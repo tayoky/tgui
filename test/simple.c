@@ -22,6 +22,10 @@ int main() {
 
 	// create a style for the button
 	tgui_style_t *button_style = tgui_style_new();
+	tgui_color_t *dark_green = tgui_color_new_rgb(0, 100, 0);
+	tgui_style_set_border_style(button_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
+	tgui_style_set_border_width(button_style, TGUI_SIDE_ALL, 2);
+	tgui_style_set_border_color(button_style, TGUI_SIDE_ALL, dark_green);
 
 	// put three buttons in the box
 	for (int i=0; i<3; i++) {

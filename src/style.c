@@ -42,8 +42,10 @@ void tgui_style_set_border_width(tgui_style_t *style, int side, unsigned int wid
 		for (int i=0; i<4;i++) {
 			style->border_width[i] = width;
 		}
+		style->border_width_flags |= 0xf;
 	} else {
 		style->border_width[side] = width;
+		style->border_width_flags |= 1 << side;
 	}
 }
 
@@ -119,6 +121,7 @@ tgui_font_t *tgui_style_get_font(tgui_style_t *style) {
 
 void tgui_style_set_font_size(tgui_style_t *style, unsigned int font_size) {
 	style->font_size = font_size;
+	style->flags |= TGUI_STYLE_FONT_SIZE;
 }
 
 unsigned int tgui_style_get_font_size(tgui_style_t *style) {

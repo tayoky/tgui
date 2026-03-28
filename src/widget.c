@@ -3,6 +3,10 @@
 #include <widget.h>
 #include <render.h>
 
+static void tgui_widget_mark_dirty_style(tgui_widget_t *widget) {
+		widget->flags |= TGUI_WIDGET_DIRTY_STYLE;
+}
+
 tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 	if (class->new) {
 		return class->new();
@@ -12,6 +16,7 @@ tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 		widget->class = class;
 		tgui_widget_mark_dirty(widget);
 		tgui_widget_mark_dirty_size(widget);
+		tgui_widget_mark_dirty_style(widget);
 		return widget;
 	}
 }
@@ -41,6 +46,8 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 	if (widget->class->calculate_sizes) {
 		widget->class->calculate_sizes(widget);
 
+		tgui_style_t *style = tgui_widget_get_current_style(widget);
+
 		// add margin to sizes
 		widget->min_width  += widget->left_margin + widget->right_margin;
 		widget->min_height += widget->top_margin + widget->bottom_margin;
@@ -52,6 +59,26 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 		widget->min_height += widget->top_padding + widget->bottom_padding;
 		widget->pref_width  += widget->left_padding + widget->right_padding;
 		widget->pref_height += widget->top_padding + widget->bottom_padding;
+
+		// add border to sizes
+		for (int side=0; side<4; side++) {
+			if (style->border_style[side] == TGUI_BORDER_NONE) {
+				continue;
+			}
+			int width = style->border_width[side];
+			switch (side) {
+			case TGUI_SIDE_LEFT:
+			case TGUI_SIDE_RIGHT:
+				widget->min_width += width;
+				widget->pref_width += width;
+				break;
+			case TGUI_SIDE_TOP:
+			case TGUI_SIDE_BOTTOM:
+				widget->min_height += width;
+				widget->pref_height += width;
+				break;
+			}
+		}
 	}
 	printf("got min size of %ldx%ld for %s\n", widget->min_width, widget->min_height, widget->class->name);
 }
@@ -173,6 +200,7 @@ void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent) {
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style) {
 	// TODO
 	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_style(widget);
 }
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style) {
 	if (!style) return;
@@ -180,6 +208,7 @@ void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style) {
 	node->style = tgui_style_ref(style);
 	tgui_list_prepend(&widget->styles, &node->node);
 	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_style(widget);
 }
 
 tgui_list_t *tgui_widget_get_styles(tgui_widget_t *widget) {
@@ -201,22 +230,41 @@ static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_styl
 		CHECK_PTR(color);
 		CHECK_PTR(background_color);
 		CHECK_PTR(font);
+		for (int i=0; i<4; i++) {
+			CHECK_PTR(border_color[i]);
+			if (style->border_style[i] != TGUI_BORDER_UNDEFINED) {
+				dest_style->border_style[i] = style->border_style[i];
+			}
+			if (style->border_width_flags & (1 << i)) {
+				dest_style->border_width[i] = style->border_width[i];
+			}
+				
+		}
 	}
 	// TODO : apply state flags
 }
 
-void tgui_widget_get_current_style(tgui_widget_t *widget, tgui_style_t *style) {
+tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
+	tgui_style_t *style = &widget->cache_style;
+	if (!(widget->flags & TGUI_WIDGET_DIRTY_STYLE)) {
+		return style;
+	}
+	widget->flags &= ~TGUI_WIDGET_DIRTY_STYLE;
 	memset(style, 0, sizeof(tgui_style_t));
 	// defaults
 	style->font_size = 12;
 	style->font = tgui_font_get_default();
+	for (int i=0; i<4; i++) {
+		style->border_style[i] = TGUI_BORDER_NONE;
+	}
 	static tgui_color_t *color = NULL;
 	if (!color) color = tgui_color_new_rgb(0, 0, 0);
 	style->color = color;
 	tgui_widget_get_current_style_recur(widget, style);
+	return style;
 }
 
-unsigned int tgui_widget_get_border_width(tgui_widget_t *widget, int side);
+unsigned int tgui_widget_get_border_size(tgui_widget_t *widget, int side);
 
 
 tgui_color_t *tgui_widget_get_border_color(tgui_style_t *style, int side);
@@ -226,25 +274,17 @@ char tgui_widget_get_border_widget(tgui_widget_t *widget, int side);
 
 
 tgui_color_t *tgui_widget_get_color(tgui_widget_t *widget) {
-	tgui_style_t style;
-	tgui_widget_get_current_style(widget, &style);
-	return style.color;
+	return tgui_widget_get_current_style(widget)->color;
 }
 
 tgui_color_t *tgui_widget_get_background_color(tgui_widget_t *widget) {
-	tgui_style_t style;
-	tgui_widget_get_current_style(widget, &style);
-	return style.background_color;
+	return tgui_widget_get_current_style(widget)->background_color;
 }
 
 tgui_font_t *tgui_widget_get_font(tgui_widget_t *widget) {
-	tgui_style_t style;
-	tgui_widget_get_current_style(widget, &style);
-	return style.font;
+	return tgui_widget_get_current_style(widget)->font;
 }
 
 unsigned int tgui_widget_get_font_size(tgui_widget_t *widget) {
-	tgui_style_t style;
-	tgui_widget_get_current_style(widget, &style);
-	return style.font_size;
+	return tgui_widget_get_current_style(widget)->font_size;
 }

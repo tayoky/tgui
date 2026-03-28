@@ -13,18 +13,23 @@ typedef struct tgui_style {
 	unsigned int border_width[4];
 	char border_style[4];
 	unsigned int font_size;
+	unsigned int flags;
+	unsigned char border_width_flags;
 } tgui_style_t;
 
-#define TGUI_SIDE_LEFT    1
-#define TGUI_SIDE_RIGHT   2
-#define TGUI_SIDE_TOP     3
-#define TGUI_SIDE_BOTTOM  4
-#define TGUI_SIDE_ALL     5
+#define TGUI_STYLE_FONT_SIZE 0x01
 
-#define TGUI_BORDER_NONE   0
-#define TGUI_BORDER_SOLILD 1
-#define TGUI_BORDER_DASHED 2
-#define TGUI_BORDER_DOTTED 3
+#define TGUI_SIDE_LEFT    0
+#define TGUI_SIDE_RIGHT   1
+#define TGUI_SIDE_TOP     2
+#define TGUI_SIDE_BOTTOM  3
+#define TGUI_SIDE_ALL     4
+
+#define TGUI_BORDER_UNDEFINED  0
+#define TGUI_BORDER_NONE       1
+#define TGUI_BORDER_SOLID      2
+#define TGUI_BORDER_DASHED     3
+#define TGUI_BORDER_DOTTED     4
 
 tgui_style_t *tgui_style_new(void);
 tgui_style_t *tgui_style_copy(tgui_style_t *style);
