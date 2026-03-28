@@ -159,6 +159,7 @@ void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long 
 }
 
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
+	printf("render text %ld %ld %s\n", x, y, text);
 	tgui_font_t *font = tgui_widget_get_font(widget);
 	XftFont *xft_font = font->private;
 	tgui_color_t *color = tgui_widget_get_color(widget);

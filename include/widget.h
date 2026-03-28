@@ -68,8 +68,9 @@ struct tgui_widget {
 #define TGUI_WIDGET_HEXPAND     0x01
 #define TGUI_WIDGET_VEXPAND     0x02
 #define TGUI_WIDGET_DIRTY       0x04
-#define TGUI_WIDGET_DIRTY_SIZE  0x04
-#define TGUI_WIDGET_DIRTY_STYLE 0x08
+#define TGUI_WIDGET_DIRTY_SIZE  0x08
+#define TGUI_WIDGET_DIRTY_STYLE 0x10
+#define TGUI_WIDGET_DIRTY_CHILD 0x20
 
 #define TGUI_ALIGN_FILL    0x00
 #define TGUI_ALIGN_LEFT    0x01
@@ -90,8 +91,9 @@ void tgui_widget_render(tgui_widget_t *widget);
 int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name);
 
 static inline void tgui_widget_mark_dirty(tgui_widget_t *widget) {
+	widget->flags |= TGUI_WIDGET_DIRTY;
 	while (widget) {
-		widget->flags |= TGUI_WIDGET_DIRTY;
+		widget->flags |= TGUI_WIDGET_DIRTY_CHILD;
 		widget = widget->parent;
 	}
 }
@@ -100,9 +102,13 @@ static inline int tgui_widget_is_dirty(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_DIRTY;
 }
 
+static inline int tgui_widget_has_dirty_child(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_DIRTY_CHILD;
+}
+
 static inline void tgui_widget_mark_dirty_size(tgui_widget_t *widget) {
 	while (widget) {
-		widget->flags |= TGUI_WIDGET_DIRTY_SIZE | TGUI_WIDGET_DIRTY;
+		widget->flags |= TGUI_WIDGET_DIRTY_SIZE;
 		widget = widget->parent;
 	}
 }

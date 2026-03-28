@@ -158,19 +158,32 @@ int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name) {
 	return !strcmp(widget->class->name, class_name);
 }
 
-void tgui_widget_render(tgui_widget_t *widget) {
+static void tgui_widget_render_raw(tgui_widget_t *widget) {
 	if (!widget) return;
-	if (!tgui_widget_is_dirty(widget)) {
-		return;
-	}
-	widget->flags &= TGUI_WIDGET_DIRTY;
+	widget->flags &= ~TGUI_WIDGET_DIRTY;
 	tgui_render_widget_base(widget);
 	if (widget->class->render) {
 		widget->class->render(widget);
 	}
+	widget->flags &= ~TGUI_WIDGET_DIRTY_CHILD;
 	TGUI_LIST_FOREACH(node, &widget->children) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
-		tgui_widget_render(child);
+		tgui_widget_render_raw(child);
+	}
+}
+
+void tgui_widget_render(tgui_widget_t *widget) {
+	if (!widget) return;
+	if (tgui_widget_is_dirty(widget)) {
+		tgui_widget_render_raw(widget);
+		return;
+	}
+	if (tgui_widget_has_dirty_child(widget)) {
+		widget->flags &= ~TGUI_WIDGET_DIRTY_CHILD;
+		TGUI_LIST_FOREACH(node, &widget->children) {
+			tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
+			tgui_widget_render(child);
+		}
 	}
 }
 
