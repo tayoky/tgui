@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. ./tconf.sh
+
+tconf_init "$@"
+
+tconf_search_cc "$HOST"
+
+tconf_fini
