@@ -19,6 +19,7 @@ tgui_color_t *tgui_color_ref(tgui_color_t *color) {
 }
 
 void tgui_color_release(tgui_color_t *color) {
+	if (!color) return;
 	if (color->ref_count > 1) {
 		color->ref_count--;
 		return;

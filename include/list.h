@@ -14,6 +14,7 @@ typedef struct tgui_list {
 
 #define TGUI_LIST_FOREACH(node, list) for (tgui_list_node_t *node=(list)->first; node; node=node->next)
 
+void tgui_list_prepend(tgui_list_t *list, tgui_list_node_t *node);
 void tgui_list_append(tgui_list_t *list, tgui_list_node_t *node);
 void tgui_list_remove(tgui_list_t *list, tgui_list_node_t *node);
 

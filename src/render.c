@@ -15,13 +15,16 @@ void tgui_render_text(tgui_widget_t *widget, long x, long y, const char *text) {
 }
 
 void tgui_render_widget_base(tgui_widget_t *widget) {
+	tgui_style_t style;
+	tgui_widget_get_current_style(widget, &style);
+
 	// first render background
-	if (widget->background_color) {
+	if (style.background_color) {
 		long x = tgui_widget_get_frame_x(widget);
 		long y = tgui_widget_get_frame_y(widget);
 		long width = tgui_widget_get_frame_width(widget);
 		long height = tgui_widget_get_frame_height(widget);
-		tgui_render_rect(widget, widget->background_color, x, y, width, height);
+		tgui_render_rect(widget, style.background_color, x, y, width, height);
 	}
 
 	// TODO : border

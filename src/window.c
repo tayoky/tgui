@@ -42,7 +42,6 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	window->widget.width  = width;
 	window->widget.height = height;
-	tgui_widget_set_color(TGUI_WIDGET_CAST(window), tgui_color_new_rgb(0, 0, 0));
 	tgui_list_append(&windows, &window->node);
 
 	tgui_platform_create_window(window);
