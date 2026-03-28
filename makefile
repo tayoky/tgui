@@ -2,12 +2,18 @@ MAKEFLAGS += --no-builtin-rules
 
 include config.mk
 
+OS = $(word 2, $(subst -, ,$(HOST)))
 BUILDDIR = build
-PLATFORM = x11
 SRC = $(wildcard src/*.c) platform/$(PLATFORM).c
 OBJ = $(SRC:%.c=$(BUILDDIR)/%.o)
 
-# need to linkwith some libs
+ifeq ($(OS),stanix)
+	PLATFORM = twm
+else
+	PLATFORM = x11
+endif
+
+# need to link with some libs
 ifeq ($(PLATFORM),x11)
 	LDFLAGS += -lX11 -lXft
 	CFLAGS += -I$(PREFIX)/include/freetype2
