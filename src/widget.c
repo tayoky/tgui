@@ -197,7 +197,7 @@ static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_styl
 
 	// apply all styles
 	TGUI_LIST_FOREACH(node, tgui_widget_get_styles(widget)) {
-		tgui_style_t *style = TGUI_STYLE_FROM_NODE(widget);
+		tgui_style_t *style = TGUI_STYLE_FROM_NODE(node);
 		CHECK_PTR(color);
 		CHECK_PTR(background_color);
 		CHECK_PTR(font);
