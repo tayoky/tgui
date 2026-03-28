@@ -82,11 +82,13 @@ void tgui_window_render(tgui_window_t *window) {
 	if (tgui_widget_is_dirty_size(TGUI_WIDGET_CAST(window))) {
 		tgui_window_update_sizes(window);
 	}
-	if (window->widget.children.first) {
-		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
-		tgui_widget_render(child);
+	if (tgui_widget_has_dirty_child(TGUI_WIDGET_CAST(window))) {
+		if (window->widget.children.first) {
+			tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
+			tgui_widget_render(child);
+		}
+		tgui_platform_push_window(window);
 	}
-	tgui_platform_push_window(window);
 }
 
 tgui_list_t *tgui_get_windows(void) {

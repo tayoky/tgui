@@ -58,14 +58,17 @@ void tgui_platform_fini(void) {
 
 void tgui_platform_handle_event(void) {
 	XEvent event;
+	XFlush(display);
 	XNextEvent(display, &event);
 	switch (event.type) {
-	case Expose:;
-		tgui_window_t *window = get_window(event.xexpose.window);
-		tgui_platform_push_window(window);
+	case Expose:
+		if (event.xexpose.count == 0) {
+			tgui_window_t *window = get_window(event.xexpose.window);
+			tgui_platform_push_window(window);
+		}
 		break;
 	case ButtonPress:;
-		window = get_window(event.xbutton.window);
+		tgui_window_t *window = get_window(event.xbutton.window);
 		tgui_input_click(window, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
 		break;
 	case ButtonRelease:;

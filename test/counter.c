@@ -14,7 +14,6 @@ int plus_click(tgui_event_t *event) {
 	(void)event;
 	counter++;
 	update_label();
-	puts("+");
 	return TGUI_EVENT_HANDLED;
 }
 
