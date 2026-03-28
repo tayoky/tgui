@@ -6,6 +6,7 @@
 #include "color.h"
 #include "font.h"
 #include "style.h"
+#include "events.h"
 
 typedef struct tgui_widget tgui_widget_t;
 
@@ -41,6 +42,7 @@ struct tgui_widget {
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
 	tgui_list_t styles;
 	tgui_style_t cache_style;
+	tgui_callbacks_t callbacks;
 	long flags;
 	long left_margin;
 	long right_margin;
@@ -118,6 +120,11 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 static inline char tgui_widget_get_state(tgui_widget_t *widget) {
 	return widget->state;
 }
+
+void tgui_widget_set_callback(tgui_widget_t *widget, int type, tgui_callback_t callback, void *data);
+int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event);
+
+tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y);
 
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style);

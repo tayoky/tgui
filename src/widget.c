@@ -197,16 +197,49 @@ void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent) {
 	tgui_widget_mark_dirty(child);
 }
 
+void tgui_widget_set_callback(tgui_widget_t *widget, int type, tgui_callback_t callback, void *data) {
+	tgui_event_set_callback(widget->callbacks, type, callback, data);
+}
+
+int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event) {
+	while (widget) {
+		if (tgui_event_report(widget->callbacks, event)) return TGUI_EVENT_HANDLED;
+	}
+	return TGUI_EVENT_NOT_HANDLED;
+}
+
+tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {
+	TGUI_LIST_FOREACH(node, &parent->children) {
+		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
+		if (x < child->x || x >= child->x + child->width) {
+			continue;
+		}
+		if (y < child->y || y >= child->y + child->height) {
+			continue;
+		}
+		tgui_widget_t *sub_child = tgui_widget_get_at(child, x - child->x, y - child->y);
+		if (sub_child) return sub_child;
+		return child;
+	}
+	return NULL;
+}
+
+static void add_style(tgui_list_t *list, tgui_style_t *style) {
+	tgui_style_node_t *node = malloc(sizeof(tgui_style_node_t));
+	node->style = tgui_style_ref(style);
+	tgui_list_prepend(list, &node->node);
+}
+
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style) {
-	// TODO
+	if (!style) return;
+	add_style(&widget->state_styles[(int)state], style);
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_style(widget);
 }
+
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style) {
 	if (!style) return;
-	tgui_style_node_t *node = malloc(sizeof(tgui_style_node_t));
-	node->style = tgui_style_ref(style);
-	tgui_list_prepend(&widget->styles, &node->node);
+	add_style(&widget->styles, style);
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_style(widget);
 }

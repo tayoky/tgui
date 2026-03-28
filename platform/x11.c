@@ -1,6 +1,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 #include <platform.h>
+#include <inputs.h>
 #include <stdlib.h>
 
 typedef struct x11_window {
@@ -28,6 +29,19 @@ static tgui_window_t *get_window(Window window_id) {
 	return NULL;
 }
 
+static int x11_button2tgui(int x11_button) {
+	switch (x11_button) {
+	case Button1:
+		return TGUI_BUTTON_LEFT;
+	case Button2:
+		return TGUI_BUTTON_MIDDLE;
+	case Button3:
+		return TGUI_BUTTON_RIGHT;
+	default:
+		return 0;
+	}
+}
+
 int tgui_platform_init(void) {
 	display = XOpenDisplay(NULL);
 	if (!display) return -1;
@@ -50,13 +64,21 @@ void tgui_platform_handle_event(void) {
 		tgui_window_t *window = get_window(event.xexpose.window);
 		tgui_platform_push_window(window);
 		break;
+	case ButtonPress:;
+		window = get_window(event.xbutton.window);
+		tgui_input_click(window, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
+		break;
+	case ButtonRelease:;
+		window = get_window(event.xbutton.window);
+		tgui_input_unclick(window, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
+		break;
 	}	
 }
 
 int tgui_platform_create_window(tgui_window_t *window) {
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
 	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, window->widget.width, window->widget.height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
-	XSelectInput(display, x11_window->window, ExposureMask);
+	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask);
 
 	// setup pixmap and GC
 	XGCValues values;
