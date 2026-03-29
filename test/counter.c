@@ -35,9 +35,11 @@ int main() {
 	label = tgui_label_new("0");
 	tgui_button_t *plus = tgui_button_new();
 	tgui_button_set_text(plus, "+");
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(plus), TGUI_TRUE);
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(plus), TGUI_EVENT_CLICK, plus_click, NULL);
 	tgui_button_t *minus = tgui_button_new();
 	tgui_button_set_text(minus, "-");
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(minus), TGUI_TRUE);
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(minus), TGUI_EVENT_CLICK, minus_click, NULL);
 
 	// create the box with the counter the plus and the minus

@@ -40,6 +40,10 @@ void tgui_button_set_text(tgui_button_t *button, const char *text) {
 	} else {
 		tgui_label_t *label = tgui_label_new(text);
 		tgui_button_set_child(button, TGUI_WIDGET_CAST(label));
+		tgui_widget_set_hexpand(TGUI_WIDGET_CAST(label), TGUI_TRUE);
+		tgui_widget_set_vexpand(TGUI_WIDGET_CAST(label), TGUI_TRUE);
+		tgui_widget_set_halign(TGUI_WIDGET_CAST(label), TGUI_ALIGN_CENTER);
+		tgui_widget_set_valign(TGUI_WIDGET_CAST(label), TGUI_ALIGN_TOP);
 	}
 }
 

@@ -22,4 +22,9 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_width(button_style, TGUI_SIDE_ALL, 1);
 	tgui_style_set_border_color(button_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_default(button_style, "button");
+
+	// labels
+	tgui_style_t *label_style = tgui_style_new();
+	tgui_style_set_border_style(label_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
+	tgui_style_set_default(label_style, "label");
 }

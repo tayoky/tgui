@@ -91,6 +91,9 @@ struct tgui_widget {
 #define TGUI_CONTAINER_OF(ptr, type, member) ((type *)((char*)(ptr) - offsetof(type, member)))
 #define TGUI_WIDGET_FROM_NODE(n) TGUI_CONTAINER_OF(n, tgui_widget_t, node)
 
+#define TGUI_FALSE 0
+#define TGUI_TRUE  1
+
 tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class);
 void tgui_widget_destroy(tgui_widget_t *widget);
 void tgui_widget_calculate_sizes(tgui_widget_t *widget);
@@ -140,6 +143,24 @@ static inline void tgui_widget_show(tgui_widget_t *widget) {
 
 static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_HIDDEN;
+}
+
+static inline void tgui_widget_set_hexpand(tgui_widget_t *widget, int hexpand) {
+	if (hexpand) {
+		widget->flags |= TGUI_WIDGET_HEXPAND;
+	} else {
+		widget->flags &= ~TGUI_WIDGET_HEXPAND;
+	}
+	tgui_widget_mark_dirty_size(widget->parent);
+}
+
+static inline void tgui_widget_set_vexpand(tgui_widget_t *widget, int hexpand) {
+	if (hexpand) {
+		widget->flags |= TGUI_WIDGET_VEXPAND;
+	} else {
+		widget->flags &= ~TGUI_WIDGET_VEXPAND;
+	}
+	tgui_widget_mark_dirty_size(widget->parent);
 }
 
 static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
