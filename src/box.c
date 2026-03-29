@@ -44,7 +44,7 @@ void tgui_box_allocate_space(tgui_widget_t *widget) {
 	tgui_box_t *box = TGUI_BOX_CAST(widget);
 	if (box->widget.children.count == 0) return;
 	long x = tgui_widget_get_inner_x(widget);
-	long y = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
 	long width  = tgui_widget_get_inner_width(widget);
 	long height = tgui_widget_get_inner_height(widget);
 
