@@ -227,6 +227,7 @@ void tgui_widget_set_callback(tgui_widget_t *widget, int type, tgui_callback_t c
 
 int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event) {
 	while (widget) {
+		event->widget = widget;
 		if (tgui_event_report(widget->callbacks, event)) return TGUI_EVENT_HANDLED;
 		widget = widget->parent;
 	}

@@ -1,7 +1,7 @@
 #include <widget.h>
 #include <box.h>
 
-static void tgui_box_calculate_sizes(tgui_widget_t *widget) {
+void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 	tgui_box_t *box = TGUI_BOX_CAST(widget);
 	long min_width = 0;
 	long min_height = 0;
@@ -10,6 +10,7 @@ static void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 
 	TGUI_LIST_FOREACH(node, &box->widget.children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
+		if (tgui_widget_is_hidden(widget)) continue;
 		tgui_widget_calculate_sizes(widget);
 		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
 			if (min_width < widget->min_width) min_width = widget->min_width;
@@ -39,7 +40,7 @@ static void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 	box->widget.pref_height = pref_height;
 }
 
-static void tgui_box_allocate_space(tgui_widget_t *widget) {
+void tgui_box_allocate_space(tgui_widget_t *widget) {
 	tgui_box_t *box = TGUI_BOX_CAST(widget);
 	if (box->widget.children.count == 0) return;
 	long x = tgui_widget_get_inner_x(widget);
@@ -53,6 +54,7 @@ static void tgui_box_allocate_space(tgui_widget_t *widget) {
 	long expand_count = 0;
 	TGUI_LIST_FOREACH(node, &box->widget.children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
+		if (tgui_widget_is_hidden(widget)) continue;
 		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
 			excess -= widget->min_height;
 			if (widget->flags & TGUI_WIDGET_VEXPAND) expand_count++;
@@ -74,6 +76,7 @@ static void tgui_box_allocate_space(tgui_widget_t *widget) {
 	// actually give those sizes
 	TGUI_LIST_FOREACH(node, &box->widget.children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
+		if (tgui_widget_is_hidden(widget)) continue;
 		long alloc_width;
 		long alloc_height;
 		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {

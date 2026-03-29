@@ -7,6 +7,7 @@
 #include "label.h"
 #include "list.h"
 #include "box.h"
+#include "expander.h"
 #include "font.h"
 #include "color.h"
 

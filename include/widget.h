@@ -87,7 +87,7 @@ struct tgui_widget {
 #define TGUI_ORIENTATION_VERTICAL   0
 #define TGUI_ORIENTATION_HORIZONTAL 1
 
-#define TGUI_WIDGET_CAST(w) (&(w)->widget)
+#define TGUI_WIDGET_CAST(w) ((tgui_widget_t*)w)
 #define TGUI_CONTAINER_OF(ptr, type, member) ((type *)((char*)(ptr) - offsetof(type, member)))
 #define TGUI_WIDGET_FROM_NODE(n) TGUI_CONTAINER_OF(n, tgui_widget_t, node)
 
