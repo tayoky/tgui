@@ -2,6 +2,7 @@
 #include <string.h>
 #include <widget.h>
 #include <render.h>
+#include <stdio.h>
 
 static void tgui_widget_mark_dirty_style(tgui_widget_t *widget) {
 		widget->flags |= TGUI_WIDGET_DIRTY_STYLE;

@@ -3,7 +3,7 @@
 #include <twm.h>
 #include <gfx.h>
 
-static gfx_t *gfx;
+static gfx_t gfx;
 
 typedef struct stanix_window {
 	twm_window_t window;
@@ -12,6 +12,15 @@ typedef struct stanix_window {
 
 int tgui_platform_init(void) {
 	if (twm_init(NULL) < 0) return -1;
+	twm_fb_info_t fb_info;
+	twm_get_screen_fb(0, &fb_info);
+	gfx.bpp = fb_info.bpp;
+	gfx.red_mask_shift   = fb_info.red_mask_shift;
+	gfx.red_mask_size    = fb_info.red_mask_size;
+	gfx.green_mask_shift = fb_info.green_mask_shift;
+	gfx.green_mask_size  = fb_info.green_mask_size;
+	gfx.blue_mask_shift  = fb_info.blue_mask_shift;
+	gfx.blue_mask_size   = fb_info.blue_mask_size;
 	return 0;
 }
 
@@ -21,17 +30,21 @@ void tgui_platform_fini(void) {
 
 void tgui_platform_handle_event(void) {
 	twm_event_t *event = twm_poll_event();
+	switch (event->type) {
+	default:
+		break;
+	}
 }
 
 int tgui_platform_create_window(tgui_window_t *window) {
-	stanix_window_t *stanix_window = malloc(sizeof(twm_window_t));
+	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
 	stanix_window->window = twm_create_window("tgui window", window->widget.width, window->widget.height);
 	if (stanix_window->window) {
 		free(stanix_window);
 		return -1;
 	}
 	stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
-	if (!gfx) gfx = stanix_window->gfx;
+	window->private = stanix_window;
 	return 0;
 }
 
@@ -48,7 +61,7 @@ void tgui_platform_push_window(tgui_window_t *window) {
 }
 
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	color->private = (void*)(uintptr_t)gfx_color_rgba(gfx, r, g, b, a);
+	color->private = (void*)(uintptr_t)gfx_color_rgba(&gfx, r, g, b, a);
 }
 
 void tgui_platform_free_color(tgui_color_t *color) {
