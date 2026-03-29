@@ -158,8 +158,18 @@ int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name) {
 	return !strcmp(widget->class->name, class_name);
 }
 
+void tgui_widget_set_id(tgui_widget_t *widget, const char *id) {
+	if (widget->id) free(widget->id);
+	if (id) {
+		widget->id = strdup(id);
+	} else {
+		widget->id = NULL;
+	}
+}
+
 static void tgui_widget_render_raw(tgui_widget_t *widget) {
 	if (!widget) return;
+	if (tgui_widget_is_hidden(widget)) return;
 	widget->flags &= ~TGUI_WIDGET_DIRTY;
 	tgui_render_widget_base(widget);
 	if (widget->class->render) {
@@ -174,6 +184,7 @@ static void tgui_widget_render_raw(tgui_widget_t *widget) {
 
 void tgui_widget_render(tgui_widget_t *widget) {
 	if (!widget) return;
+	if (tgui_widget_is_hidden(widget)) return;
 	if (tgui_widget_is_dirty(widget)) {
 		tgui_widget_render_raw(widget);
 		return;
@@ -334,4 +345,22 @@ tgui_font_t *tgui_widget_get_font(tgui_widget_t *widget) {
 
 unsigned int tgui_widget_get_font_size(tgui_widget_t *widget) {
 	return tgui_widget_get_current_style(widget)->font_size;
+}
+
+void tgui_container_single_calculate_sizes(tgui_widget_t *widget) {
+	if (!widget->children.first) {
+empty:
+		widget->min_width = 0;
+		widget->min_height = 0;
+		widget->pref_width = 0;
+		widget->pref_height = 0;
+		return;
+	}
+	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(widget->children.first);
+	if (tgui_widget_is_hidden(child)) goto empty;
+	tgui_widget_calculate_sizes(child);
+	widget->min_width  = child->min_width;
+	widget->min_height = child->min_height;
+	widget->pref_width  = child->min_width;
+	widget->pref_height = child->pref_height;
 }

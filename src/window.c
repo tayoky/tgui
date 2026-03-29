@@ -10,28 +10,11 @@ static void tgui_window_free(tgui_widget_t *widget) {
 	tgui_platform_close_window(window);
 }
 
-static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
-	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
-	if (!window->widget.children.first) {
-		window->widget.min_width = 0;
-		window->widget.min_height = 0;
-		window->widget.pref_width = 0;
-		window->widget.pref_height = 0;
-		return;
-	}
-	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
-	tgui_widget_calculate_sizes(child);
-	window->widget.min_width  = child->min_width;
-	window->widget.min_height = child->min_height;
-	window->widget.pref_width  = child->min_width;
-	window->widget.pref_height = child->pref_height;
-}
-
 static tgui_widget_class_t window_class = {
 	.name = "window",
 	.size = sizeof(tgui_window_t),
 	.free = tgui_window_free,
-	.calculate_sizes = tgui_window_calculate_sizes,
+	.calculate_sizes = tgui_container_single_calculate_sizes,
 };
 
 tgui_window_t *tgui_window_new(const char *title, long width, long height) {

@@ -8,6 +8,7 @@
 #include "style.h"
 #include "events.h"
 
+struct tgui_css;
 typedef struct tgui_widget tgui_widget_t;
 
 typedef struct tgui_widget_class {
@@ -39,6 +40,8 @@ struct tgui_widget {
 	tgui_list_t children;
 	tgui_widget_t *parent;
 	tgui_widget_class_t *class;
+	char *id;
+	tgui_list_t css;
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
 	tgui_list_t styles;
 	tgui_style_t cache_style;
@@ -71,6 +74,7 @@ struct tgui_widget {
 #define TGUI_WIDGET_DIRTY_SIZE  0x08
 #define TGUI_WIDGET_DIRTY_STYLE 0x10
 #define TGUI_WIDGET_DIRTY_CHILD 0x20
+#define TGUI_WIDGET_HIDDEN      0x40
 
 #define TGUI_ALIGN_FILL    0x00
 #define TGUI_ALIGN_LEFT    0x01
@@ -89,6 +93,7 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget);
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height);
 void tgui_widget_render(tgui_widget_t *widget);
 int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name);
+void tgui_widget_set_id(tgui_widget_t *widget, const char *id);
 
 static inline void tgui_widget_mark_dirty(tgui_widget_t *widget) {
 	widget->flags |= TGUI_WIDGET_DIRTY;
@@ -115,6 +120,22 @@ static inline void tgui_widget_mark_dirty_size(tgui_widget_t *widget) {
 
 static inline int tgui_widget_is_dirty_size(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_DIRTY_SIZE;
+}
+
+static inline void tgui_widget_hide(tgui_widget_t *widget) {
+	widget->flags |= TGUI_WIDGET_HIDDEN;
+	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_size(widget->parent);
+}
+
+static inline void tgui_widget_show(tgui_widget_t *widget) {
+	widget->flags &= ~TGUI_WIDGET_HIDDEN;
+	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_size(widget->parent);
+}
+
+static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_HIDDEN;
 }
 
 static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
@@ -311,5 +332,6 @@ static inline long tgui_widget_get_inner_height(tgui_widget_t *widget) {
 
 void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent);
 void tgui_widget_remove_parent(tgui_widget_t *child);
+void tgui_container_single_calculate_sizes(tgui_widget_t *widget);
 
 #endif
