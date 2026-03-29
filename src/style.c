@@ -1,7 +1,17 @@
 #include <stdlib.h>
 #include <string.h>
+#include <widget.h>
 #include <color.h>
 #include <style.h>
+#include <list.h>
+
+typedef struct tgui_default_style {
+	tgui_list_node_t node;
+	char *class;
+	tgui_style_t *style;
+} tgui_default_style_t;
+
+static tgui_list_t default_styles;
 
 tgui_style_t *tgui_style_new(void) {
 	tgui_style_t *style = malloc(sizeof(tgui_style_t));
@@ -127,4 +137,22 @@ void tgui_style_set_font_size(tgui_style_t *style, unsigned int font_size) {
 unsigned int tgui_style_get_font_size(tgui_style_t *style) {
 	if (!style) return 0;
 	return style->font_size;
+}
+
+
+void tgui_style_set_default(tgui_style_t *style, const char *class) {
+	tgui_default_style_t *default_style = malloc(sizeof(tgui_default_style_t));
+	default_style->class = strdup(class);
+	default_style->style = tgui_style_ref(style);
+	tgui_list_prepend(&default_styles, &default_style->node);
+}
+
+tgui_style_t *tgui_style_get_default(const char *class) {
+	TGUI_LIST_FOREACH(node, &default_styles) {
+		tgui_default_style_t *default_style = TGUI_CONTAINER_OF(node, tgui_default_style_t, node);
+		if (!strcmp(default_style->class, class)) {
+			return default_style->style;
+		}
+	}
+	return NULL;
 }

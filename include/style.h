@@ -49,5 +49,7 @@ void tgui_style_set_font(tgui_style_t *style, tgui_font_t *font);
 tgui_font_t *tgui_style_get_font(tgui_style_t *style);
 void tgui_style_set_font_size(tgui_style_t *style, unsigned int font_size);
 unsigned int tgui_style_get_font_size(tgui_style_t *style);
+void tgui_style_set_default(tgui_style_t *style, const char *class);
+tgui_style_t *tgui_style_get_default(const char *class);
 
 #endif

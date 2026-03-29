@@ -169,6 +169,8 @@ tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y);
 
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style);
+void tgui_widget_remove_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
+void tgui_widget_remove_style(tgui_widget_t *widget, tgui_style_t *style);
 tgui_list_t *tgui_widget_get_styles(tgui_widget_t *widget);
 tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget);
 

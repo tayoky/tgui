@@ -17,6 +17,10 @@ tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 		tgui_widget_mark_dirty(widget);
 		tgui_widget_mark_dirty_size(widget);
 		tgui_widget_mark_dirty_style(widget);
+		tgui_style_t *style = tgui_style_get_default(class->name);
+		if (style) {
+			tgui_widget_add_style(widget, style);
+		}
 		return widget;
 	}
 }
@@ -34,6 +38,7 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 	if (widget->class->free) {
 		widget->class->free(widget);
 	}
+	// TODO : free styles
 	free(widget);
 }
 
@@ -266,6 +271,32 @@ void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style) {
 	if (!style) return;
 	add_style(&widget->styles, style);
+	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_style(widget);
+}
+
+static void remove_style(tgui_list_t *list, tgui_style_t *style) {
+	TGUI_LIST_FOREACH(node, list) {
+		tgui_style_node_t *style_node = TGUI_CONTAINER_OF(node, tgui_style_node_t, node);
+		if (style_node->style != style) {
+			continue;
+		}
+		tgui_list_remove(list, &style_node->node);
+		tgui_style_release(style);
+		free(style_node);
+	}
+}
+
+void tgui_widget_remove_state_style(tgui_widget_t *widget, char state, tgui_style_t *style) {
+	if (!style) return;
+	remove_style(&widget->state_styles[(int)state], style);
+	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_style(widget);
+}
+
+void tgui_widget_remove_style(tgui_widget_t *widget, tgui_style_t *style) {
+	if (!style) return;
+	remove_style(&widget->styles, style);
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_style(widget);
 }

@@ -11,6 +11,7 @@
 #include "font.h"
 #include "color.h"
 
+void tgui_quit(void);
 int tgui_init(void);
 void tgui_fini(void);
 void tgui_main(void);
