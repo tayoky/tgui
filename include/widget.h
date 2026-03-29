@@ -66,6 +66,7 @@ struct tgui_widget {
 	char valign;
 	char halign;
 	char state;
+	char orientation;
 };
 
 #define TGUI_WIDGET_HEXPAND     0x01
@@ -82,6 +83,9 @@ struct tgui_widget {
 #define TGUI_ALIGN_CENTER  0x02
 #define TGUI_ALIGN_RIGHT   0x03
 #define TGUI_ALIGN_BOTTOM  0x03
+
+#define TGUI_ORIENTATION_VERTICAL   0
+#define TGUI_ORIENTATION_HORIZONTAL 1
 
 #define TGUI_WIDGET_CAST(w) (&(w)->widget)
 #define TGUI_CONTAINER_OF(ptr, type, member) ((type *)((char*)(ptr) - offsetof(type, member)))
@@ -146,6 +150,16 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 
 static inline char tgui_widget_get_state(tgui_widget_t *widget) {
 	return widget->state;
+}
+
+static inline void tgui_widget_set_orientation(tgui_widget_t *widget, char orientation) {
+	if (widget->orientation == orientation) return;
+	widget->orientation = orientation;
+	tgui_widget_mark_dirty_size(widget);
+}
+
+static inline char tgui_widget_get_orientation(tgui_widget_t *widget) {
+	return widget->orientation;
 }
 
 void tgui_widget_set_callback(tgui_widget_t *widget, int type, tgui_callback_t callback, void *data);

@@ -11,7 +11,7 @@ static void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 	TGUI_LIST_FOREACH(node, &box->widget.children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
 		tgui_widget_calculate_sizes(widget);
-		if (box->orientation == TGUI_BOX_VERTICAL) {
+		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
 			if (min_width < widget->min_width) min_width = widget->min_width;
 			min_height += widget->min_height;
 			if (pref_width < widget->pref_width) pref_width = widget->pref_width;
@@ -53,7 +53,7 @@ static void tgui_box_allocate_space(tgui_widget_t *widget) {
 	long expand_count = 0;
 	TGUI_LIST_FOREACH(node, &box->widget.children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
-		if (box->orientation == TGUI_BOX_VERTICAL) {
+		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
 			excess -= widget->min_height;
 			if (widget->flags & TGUI_WIDGET_VEXPAND) expand_count++;
 			pref_amount += widget->pref_height - widget->min_height;
@@ -76,7 +76,7 @@ static void tgui_box_allocate_space(tgui_widget_t *widget) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
 		long alloc_width;
 		long alloc_height;
-		if (box->orientation == TGUI_BOX_VERTICAL) {
+		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
 			alloc_width = width;
 			long pref = widget->pref_height - widget->min_height;
 			alloc_height = widget->min_height;
@@ -106,7 +106,7 @@ static void tgui_box_allocate_space(tgui_widget_t *widget) {
 			alloc_height = height;
 		}
 		tgui_widget_allocate_space(widget, x, y, alloc_width, alloc_height);
-		if (box->orientation == TGUI_BOX_VERTICAL) {
+		if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
 			y += alloc_height + box->spacing;
 		} else {
 			x += alloc_width + box->spacing;
