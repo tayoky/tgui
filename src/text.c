@@ -30,7 +30,7 @@ tgui_text_t *tgui_text_new(void) {
 }
 
 static void tgui_text_update_label(tgui_text_t *text) {
-	if (text->text) {
+	if (text->text && text->text[0]) {
 		tgui_label_set_text(text->label, text->text);
 	} else {
 		tgui_label_set_text(text->label, text->placeholder);
@@ -54,6 +54,7 @@ void tgui_text_set_content(tgui_text_t *text, const char *content) {
 	} else {
 		text->text = NULL;
 	}
+	text->cursor_x = 0;
 	tgui_text_update_label(text);
 }
 
