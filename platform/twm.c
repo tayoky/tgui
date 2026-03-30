@@ -45,7 +45,7 @@ void tgui_platform_fini(void) {
 
 void send_button_event(tgui_window_t *window, int button, twm_event_input_t *input_event) {
 	stanix_window_t *stanix_window = window->private;
-	if (input_event->key.flags & IE_KEY_PRESS) {
+	if (input_event->key.flags & TWM_INPUT_PRESS) {
 		tgui_input_click(window, button, stanix_window->cursor_x, stanix_window->cursor_y);
 	} else {
 		tgui_input_unclick(window, button, stanix_window->cursor_x, stanix_window->cursor_y);
