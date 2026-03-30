@@ -64,6 +64,15 @@ const char *tgui_text_get_content(tgui_text_t *text) {
 }
 
 void tgui_text_insert(tgui_text_t *text, const char *content) {
+	if (text->text) {
+		text->text = realloc(text->text, strlen(text->text) + strlen(content) + 1);
+	} else {
+		text->text = malloc(strlen(content) + 1);
+		text->text[0] = '\0';
+	}
+	memmove(text->text + text->cursor_x + strlen(content), text->text + text->cursor_x, strlen(text->text) - text->cursor_x + 1);
+	memcpy(text->text + text->cursor_x, content, strlen(content));
+	text->cursor_x += strlen(content);
 	tgui_text_update_label(text);
 }
 

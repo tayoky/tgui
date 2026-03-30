@@ -1,5 +1,7 @@
 #include <platform.h>
 #include <stdlib.h>
+#include <inputs.h>
+#include <input.h>
 #include <twm.h>
 #include <gfx.h>
 
@@ -8,7 +10,20 @@ static gfx_t gfx;
 typedef struct stanix_window {
 	twm_window_t window;
 	gfx_t *gfx;
+	long cursor_x;
+	long cursor_y;
 } stanix_window_t;
+
+static tgui_window_t *get_window(twm_window_t window_id) {
+	TGUI_LIST_FOREACH(node, tgui_get_windows()) {
+		tgui_window_t *window = TGUI_CONTAINER_OF(node, tgui_window_t, node);
+		stanix_window_t *stanix_window = window->private;
+		if (stanix_window->window == window_id) {
+			return window;
+		}
+	}
+	return NULL;
+}
 
 int tgui_platform_init(void) {
 	if (twm_init(NULL) < 0) return -1;
@@ -28,12 +43,45 @@ void tgui_platform_fini(void) {
 	twm_fini();
 }
 
+void send_button_event(tgui_window_t *window, int button, twm_event_input_t *input_event) {
+	stanix_window_t *stanix_window = window->private;
+	if (input_event->key.flags & IE_KEY_PRESS) {
+		tgui_input_click(window, button, stanix_window->cursor_x, stanix_window->cursor_y);
+	} else {
+		tgui_input_unclick(window, button, stanix_window->cursor_x, stanix_window->cursor_y);
+	}
+}
+
 void tgui_platform_handle_event(void) {
 	twm_event_t *event = twm_poll_event();
 	switch (event->type) {
+	case TWM_EVENT_INPUT:;
+		twm_event_input_t *input_event = (twm_event_input_t*)event;
+		tgui_window_t *window = get_window(input_event->window);
+		stanix_window_t *stanix_window = window->private;
+		switch (input_event->type) {
+		case TWM_INPUT_MOVE:
+			stanix_window->cursor_x = input_event->move.abs_x;
+			stanix_window->cursor_y = input_event->move.abs_y;
+			break;
+		case TWM_INPUT_KEY:
+			switch (input_event->key.scancode) {
+			case INPUT_KEY_MOUSE_LEFT:
+				send_button_event(window, TGUI_BUTTON_LEFT, input_event);
+				break;
+			case INPUT_KEY_MOUSE_RIGHT:
+				send_button_event(window, TGUI_BUTTON_RIGHT, input_event);
+				break;
+			case INPUT_KEY_MOUSE_MIDDLE:
+				send_button_event(window, TGUI_BUTTON_MIDDLE, input_event);
+				break;
+			}
+		}
+		break;
 	default:
 		break;
 	}
+	free(event);
 }
 
 int tgui_platform_create_window(tgui_window_t *window) {
