@@ -33,9 +33,9 @@ tgui_button_t *tgui_button_new(void){
 }
 
 void tgui_button_set_text(tgui_button_t *button, const char *text) {
-	if (button->widget.children.first && tgui_widget_is_class(TGUI_WIDGET_FROM_NODE(button->widget.children.first), "label")) {
+	tgui_widget_t *child = tgui_button_get_child(button);
+	if (tgui_widget_is_class(child, "label")) {
 		// we already have a label
-		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(button->widget.children.first);
 		tgui_label_set_text(TGUI_LABEL_CAST(child), text);
 	} else {
 		tgui_label_t *label = tgui_label_new(text);
@@ -57,4 +57,23 @@ void tgui_button_set_child(tgui_button_t *button, tgui_widget_t *child) {
 		tgui_widget_destroy(TGUI_WIDGET_FROM_NODE(button->widget.children.first));
 	}
 	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(button));
+}
+
+const char *tgui_button_get_text(tgui_button_t *button) {
+	tgui_widget_t *child = tgui_button_get_child(button);
+	if (tgui_widget_is_class(child, "label")) {
+		return tgui_label_get_text(TGUI_LABEL_CAST(child));
+	} else {
+		return NULL;
+	}
+}
+
+const char *tgui_button_get_icon(tgui_button_t *button);
+
+tgui_widget_t *tgui_button_get_child(tgui_button_t *button) {
+	if (button->widget.children.first) {
+		return TGUI_WIDGET_FROM_NODE(button->widget.children.first);
+	} else {
+		return NULL;
+	}
 }

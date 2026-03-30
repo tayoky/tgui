@@ -12,5 +12,6 @@ typedef struct tgui_label {
 
 tgui_label_t *tgui_label_new(const char *text);
 void tgui_label_set_text(tgui_label_t *label, const char *text);
+const char *tgui_label_get_text(tgui_label_t *label);
 
 #endif

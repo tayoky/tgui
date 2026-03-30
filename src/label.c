@@ -54,3 +54,7 @@ void tgui_label_set_text(tgui_label_t *label, const char *text) {
 	tgui_widget_mark_dirty(TGUI_WIDGET_CAST(label));
 	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(label));
 }
+
+const char *tgui_label_get_text(tgui_label_t *label) {
+	return label->text;
+}
