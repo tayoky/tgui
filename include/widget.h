@@ -294,19 +294,19 @@ static inline long tgui_widget_get_outer_height(tgui_widget_t *widget) {
 }
 
 static inline long tgui_widget_get_border_x(tgui_widget_t *widget) {
-	return widget->x + widget->left_padding;
+	return widget->x + widget->left_margin;
 }
 
 static inline long tgui_widget_get_border_width(tgui_widget_t *widget) {
-	return widget->width - widget->left_padding - widget->right_padding;
+	return widget->width - widget->left_margin - widget->right_margin;
 }
 
 static inline long tgui_widget_get_border_y(tgui_widget_t *widget) {
-	return widget->y + widget->top_padding;
+	return widget->y + widget->top_margin;
 }
 
 static inline long tgui_widget_get_border_height(tgui_widget_t *widget) {
-	return widget->height - widget->top_padding - widget->bottom_padding;
+	return widget->height - widget->top_margin - widget->bottom_margin;
 }
 
 static inline long tgui_widget_get_frame_x(tgui_widget_t *widget) {
