@@ -5,13 +5,13 @@
 void tgui_render_rect(tgui_widget_t *widget, tgui_color_t *color, long x, long y, long width, long height) {
 	tgui_window_t *window = tgui_widget_get_window(widget);
 	if (!window) return;
-	tgui_platform_render_rect(window, color, x, y, width, height);
+	tgui_platform_render_rect(window, color, x * window->scaling, y * window->scaling, width *window->scaling, height * window->scaling);
 }
 
 void tgui_render_text(tgui_widget_t *widget, long x, long y, const char *text) {
 	tgui_window_t *window = tgui_widget_get_window(widget);
 	if (!window) return;
-	tgui_platform_render_text(window, widget, x, y, text);
+	tgui_platform_render_text(window, widget, x * window->scaling, y * window->scaling, text);
 }
 
 void tgui_render_widget_base(tgui_widget_t *widget) {

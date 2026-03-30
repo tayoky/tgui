@@ -2,6 +2,7 @@
 #include <X11/Xft/Xft.h>
 #include <platform.h>
 #include <inputs.h>
+#include <list.h>
 #include <stdlib.h>
 
 typedef struct x11_window {
@@ -10,6 +11,16 @@ typedef struct x11_window {
 	GC gc;
 	XftDraw *draw;
 } x11_window_t;
+
+typedef struct x11_font {
+	tgui_list_t cache;
+} x11_font_t;
+
+typedef struct font_cache {
+	tgui_list_node_t node;
+	unsigned int size;
+	XftFont *font;
+} font_cache_t;
 
 static Display *display;
 static Visual *visual;

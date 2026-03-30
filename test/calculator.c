@@ -16,6 +16,7 @@ int main() {
 	}
 
 	tgui_window_t *window = tgui_window_new("tgui calculator", 200, 200);
+	tgui_window_set_scaling(window, 2);
 
 	// create the grid with all the buttons
 	tgui_grid_t *grid = tgui_grid_new(4, 4);
@@ -28,6 +29,7 @@ int main() {
 		tgui_button_t *button = new_button(text);
 		tgui_grid_set_at(grid, x, y, TGUI_WIDGET_CAST(button));
 	}
+	tgui_grid_set_at(grid, 1, 3, TGUI_WIDGET_CAST(new_button("=")));
 	tgui_grid_set_at(grid, 1, 3, TGUI_WIDGET_CAST(new_button("0")));
 	tgui_grid_set_at(grid, 3, 0, TGUI_WIDGET_CAST(new_button("/")));
 	tgui_grid_set_at(grid, 3, 1, TGUI_WIDGET_CAST(new_button("*")));

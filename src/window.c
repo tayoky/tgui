@@ -25,6 +25,7 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	window->widget.width  = width;
 	window->widget.height = height;
+	window->scaling = 1;
 	tgui_list_append(&windows, &window->node);
 
 	tgui_platform_create_window(window);
@@ -76,4 +77,12 @@ void tgui_window_render(tgui_window_t *window) {
 
 tgui_list_t *tgui_get_windows(void) {
 	return &windows;
+}
+
+void tgui_window_set_scaling(tgui_window_t *window, long scaling) {
+	window->scaling = scaling;
+}
+
+long tgui_window_get_scaling(tgui_window_t *window) {
+	return window->scaling;
 }

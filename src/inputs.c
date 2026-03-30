@@ -7,8 +7,8 @@ void tgui_input_click(tgui_window_t *window, int button, long x, long y) {
 		.type = TGUI_EVENT_CLICK,
 		.click = {
 			.button = button,
-			.x = x,
-			.y = y,
+			.x = x / window->scaling,
+			.y = y / window->scaling,
 		},
 	};
 	tgui_widget_send_event(widget, &event);
@@ -19,8 +19,8 @@ void tgui_input_unclick(tgui_window_t *window, int button, long x, long y) {
 		.type = TGUI_EVENT_UNCLICK,
 		.unclick = {
 			.button = button,
-			.x = x,
-			.y = y,
+			.x = x / window->scaling,
+			.y = y / window->scaling,
 		},
 	};
 	tgui_widget_send_event(widget, &event);
