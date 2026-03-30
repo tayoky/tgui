@@ -9,6 +9,7 @@ void update_label(void) {
 }
 
 int button_click(tgui_event_t *event) {
+	puts("click");
 	tgui_button_t *button = TGUI_BUTTON_CAST(event->widget);
 	strcat(text, tgui_button_get_text(button));
 	update_label();
@@ -49,7 +50,7 @@ int main() {
 		tgui_button_t *button = new_button(text);
 		tgui_grid_set_at(grid, x, y, TGUI_WIDGET_CAST(button));
 	}
-	tgui_grid_set_at(grid, 1, 3, TGUI_WIDGET_CAST(new_button("=")));
+	tgui_grid_set_at(grid, 0, 3, TGUI_WIDGET_CAST(new_button("=")));
 	tgui_grid_set_at(grid, 1, 3, TGUI_WIDGET_CAST(new_button("0")));
 	tgui_grid_set_at(grid, 3, 0, TGUI_WIDGET_CAST(new_button("/")));
 	tgui_grid_set_at(grid, 3, 1, TGUI_WIDGET_CAST(new_button("*")));

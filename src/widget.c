@@ -249,7 +249,7 @@ tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {
 		if (y < child->y || y >= child->y + child->height) {
 			continue;
 		}
-		tgui_widget_t *sub_child = tgui_widget_get_at(child, x - child->x, y - child->y);
+		tgui_widget_t *sub_child = tgui_widget_get_at(child, x, y);
 		if (sub_child) return sub_child;
 		return child;
 	}
