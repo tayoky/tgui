@@ -8,6 +8,7 @@
 #include "list.h"
 #include "box.h"
 #include "grid.h"
+#include "text.h"
 #include "expander.h"
 #include "font.h"
 #include "color.h"

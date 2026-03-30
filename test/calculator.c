@@ -8,6 +8,9 @@ void update_label(void) {
 	tgui_label_set_text(label, text);
 }
 
+long calculate1(const char **ptr) {
+}
+
 int button_click(tgui_event_t *event) {
 	puts("click");
 	tgui_button_t *button = TGUI_BUTTON_CAST(event->widget);
