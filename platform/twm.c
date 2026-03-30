@@ -39,7 +39,7 @@ void tgui_platform_handle_event(void) {
 int tgui_platform_create_window(tgui_window_t *window) {
 	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
 	stanix_window->window = twm_create_window("tgui window", window->widget.width, window->widget.height);
-	if (!stanix_window->window) {
+	if (stanix_window->window < 0) {
 		free(stanix_window);
 		return -1;
 	}
