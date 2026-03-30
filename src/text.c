@@ -15,6 +15,8 @@ static tgui_widget_class_t text_class = {
 	.size = sizeof(tgui_text_t),
 	.name = "text",
 	.free = tgui_text_free,
+	.calculate_sizes = tgui_container_single_calculate_sizes,
+	.allocate_space = tgui_container_single_allocate_space,
 };
 
 tgui_text_t *tgui_text_new(void) {

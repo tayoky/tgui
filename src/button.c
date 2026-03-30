@@ -2,26 +2,11 @@
 #include <button.h>
 #include <label.h>
 
-static void tgui_button_allocate_space(tgui_widget_t *widget) {
-	tgui_button_t *button = TGUI_BUTTON_CAST(widget);
-	if (button->widget.children.count == 0) {
-		return;
-	}
-	long x = tgui_widget_get_inner_x(widget);
-	long y = tgui_widget_get_inner_y(widget);
-	long width  = tgui_widget_get_inner_width(widget);
-	long height = tgui_widget_get_inner_height(widget);
-
-
-	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(button->widget.children.first);
-	tgui_widget_allocate_space(child, x, y, width, height);
-}
-
 static tgui_widget_class_t button_class = {
 	.name = "button",
 	.size = sizeof(tgui_button_t),
 	.calculate_sizes = tgui_container_single_calculate_sizes,
-	.allocate_space = tgui_button_allocate_space,
+	.allocate_space = tgui_container_single_allocate_space,
 };
 
 tgui_button_t *tgui_button_new(void){

@@ -397,3 +397,18 @@ empty:
 	widget->pref_width  = child->min_width;
 	widget->pref_height = child->pref_height;
 }
+
+
+void tgui_container_single_allocate_space(tgui_widget_t *widget) {
+	if (widget->children.count == 0) {
+		return;
+	}
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	long width  = tgui_widget_get_inner_width(widget);
+	long height = tgui_widget_get_inner_height(widget);
+
+
+	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(widget->children.first);
+	tgui_widget_allocate_space(child, x, y, width, height);
+}
