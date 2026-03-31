@@ -18,12 +18,33 @@ typedef struct tgui_event {
 			int x;
 			int y;
 		} unclick;
+		struct {
+			int rel_x;
+			int rel_y;
+			int abs_x;
+			int abs_y;
+		} move;
+		struct {
+			int amount;
+		} scroll;
+		struct {
+			long scancode;
+			long sym;
+		} press;
+		struct {
+			long scancode;
+			long sym;
+		} release;
 	};
 } tgui_event_t;
 
 #define TGUI_EVENT_CLICK   0
 #define TGUI_EVENT_UNCLICK 1
-#define TGUI_EVENT_COUNT   2
+#define TGUI_EVENT_MOVE    2
+#define TGUI_EVENT_SCROLL  3
+#define TGUI_EVENT_PRESS   4
+#define TGUI_EVENT_RELEASE 5
+#define TGUI_EVENT_COUNT   6
 
 #define TGUI_EVENT_NOT_HANDLED 0
 #define TGUI_EVENT_HANDLED     1

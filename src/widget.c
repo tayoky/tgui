@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <window.h>
 #include <widget.h>
 #include <render.h>
 #include <stdio.h>
@@ -28,6 +29,12 @@ tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 
 void tgui_widget_destroy(tgui_widget_t *widget) {
 	if (!widget) return;
+	// make sure to unfocus
+	tgui_window_t *window = tgui_widget_get_window(widget);
+	if (tgui_window_get_focus(window) == widget) {
+		tgui_window_set_focus(window, NULL);
+	}
+
 	tgui_widget_remove_parent(widget);
 
 	// destroy children

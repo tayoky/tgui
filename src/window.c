@@ -87,3 +87,11 @@ void tgui_window_set_scaling(tgui_window_t *window, long scaling) {
 long tgui_window_get_scaling(tgui_window_t *window) {
 	return window->scaling;
 }
+
+void tgui_window_set_focus(tgui_window_t *window, tgui_widget_t *widget) {
+	window->focus = widget;
+}
+
+tgui_widget_t *tgui_window_get_focus(tgui_window_t *window) {
+	return window->focus;
+}

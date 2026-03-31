@@ -11,6 +11,15 @@ static void tgui_text_free(tgui_widget_t *widget) {
 	free(text->text);
 }
 
+static int tgui_text_key_press(tgui_event_t *event) {
+	tgui_text_t *text = TGUI_TEXT_CAST(event->widget);
+	char buf[2];
+	buf[0] = event->press.sym;
+	buf[1] = '\0';
+	tgui_text_insert(text, buf);
+	return TGUI_EVENT_HANDLED;
+}
+
 static tgui_widget_class_t text_class = {
 	.size = sizeof(tgui_text_t),
 	.name = "text",
@@ -26,6 +35,7 @@ tgui_text_t *tgui_text_new(void) {
 	tgui_text_t *text = TGUI_TEXT_CAST(widget);
 	text->label = tgui_label_new("");
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(text->label), TGUI_WIDGET_CAST(text));
+	tgui_widget_set_callback(widget, TGUI_EVENT_PRESS, tgui_text_key_press, NULL);
 	return text;
 }
 
