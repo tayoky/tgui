@@ -10,6 +10,7 @@
 #include "grid.h"
 #include "text.h"
 #include "expander.h"
+#include "separator.h"
 #include "font.h"
 #include "color.h"
 
