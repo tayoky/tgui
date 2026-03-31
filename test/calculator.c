@@ -98,6 +98,7 @@ tgui_button_t *new_button(const char *text) {
 	tgui_button_t *button = tgui_button_new();
 	tgui_widget_set_margin(TGUI_WIDGET_CAST(button), 1);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
 	tgui_button_set_text(button, text);
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(button), TGUI_EVENT_CLICK, button_click, NULL);
 	return button;
@@ -117,7 +118,10 @@ int main() {
 
 	// create the grid with all the buttons
 	tgui_grid_t *grid = tgui_grid_new(4, 4);
+	tgui_grid_set_same_width(grid, TGUI_TRUE);
+	tgui_grid_set_same_height(grid, TGUI_TRUE);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(grid), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(grid), TGUI_TRUE);
 	for (int i=1; i<10; i++) {
 		int x = (i - 1) % 3;
 		int y = 2 - ((i - 1)/ 3);

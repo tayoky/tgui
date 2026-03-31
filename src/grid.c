@@ -95,14 +95,22 @@ static void tgui_grid_allocate_space(tgui_widget_t *widget) {
 	long p_x = tgui_widget_get_inner_x(widget);
 	for (unsigned int x=0; x<grid->columns; x++) {
 		long p_y = tgui_widget_get_inner_y(widget);
+		long col_width = widths[x];
+		if (grid->flags & TGUI_GRID_SAME_WIDTH) {
+			col_width = tgui_widget_get_inner_width(widget) / grid->columns;
+		}
 		for (unsigned int y=0; y<grid->rows; y++) {
+			long row_height = heights[y];
+			if (grid->flags & TGUI_GRID_SAME_HEIGHT) {
+				row_height = tgui_widget_get_inner_height(widget) / grid->rows;
+			}
 			tgui_widget_t *child = tgui_grid_get_at(grid, x, y);
 			if (child) {
-				tgui_widget_allocate_space(child, p_x, p_y, widths[x], heights[y]);
+				tgui_widget_allocate_space(child, p_x, p_y, col_width, row_height);
 			}
-			p_y += heights[y];
+			p_y += row_height;
 		}
-		p_x += widths[x];
+		p_x += col_width;
 	}
 }
 
@@ -136,4 +144,20 @@ void tgui_grid_set_at(tgui_grid_t *grid, unsigned int x, unsigned int y, tgui_wi
 
 tgui_widget_t *tgui_grid_get_at(tgui_grid_t *grid, unsigned int x, unsigned int y) {
 		return grid->grid[x + y * grid->columns];
+}
+
+void tgui_grid_set_same_width(tgui_grid_t *grid, int value) {
+	if (value) {
+		grid->flags |= TGUI_GRID_SAME_WIDTH;
+	} else {
+		grid->flags &= ~TGUI_GRID_SAME_WIDTH;
+	}
+}
+
+void tgui_grid_set_same_height(tgui_grid_t *grid, int value) {
+	if (value) {
+		grid->flags |= TGUI_GRID_SAME_HEIGHT;
+	} else {
+		grid->flags &= ~TGUI_GRID_SAME_HEIGHT;
+	}
 }

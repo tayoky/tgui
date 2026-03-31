@@ -44,7 +44,7 @@ static void tgui_window_update_sizes(tgui_window_t *window) {
 	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
 	if (window->widget.children.first) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
-		tgui_widget_allocate_space(child, 0, 0, window->widget.width, window->widget.height);
+		tgui_widget_allocate_space(child, 0, 0, window->widget.width / window->scaling, window->widget.height / window->scaling);
 	}
 }
 
@@ -81,6 +81,7 @@ tgui_list_t *tgui_get_windows(void) {
 
 void tgui_window_set_scaling(tgui_window_t *window, long scaling) {
 	window->scaling = scaling;
+	tgui_window_update_sizes(window);
 }
 
 long tgui_window_get_scaling(tgui_window_t *window) {
