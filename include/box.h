@@ -19,6 +19,7 @@ static inline void tgui_box_set_spacing(tgui_box_t *box, int spacing) {
 	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(box));
 }
 
+void tgui_box_prepend_widget(tgui_box_t *box, tgui_widget_t *widget);
 void tgui_box_append_widget(tgui_box_t *box, tgui_widget_t *widget);
 
 #endif

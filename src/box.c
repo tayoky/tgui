@@ -131,6 +131,16 @@ tgui_box_t *tgui_box_new(void) {
 	return TGUI_BOX_CAST(widget);
 }
 
+void tgui_box_prepend_widget(tgui_box_t *box, tgui_widget_t *widget) {
+	tgui_widget_set_parent(widget, TGUI_WIDGET_CAST(box));
+
+	// make sure to place it first
+	if (widget->node.prev) {
+		tgui_list_remove(&box->widget.children, &widget->node);
+		tgui_list_prepend(&box->widget.children, &widget->node);
+	}
+}
+
 void tgui_box_append_widget(tgui_box_t *box, tgui_widget_t *widget) {
 	tgui_widget_set_parent(widget, TGUI_WIDGET_CAST(box));
 }

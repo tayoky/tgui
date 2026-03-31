@@ -55,13 +55,7 @@ void tgui_expander_set_title_child(tgui_expander_t *expander, tgui_widget_t *chi
 	if (expander->title) {
 		tgui_widget_destroy(expander->title);
 	}
-	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(expander));
-
-	// make sure to place it first
-	if (child->node.prev) {
-		tgui_list_remove(&expander->box.widget.children, &child->node);
-		tgui_list_prepend(&expander->box.widget.children, &child->node);
-	}
+	tgui_box_prepend_widget(&expander->box, child);
 	expander->title = child;
 }
 
@@ -70,7 +64,7 @@ void tgui_expander_set_child(tgui_expander_t *expander, tgui_widget_t *child) {
 	if (expander->child) {
 		tgui_widget_destroy(expander->child);
 	}
-	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(expander));
+	tgui_box_append_widget(&expander->box, child);
 	expander->child = child;
 	if (tgui_expander_is_expanded(expander)) {
 		tgui_widget_show(child);
