@@ -74,7 +74,7 @@ struct tgui_widget {
 #define TGUI_WIDGET_DIRTY       0x04
 #define TGUI_WIDGET_DIRTY_SIZE  0x08
 #define TGUI_WIDGET_DIRTY_STYLE 0x10
-#define TGUI_WIDGET_DIRTY_CHILD 0x20
+#define TGUI_WIDGET_DIRTY_SPACE 0x20
 #define TGUI_WIDGET_HIDDEN      0x40
 
 #define TGUI_ALIGN_FILL    0x00
@@ -102,21 +102,7 @@ void tgui_widget_render(tgui_widget_t *widget);
 int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name);
 void tgui_widget_set_id(tgui_widget_t *widget, const char *id);
 
-static inline void tgui_widget_mark_dirty(tgui_widget_t *widget) {
-	widget->flags |= TGUI_WIDGET_DIRTY;
-	while (widget) {
-		widget->flags |= TGUI_WIDGET_DIRTY_CHILD;
-		widget = widget->parent;
-	}
-}
-
-static inline int tgui_widget_is_dirty(tgui_widget_t *widget) {
-	return widget->flags & TGUI_WIDGET_DIRTY;
-}
-
-static inline int tgui_widget_has_dirty_child(tgui_widget_t *widget) {
-	return widget->flags & TGUI_WIDGET_DIRTY_CHILD;
-}
+void tgui_widget_mark_dirty(tgui_widget_t *widget);
 
 static inline void tgui_widget_mark_dirty_size(tgui_widget_t *widget) {
 	while (widget) {
@@ -127,6 +113,17 @@ static inline void tgui_widget_mark_dirty_size(tgui_widget_t *widget) {
 
 static inline int tgui_widget_is_dirty_size(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_DIRTY_SIZE;
+}
+
+static inline void tgui_widget_mark_dirty_space(tgui_widget_t *widget) {
+	while (widget) {
+		widget->flags |= TGUI_WIDGET_DIRTY_SPACE;
+		widget = widget->parent;
+	}
+}
+
+static inline int tgui_widget_is_dirty_space(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_DIRTY_SPACE;
 }
 
 static inline void tgui_widget_hide(tgui_widget_t *widget) {

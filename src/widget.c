@@ -58,45 +58,56 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 	widget->flags &= ~TGUI_WIDGET_DIRTY_SIZE;
 	if (widget->class->calculate_sizes) {
 		widget->class->calculate_sizes(widget);
+	} else {
+		widget->min_width = 0;
+		widget->min_height = 0;
+		widget->pref_width = 0;
+		widget->pref_height = 0;
+	}
 
-		tgui_style_t *style = tgui_widget_get_current_style(widget);
+	tgui_style_t *style = tgui_widget_get_current_style(widget);
 
-		// add margin to sizes
-		widget->min_width  += widget->left_margin + widget->right_margin;
-		widget->min_height += widget->top_margin + widget->bottom_margin;
-		widget->pref_width  += widget->left_margin + widget->right_margin;
-		widget->pref_height += widget->top_margin + widget->bottom_margin;
+	// add margin to sizes
+	widget->min_width  += widget->left_margin + widget->right_margin;
+	widget->min_height += widget->top_margin + widget->bottom_margin;
+	widget->pref_width  += widget->left_margin + widget->right_margin;
+	widget->pref_height += widget->top_margin + widget->bottom_margin;
 
-		// add padding to sizes
-		widget->min_width  += widget->left_padding + widget->right_padding;
-		widget->min_height += widget->top_padding + widget->bottom_padding;
-		widget->pref_width  += widget->left_padding + widget->right_padding;
-		widget->pref_height += widget->top_padding + widget->bottom_padding;
+	// add padding to sizes
+	widget->min_width  += widget->left_padding + widget->right_padding;
+	widget->min_height += widget->top_padding + widget->bottom_padding;
+	widget->pref_width  += widget->left_padding + widget->right_padding;
+	widget->pref_height += widget->top_padding + widget->bottom_padding;
 
-		// add border to sizes
-		for (int side=0; side<4; side++) {
-			if (style->border_style[side] == TGUI_BORDER_NONE) {
-				continue;
-			}
-			int width = style->border_width[side];
-			switch (side) {
-			case TGUI_SIDE_LEFT:
-			case TGUI_SIDE_RIGHT:
-				widget->min_width += width;
-				widget->pref_width += width;
-				break;
-			case TGUI_SIDE_TOP:
-			case TGUI_SIDE_BOTTOM:
-				widget->min_height += width;
-				widget->pref_height += width;
-				break;
-			}
+	// add border to sizes
+	for (int side=0; side<4; side++) {
+		if (style->border_style[side] == TGUI_BORDER_NONE) {
+			continue;
+		}
+		int width = style->border_width[side];
+		switch (side) {
+		case TGUI_SIDE_LEFT:
+		case TGUI_SIDE_RIGHT:
+			widget->min_width += width;
+			widget->pref_width += width;
+			break;
+		case TGUI_SIDE_TOP:
+		case TGUI_SIDE_BOTTOM:
+			widget->min_height += width;
+			widget->pref_height += width;
+			break;
 		}
 	}
 	printf("got min size of %ldx%ld for %s\n", widget->min_width, widget->min_height, widget->class->name);
+	tgui_widget_mark_dirty_space(widget);
 }
 
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height) {
+	// do not recalculate if useless
+	if (!tgui_widget_is_dirty_space(widget)) {
+		return;
+	}
+	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 	printf("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, widget->class->name);
 	long new_x = x;
 	long new_width = width;
@@ -149,17 +160,15 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 	}
 
 
-	if (widget->x == new_x && widget->width == new_width && widget->y == new_y && widget->height == new_height) {
-		// nothing changed
-		return;
+	if (widget->x != new_x || widget->width != new_width || widget->y != new_y || widget->height != new_height) {
+		// we need to redraw this
+		tgui_widget_mark_dirty(widget);
+		widget->x = new_x;
+		widget->width = new_width;
+		widget->y = new_y;
+		widget->height = new_height;
+		tgui_widget_mark_dirty(widget);
 	}
-
-	// we will need to redraw this
-	widget->x = new_x;
-	widget->width = new_width;
-	widget->y = new_y;
-	widget->height = new_height;
-	tgui_widget_mark_dirty(widget);
 
 	if (widget->class->allocate_space) {
 		widget->class->allocate_space(widget);
@@ -180,34 +189,30 @@ void tgui_widget_set_id(tgui_widget_t *widget, const char *id) {
 	}
 }
 
-static void tgui_widget_render_raw(tgui_widget_t *widget) {
-	if (!widget) return;
-	if (tgui_widget_is_hidden(widget)) return;
-	widget->flags &= ~TGUI_WIDGET_DIRTY;
-	tgui_render_widget_base(widget);
-	if (widget->class->render) {
-		widget->class->render(widget);
-	}
-	widget->flags &= ~TGUI_WIDGET_DIRTY_CHILD;
-	TGUI_LIST_FOREACH(node, &widget->children) {
-		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
-		tgui_widget_render_raw(child);
-	}
+void tgui_widget_mark_dirty(tgui_widget_t *widget) {
+	tgui_window_invalidate(tgui_widget_get_window(widget), widget->x, widget->y, widget->width, widget->height);
+}
+
+static int tgui_widget_is_dirty(tgui_widget_t *widget) {
+	tgui_window_t *window = tgui_widget_get_window(widget);
+	if (widget->x >= window->inval_end_x) return 0;
+	if (widget->y >= window->inval_end_y) return 0;
+	if (widget->x + widget->width <= window->inval_start_x) return 0;
+	if (widget->y + widget->height <= window->inval_start_y) return 0;
+	return 1;
 }
 
 void tgui_widget_render(tgui_widget_t *widget) {
 	if (!widget) return;
 	if (tgui_widget_is_hidden(widget)) return;
-	if (tgui_widget_is_dirty(widget)) {
-		tgui_widget_render_raw(widget);
-		return;
+	if (!tgui_widget_is_dirty(widget)) return;
+	tgui_render_widget_base(widget);
+	if (widget->class->render) {
+		widget->class->render(widget);
 	}
-	if (tgui_widget_has_dirty_child(widget)) {
-		widget->flags &= ~TGUI_WIDGET_DIRTY_CHILD;
-		TGUI_LIST_FOREACH(node, &widget->children) {
-			tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
-			tgui_widget_render(child);
-		}
+	TGUI_LIST_FOREACH(node, &widget->children) {
+		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
+		tgui_widget_render(child);
 	}
 }
 

@@ -75,11 +75,19 @@ int tgui_window_resize(tgui_window_t *window, long width, long height) {
 	return 0;
 }
 
+static int tgui_window_is_dirty(tgui_window_t *window) {
+	return window->inval_start_x != LONG_MAX;
+}
+
 void tgui_window_render(tgui_window_t *window) {
 	if (tgui_widget_is_dirty_size(TGUI_WIDGET_CAST(window))) {
 		tgui_window_update_sizes(window);
 	}
-	if (tgui_widget_has_dirty_child(TGUI_WIDGET_CAST(window))) {
+	if (tgui_window_is_dirty(window)) {
+		printf("got dirty rect from %ld %ld to %ld %ld\n", window->inval_start_x, window->inval_start_y, window->inval_end_x, window->inval_end_y);
+		tgui_platform_set_clip(window, window->inval_start_x, window->inval_start_y, 
+		(window->inval_end_x - window->inval_start_x) * window->scaling, 
+		(window->inval_end_y - window->inval_start_y) * window->scaling);
 		if (window->widget.children.first) {
 			tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
 			tgui_widget_render(child);
@@ -111,6 +119,7 @@ tgui_widget_t *tgui_window_get_focus(tgui_window_t *window) {
 }
 
 void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, long height) {
+	if (width == 0 || height == 0) return;
 	long end_x = x + width;
 	long end_y = y + height;
 	if (x < window->inval_start_x) {
@@ -120,9 +129,9 @@ void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, l
 		window->inval_start_y = y;
 	}
 	if (end_x > window->inval_end_x) {
-		window->inval_end_x = x;
+		window->inval_end_x = end_x;
 	}
 	if (end_y > window->inval_end_y) {
-		window->inval_end_y = y;
+		window->inval_end_y = end_y;
 	}
 }

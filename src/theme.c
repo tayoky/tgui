@@ -30,9 +30,11 @@ int tgui_theme_load(void) {
 
 	// separators
 	tgui_style_t *separator_style = tgui_style_new();
-	tgui_style_set_border_style(separator_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
+	tgui_style_set_border_style(separator_style, TGUI_SIDE_LEFT, TGUI_BORDER_SOLID);
+	tgui_style_set_border_style(separator_style, TGUI_SIDE_TOP, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(separator_style, TGUI_SIDE_ALL, 1);
 	tgui_style_set_border_color(separator_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_default(separator_style, "separator");
 
+	return 0;
 }
