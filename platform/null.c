@@ -46,3 +46,6 @@ void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long 
 
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
 }
+
+void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
+}

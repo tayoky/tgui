@@ -185,3 +185,15 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 
 	XftDrawString8(x11_window->draw, color->private, xft_font, x, y + xft_font->ascent, (const FcChar8*)text, strlen(text));
 }
+
+void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
+	x11_window_t *x11_window = window->private;
+	XRectangle rect = {
+		.x = x,
+		.y = y,
+		.width = width,
+		.height = height,
+	};
+	Picture picture = XftDrawPicture(x11_window->draw);
+	XRenderSetPictureClipRectangles(display, picture, 0, 0, &rect, 1);
+}

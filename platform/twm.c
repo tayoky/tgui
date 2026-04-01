@@ -146,3 +146,7 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 	color_t color = (color_t)(uintptr_t)tgui_widget_get_color(widget)->private;
 	gfx_draw_string(stanix_window->gfx, tgui_widget_get_font(widget)->private, color, x, y, text);
 }
+
+void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
+	// TODO : clip
+}
