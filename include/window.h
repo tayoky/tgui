@@ -9,6 +9,11 @@ typedef struct tgui_window {
 	void *private;
 	long scaling;
 	tgui_widget_t *focus;
+	char *title;
+	long inval_start_x;
+	long inval_start_y; 
+	long inval_end_x;
+	long inval_end_y;
 } tgui_window_t;
 
 #define TGUI_WINDOW_CAST(w) TGUI_CONTAINER_OF(w, tgui_window_t, widget)
@@ -22,6 +27,7 @@ void tgui_window_set_scaling(tgui_window_t *window, long scaling);
 long tgui_window_get_scaling(tgui_window_t *window);
 void tgui_window_set_focus(tgui_window_t *window, tgui_widget_t *widget);
 tgui_widget_t *tgui_window_get_focus(tgui_window_t *window);
+void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, long height);
 
 static inline tgui_window_t *tgui_widget_get_window(tgui_widget_t *widget) {
 	while (widget) {

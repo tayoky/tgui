@@ -1,3 +1,6 @@
+#include <limits.h>
+#include <string.h>
+#include <stdlib.h>
 #include <widget.h>
 #include <window.h>
 #include <platform.h>
@@ -8,6 +11,7 @@ static void tgui_window_free(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_list_remove(&windows, &window->node);
 	tgui_platform_close_window(window);
+	free(window->title);
 }
 
 static tgui_widget_class_t window_class = {
@@ -16,6 +20,13 @@ static tgui_widget_class_t window_class = {
 	.free = tgui_window_free,
 	.calculate_sizes = tgui_container_single_calculate_sizes,
 };
+
+static void tgui_window_reset_dirty(tgui_window_t *window) {
+	window->inval_start_x = LONG_MAX;
+	window->inval_start_y = LONG_MAX;
+	window->inval_end_x = 0;
+	window->inval_end_y = 0;
+}
 
 tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_widget_t *widget = tgui_widget_new(&window_class);
@@ -26,9 +37,11 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	window->widget.width  = width;
 	window->widget.height = height;
 	window->scaling = 1;
+	window->title = strdup(title ? title : "tgui window");
 	tgui_list_append(&windows, &window->node);
 
 	tgui_platform_create_window(window);
+	tgui_window_invalidate(window, 0, 0, width, height);
 	return window;
 }
 
@@ -73,6 +86,7 @@ void tgui_window_render(tgui_window_t *window) {
 		}
 		tgui_platform_push_window(window);
 	}
+	tgui_window_reset_dirty(window);
 }
 
 tgui_list_t *tgui_get_windows(void) {
@@ -94,4 +108,21 @@ void tgui_window_set_focus(tgui_window_t *window, tgui_widget_t *widget) {
 
 tgui_widget_t *tgui_window_get_focus(tgui_window_t *window) {
 	return window->focus;
+}
+
+void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, long height) {
+	long end_x = x + width;
+	long end_y = y + height;
+	if (x < window->inval_start_x) {
+		window->inval_start_x = x;
+	}
+	if (y < window->inval_start_y) {
+		window->inval_start_y = y;
+	}
+	if (end_x > window->inval_end_x) {
+		window->inval_end_x = x;
+	}
+	if (end_y > window->inval_end_y) {
+		window->inval_end_y = y;
+	}
 }
