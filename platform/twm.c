@@ -10,8 +10,11 @@ static gfx_t gfx;
 typedef struct stanix_window {
 	twm_window_t window;
 	gfx_t *gfx;
+	gfx_t *clip;
 	long cursor_x;
 	long cursor_y;
+	long clip_x;
+	long clip_y;
 } stanix_window_t;
 
 static tgui_window_t *get_window(twm_window_t window_id) {
@@ -136,7 +139,7 @@ int tgui_platform_text_height(tgui_widget_t *widget, const char *text) {
 }
 
 int tgui_platform_load_image(tgui_image_t *image) {
-	texture_t *texture = gfx_load_texture(image->filename);
+	texture_t *texture = gfx_load_texture(&gfx, image->filename);
 	if (!texture) return -1;
 	image->private = texture;
 	return 0;
@@ -149,21 +152,25 @@ void tgui_platform_free_image(tgui_image_t *image) {
 void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height) {
 	stanix_window_t *stanix_window = window->private;
 	color_t stanix_color = (color_t)(uintptr_t)color->private;
-	gfx_draw_rect(stanix_window->gfx, stanix_color, x, y, width, height);
+	gfx_draw_rect(stanix_window->clip, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height);
 }
 
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
 	stanix_window_t *stanix_window = window->private;
 	color_t color = (color_t)(uintptr_t)tgui_widget_get_color(widget)->private;
-	gfx_draw_string(stanix_window->gfx, tgui_widget_get_font(widget)->private, color, x, y, text);
+	gfx_draw_string(stanix_window->clip, tgui_widget_get_font(widget)->private, color, x - stanix_window->clip_x, y - stanix_window->clip_y, text);
 }
 
 
 void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
 	stanix_window_t *stanix_window = window->private;
-	gfx_draw_texture(stanix_window->gfx, image->private, x, y);
+	gfx_draw_texture(stanix_window->clip, image->private, x - stanix_window->clip_x, y - stanix_window->clip_y);
 }
 
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
-	// TODO : clip
+	stanix_window_t *stanix_window = window->private;
+	stanix_window->clip_x = x;
+	stanix_window->clip_y = y;
+	gfx_free(stanix_window->clip);
+	stanix_window->clip = gfx_create_clip(stanix_window->gfx, x, y, width, height);
 }
