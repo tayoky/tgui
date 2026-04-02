@@ -1,5 +1,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include <platform.h>
 #include <inputs.h>
 #include <list.h>
@@ -169,6 +171,20 @@ int tgui_platform_text_height(tgui_widget_t *widget, const char *text) {
 	return xft_font->ascent + xft_font->descent;
 }
 
+int tgui_platform_load_image(tgui_image_t *image) {
+	int width;
+	int height;
+	int n;
+	stbi_uc *data = stbi_load(image->filename, &width, &height, &n, 0);
+	if (!data) return -1;
+	image->private = data;
+	return 0;
+}
+
+void tgui_platform_free_image(tgui_image_t *image) {
+	stbi_image_free(image->private);
+}
+
 void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height) {
 	printf("render rect %ld %ld %ld %ld\n", x, y, width, height);
 	x11_window_t *x11_window = window->private;
@@ -184,6 +200,10 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 	x11_window_t *x11_window = window->private;
 
 	XftDrawString8(x11_window->draw, color->private, xft_font, x, y + xft_font->ascent, (const FcChar8*)text, strlen(text));
+}
+
+void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
+	x11_window_t *x11_window = window->private;
 }
 
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {

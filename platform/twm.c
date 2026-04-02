@@ -135,6 +135,17 @@ int tgui_platform_text_height(tgui_widget_t *widget, const char *text) {
 	return gfx_string_height(tgui_widget_get_font(widget)->private, text);
 }
 
+int tgui_platform_load_image(tgui_image_t *image) {
+	texture_t *texture = gfx_load_texture(image->filename);
+	if (!texture) return -1;
+	image->private = texture;
+	return 0;
+}
+
+void tgui_platform_free_image(tgui_image_t *image) {
+	gfx_free_texture(image->private);
+}
+
 void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height) {
 	stanix_window_t *stanix_window = window->private;
 	color_t stanix_color = (color_t)(uintptr_t)color->private;
@@ -145,6 +156,12 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 	stanix_window_t *stanix_window = window->private;
 	color_t color = (color_t)(uintptr_t)tgui_widget_get_color(widget)->private;
 	gfx_draw_string(stanix_window->gfx, tgui_widget_get_font(widget)->private, color, x, y, text);
+}
+
+
+void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
+	stanix_window_t *stanix_window = window->private;
+	gfx_draw_texture(stanix_window->gfx, image->private, x, y);
 }
 
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {

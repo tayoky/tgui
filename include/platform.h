@@ -3,6 +3,8 @@
 
 #include "window.h"
 #include "color.h"
+#include "font.h"
+#include "image.h"
 
 int tgui_platform_init(void);
 void tgui_platform_fini(void);
@@ -16,8 +18,11 @@ int tgui_platform_load_font(tgui_font_t *font);
 void tgui_platform_free_font(tgui_font_t *font);
 int tgui_platform_text_width(tgui_widget_t *widget, const char *text);
 int tgui_platform_text_height(tgui_widget_t *widget, const char *text);
+int tgui_platform_load_image(tgui_image_t *image);
+void tgui_platform_free_image(tgui_image_t *image);
 void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height);
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text);
+void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image);
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height);
 
 #endif
