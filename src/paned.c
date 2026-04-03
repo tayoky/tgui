@@ -10,6 +10,7 @@ static void tgui_paned_calculate_sizes(tgui_widget_t *widget) {
 		if (paned->amount < paned->first->min_height) {
 			paned->amount = paned->first->min_height;
 		}
+		// TODO : also check last has enought place
 	} else {
 		if (paned->amount < paned->first->min_width) {
 			paned->amount = paned->first->min_width;
@@ -33,9 +34,19 @@ static void tgui_paned_allocate_space(tgui_widget_t *widget) {
 	} else {
 		long handle_width = paned->handle->widget.min_width;
 		tgui_widget_allocate_space(paned->first, x, y, paned->amount, height);
-		tgui_widget_allocate_space(TGUI_WIDGET_CAST(paned->handle), x, y + paned->amount, handle_width, height);
+		tgui_widget_allocate_space(TGUI_WIDGET_CAST(paned->handle), x + paned->amount, y, handle_width, height);
 		tgui_widget_allocate_space(paned->last, x + paned->amount + handle_width, y, width - paned->amount - handle_width, height);
 	}
+}
+
+static int tgui_paned_click(tgui_event_t *event) {
+	tgui_paned_t *paned = TGUI_PANED_CAST(event->widget->parent);
+	if (paned->box.widget.orientation == TGUI_ORIENTATION_VERTICAL) {
+		paned->offset = paned->amount - event->move.abs_y;
+	} else {
+		paned->offset = paned->amount - event->move.abs_x;
+	}
+	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_paned_move(tgui_event_t *event) {
@@ -45,7 +56,7 @@ static int tgui_paned_move(tgui_event_t *event) {
 	} else {
 		paned->amount = event->move.abs_x + paned->offset;
 	}
-	// TODO : mark dirty size
+	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(paned));
 	return TGUI_EVENT_HANDLED;
 }
 
@@ -66,6 +77,7 @@ tgui_paned_t *tgui_paned_new(int orientation) {
 	} else {
 		paned->handle = tgui_separator_new(TGUI_ORIENTATION_VERTICAL);
 	}
+	tgui_widget_set_callback(TGUI_WIDGET_CAST(paned->handle), TGUI_EVENT_CLICK, tgui_paned_click, NULL);
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(paned->handle), TGUI_EVENT_MOVE, tgui_paned_move, NULL);
 	tgui_widget_set_orientation(TGUI_WIDGET_CAST(paned), orientation);
 	tgui_box_append_widget(&paned->box, TGUI_WIDGET_CAST(paned->handle));

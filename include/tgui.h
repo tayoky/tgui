@@ -9,6 +9,7 @@
 #include "box.h"
 #include "grid.h"
 #include "text.h"
+#include "paned.h"
 #include "expander.h"
 #include "separator.h"
 #include "font.h"
