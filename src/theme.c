@@ -44,5 +44,10 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_color(text_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_default(text_style, "text");
 
+	// slider
+	tgui_style_t *slider_style = tgui_style_new();
+	tgui_style_set_background_color(slider_style, border_color);
+	tgui_style_set_default(slider_style, "slider");
+
 	return 0;
 }

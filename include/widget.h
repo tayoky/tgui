@@ -20,6 +20,7 @@ typedef struct tgui_widget_class {
 	void (*allocate_space)(tgui_widget_t *);
 	void (*remove_child)(tgui_widget_t *, tgui_widget_t *child);
 	void (*render)(tgui_widget_t *);
+	void (*set_orientation)(tgui_widget_t *, int);
 } tgui_widget_class_t;
 
 #define TGUI_STATE_NORMAL   0
@@ -173,6 +174,9 @@ static inline char tgui_widget_get_state(tgui_widget_t *widget) {
 static inline void tgui_widget_set_orientation(tgui_widget_t *widget, char orientation) {
 	if (widget->orientation == orientation) return;
 	widget->orientation = orientation;
+	if (widget->class->set_orientation) {
+		widget->class->set_orientation(widget, orientation);
+	}
 	tgui_widget_mark_dirty_size(widget);
 }
 
