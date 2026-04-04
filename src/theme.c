@@ -36,5 +36,13 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_color(separator_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_default(separator_style, "separator");
 
+	// text input
+	tgui_style_t *text_style = tgui_style_new();
+	//tgui_style_set_background_color(text_style, button_color);
+	tgui_style_set_border_style(text_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
+	tgui_style_set_border_width(text_style, TGUI_SIDE_ALL, 1);
+	tgui_style_set_border_color(text_style, TGUI_SIDE_ALL, border_color);
+	tgui_style_set_default(text_style, "text");
+
 	return 0;
 }

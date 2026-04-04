@@ -115,6 +115,7 @@ int main() {
 
 	label = tgui_text_new();
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(label), TGUI_TRUE);
+	tgui_widget_set_margin(TGUI_WIDGET_CAST(label), 1);
 
 	// create the grid with all the buttons
 	tgui_grid_t *grid = tgui_grid_new(4, 4);
@@ -144,7 +145,7 @@ int main() {
 	tgui_box_t *box = tgui_box_new();
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(label));
-	tgui_box_append_widget(box, TGUI_WIDGET_CAST(tgui_separator_new(TGUI_ORIENTATION_HORIZONTAL)));
+	//tgui_box_append_widget(box, TGUI_WIDGET_CAST(tgui_separator_new(TGUI_ORIENTATION_HORIZONTAL)));
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(grid));
 
 	tgui_window_set_child(window, TGUI_WIDGET_CAST(box));
