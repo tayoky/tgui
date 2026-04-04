@@ -88,8 +88,12 @@ void tgui_platform_handle_event(void) {
 		window = get_window(event.xbutton.window);
 		tgui_input_unclick(window, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
 		break;
-	case KeyPress:;
-		window = get_window(event.xbutton.window);
+	case MotionNotify:
+		window = get_window(event.xmotion.window);
+		tgui_input_move(window, event.xmotion.x, event.xmotion.y);
+		break;
+	case KeyPress:
+		window = get_window(event.xkey.window);
 		tgui_input_key_press(window, 0, XLookupKeysym(&event.xkey, 0));
 		break;
 	}	
@@ -98,7 +102,7 @@ void tgui_platform_handle_event(void) {
 int tgui_platform_create_window(tgui_window_t *window) {
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
 	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, window->widget.width, window->widget.height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
-	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask);
+	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | KeyReleaseMask);
 
 	// setup pixmap and GC
 	XGCValues values;
