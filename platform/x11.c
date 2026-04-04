@@ -190,7 +190,7 @@ void tgui_platform_free_font(tgui_font_t *font) {
 int tgui_platform_text_width(tgui_widget_t *widget, const char *text) {
 	tgui_font_t *font = tgui_widget_get_font(widget);
 	XGlyphInfo extents;
-	XftTextExtents8(display, font->private, (const FcChar8*)text, strlen(text), &extents);
+	XftTextExtentsUtf8(display, font->private, (const FcChar8*)text, strlen(text), &extents);
 	return extents.xOff;
 }
 
@@ -229,7 +229,7 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 	tgui_color_t *color = tgui_widget_get_color(widget);
 	x11_window_t *x11_window = window->private;
 
-	XftDrawString8(x11_window->draw, color->private, xft_font, x, y + xft_font->ascent, (const FcChar8*)text, strlen(text));
+	XftDrawStringUtf8(x11_window->draw, color->private, xft_font, x, y + xft_font->ascent, (const FcChar8*)text, strlen(text));
 }
 
 void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
