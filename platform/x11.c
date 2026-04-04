@@ -222,7 +222,47 @@ void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long 
 	XftDrawRect(x11_window->draw, xft_color, x, y, width, height);
 }
 
-void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
+static Picture create_gradient(long rayon, XRenderColor color) {
+	XFixed f_rayon = XDoubleToFixed(rayon);
+	XRadialGradient grad = {
+		.inner = {f_rayon, f_rayon, 0},
+		.outer = {f_rayon, f_rayon, f_rayon},
+	};
+	XFixed stops[] = {
+		XDoubleToFixed(0),
+		XDoubleToFixed(0.95f),
+		XDoubleToFixed(1)
+	};
+	XRenderColor colors[] = {
+		color,
+		color,
+		{0, 0, 0, 0},
+	};
+
+	return XRenderCreateRadialGradient(display, &grad, stops, colors, 3);
+}
+
+static void render_corner(Picture gradient, x11_window_t *window, unsigned int rayon, int round, long src_x, long src_y, long x, long y) {
+	if (round) {
+		XRenderComposite(display, PictOpOver, gradient, None, XftDrawPicture(window->draw), src_x, src_y, 0, 0, x, y, rayon, rayon);
+	}
+}
+
+void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rayon) {
+	x11_window_t *x11_window = window->private;
+	XftColor *xft_color = COLOR2XFT(color);
+	XftDrawRect(x11_window->draw, xft_color, x, y + rayon, width, height - 2 * rayon);
+	XftDrawRect(x11_window->draw, xft_color, x + rayon, y, width - 2 * rayon, height);
+
+	// render corners
+	Picture gradient = create_gradient(rayon, xft_color->color);
+
+	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_TOP_LEFT, 0, 0, x, y);
+	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_TOP_RIGHT, rayon, 0, x + width - rayon, y);
+	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_BOTTOM_LEFT, 0, rayon, x, y + height - rayon);
+	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_BOTTOM_RIGHT, rayon, rayon, x + width - rayon, y + height - rayon);
+
+	XRenderFreePicture(display, gradient);
 }
 
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {

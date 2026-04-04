@@ -19,8 +19,9 @@ typedef struct tgui_style {
 	unsigned char border_width_flags;
 } tgui_style_t;
 
-#define TGUI_STYLE_FONT_SIZE    0x01
-#define TGUI_STYLE_ROUNDED_SIZE 0x02
+#define TGUI_STYLE_FONT_SIZE       0x01
+#define TGUI_STYLE_ROUNDED_SIZE    0x02
+#define TGUI_STYLE_ROUNDED_CORNERS 0x04
 
 #define TGUI_SIDE_LEFT    0
 #define TGUI_SIDE_RIGHT   1

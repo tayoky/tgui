@@ -17,6 +17,7 @@ int tgui_theme_load(void) {
 
 	// buttons
 	tgui_style_t *button_style = tgui_style_new();
+	tgui_style_set_rounded_corners(button_style, TGUI_CORNER_ALL);
 	tgui_style_set_background_color(button_style, button_color);
 	tgui_style_set_border_style(button_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(button_style, TGUI_SIDE_ALL, 1);
@@ -25,6 +26,7 @@ int tgui_theme_load(void) {
 
 	// labels
 	tgui_style_t *label_style = tgui_style_new();
+	tgui_style_set_rounded_corners(label_style, 0);
 	tgui_style_set_border_style(label_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
 	tgui_style_set_default(label_style, "label");
 

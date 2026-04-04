@@ -8,6 +8,12 @@ void tgui_render_rect(tgui_widget_t *widget, tgui_color_t *color, long x, long y
 	tgui_platform_render_rect(window, color, x * window->scaling, y * window->scaling, width *window->scaling, height * window->scaling);
 }
 
+void tgui_render_rounded_rect(tgui_widget_t *widget, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rayon) {
+	tgui_window_t *window = tgui_widget_get_window(widget);
+	if (!window) return;
+	tgui_platform_render_rounded_rect(window, color, x * window->scaling, y * window->scaling, width *window->scaling, height * window->scaling, corners, rayon * window->scaling);
+}
+
 void tgui_render_text(tgui_widget_t *widget, long x, long y, const char *text) {
 	tgui_window_t *window = tgui_widget_get_window(widget);
 	if (!window) return;
@@ -27,7 +33,11 @@ void tgui_render_widget_base(tgui_widget_t *widget) {
 
 	// first render background
 	if (style->background_color) {
-		tgui_render_rect(widget, style->background_color, frame_x, frame_y, frame_width, frame_height);
+		if (style->rounded_corners) {
+			tgui_render_rounded_rect(widget, style->background_color, frame_x, frame_y, frame_width, frame_height, style->rounded_corners, style->rounded_size);
+		} else {
+			tgui_render_rect(widget, style->background_color, frame_x, frame_y, frame_width, frame_height);
+		}
 	}
 
 	// TODO : more border styles

@@ -337,7 +337,10 @@ static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_styl
 			dest_style->font_size = style->font_size;
 		}
 		if (style->flags & TGUI_STYLE_ROUNDED_SIZE) {
-			dest_style->font_size = style->rounded_size;
+			dest_style->rounded_size = style->rounded_size;
+		}
+		if (style->flags & TGUI_STYLE_ROUNDED_CORNERS) {
+			dest_style->rounded_corners = style->rounded_corners;
 		}
 		for (int i=0; i<4; i++) {
 			CHECK_PTR(border_color[i]);
@@ -347,7 +350,6 @@ static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_styl
 			if (style->border_width_flags & (1 << i)) {
 				dest_style->border_width[i] = style->border_width[i];
 			}
-				
 		}
 	}
 	// TODO : apply state flags

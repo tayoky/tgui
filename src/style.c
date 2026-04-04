@@ -97,6 +97,7 @@ char tgui_style_get_border_style(tgui_style_t *style, int side) {
 }
 void tgui_style_set_rounded_corners(tgui_style_t *style, char corners) {
 	style->rounded_corners = corners;
+	style->flags |= TGUI_STYLE_ROUNDED_CORNERS;
 }
 
 char tgui_style_get_rounded_corners(tgui_style_t *style) {
