@@ -13,6 +13,10 @@ static void tgui_text_free(tgui_widget_t *widget) {
 
 static int tgui_text_key_press(tgui_event_t *event) {
 	tgui_text_t *text = TGUI_TEXT_CAST(event->widget);
+	if (event->press.sym == '\177') {
+		tgui_text_delete(text, 1);
+		return TGUI_EVENT_HANDLED;
+	}
 	char buf[2];
 	buf[0] = event->press.sym;
 	buf[1] = '\0';
@@ -40,7 +44,7 @@ tgui_text_t *tgui_text_new(void) {
 }
 
 static void tgui_text_update_label(tgui_text_t *text) {
-	if (text->text && text->text[0]) {
+	if (text->text) {
 		tgui_label_set_text(text->label, text->text);
 	} else {
 		tgui_label_set_text(text->label, text->placeholder);
@@ -86,6 +90,17 @@ void tgui_text_insert(tgui_text_t *text, const char *content) {
 	memmove(text->text + text->cursor_x + strlen(content), text->text + text->cursor_x, strlen(text->text) - text->cursor_x + 1);
 	memcpy(text->text + text->cursor_x, content, strlen(content));
 	text->cursor_x += strlen(content);
+	tgui_text_update_label(text);
+}
+
+void tgui_text_delete(tgui_text_t *text, size_t len) {
+	if (!text->text) return;
+	if (len > text->cursor_x) {
+		len = text->cursor_x;
+	}
+	if (len == 0) return;
+	memmove(text->text + text->cursor_x - len, text->text + text->cursor_x, strlen(text->text) - text->cursor_x + 1);
+	text->cursor_x -= len;
 	tgui_text_update_label(text);
 }
 

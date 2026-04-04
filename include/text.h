@@ -21,6 +21,7 @@ void tgui_text_set_content(tgui_text_t *text, const char *content);
 const char *tgui_text_get_placeholder(tgui_text_t *text);
 const char *tgui_text_get_content(tgui_text_t *text);
 void tgui_text_insert(tgui_text_t *text, const char *content);
+void tgui_text_delete(tgui_text_t *text, size_t len);
 long tgui_text_get_cursor_x(tgui_text_t *text);
 long tgui_text_get_cursor_y(tgui_text_t *text);
 

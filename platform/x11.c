@@ -55,6 +55,32 @@ static int x11_button2tgui(int x11_button) {
 	}
 }
 
+static int x11_sym2tgui(int x11_sym) {
+	switch (x11_sym) {
+	case XK_BackSpace:
+		return '\177';
+	case XK_Tab:
+	case XK_KP_Tab:
+		return '\t';
+	case XK_Escape:
+		return '\033';
+	case XK_KP_Equal:
+		return '=';
+	case XK_KP_Multiply:
+		return '*';
+	case XK_KP_Add:
+		return '+';
+	case XK_KP_Separator:
+		return '.';
+	case XK_KP_Subtract:
+		return '-';
+	case XK_KP_Divide:
+		return '/';
+	default:
+		return x11_sym;
+	}
+}
+
 int tgui_platform_init(void) {
 	display = XOpenDisplay(NULL);
 	if (!display) return -1;
@@ -94,7 +120,7 @@ void tgui_platform_handle_event(void) {
 		break;
 	case KeyPress:
 		window = get_window(event.xkey.window);
-		tgui_input_key_press(window, 0, XLookupKeysym(&event.xkey, 0));
+		tgui_input_key_press(window, 0, x11_sym2tgui(XLookupKeysym(&event.xkey, 0)));
 		break;
 	}	
 }

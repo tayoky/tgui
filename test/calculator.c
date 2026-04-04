@@ -83,7 +83,7 @@ int equal_click(tgui_event_t *event) {
 	syntax_error = 0;
 	long value = calculate1(&str);
 	if (*str) syntax_error = 1;
-	tgui_text_set_content(label, "");
+	tgui_text_set_content(label, NULL);
 	if (syntax_error) {
 		tgui_text_set_placeholder(label, "syntax error");
 	} else {
