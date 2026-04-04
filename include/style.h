@@ -12,18 +12,27 @@ typedef struct tgui_style {
 	tgui_color_t *border_color[4];
 	unsigned int border_width[4];
 	char border_style[4];
+	char rounded_corners;
+	unsigned int rounded_size;
 	unsigned int font_size;
 	unsigned int flags;
 	unsigned char border_width_flags;
 } tgui_style_t;
 
-#define TGUI_STYLE_FONT_SIZE 0x01
+#define TGUI_STYLE_FONT_SIZE    0x01
+#define TGUI_STYLE_ROUNDED_SIZE 0x02
 
 #define TGUI_SIDE_LEFT    0
 #define TGUI_SIDE_RIGHT   1
 #define TGUI_SIDE_TOP     2
 #define TGUI_SIDE_BOTTOM  3
 #define TGUI_SIDE_ALL     4
+
+#define TGUI_CORNER_TOP_LEFT     0x1
+#define TGUI_CORNER_TOP_RIGHT    0x2
+#define TGUI_CORNER_BOTTOM_LEFT  0x4
+#define TGUI_CORNER_BOTTOM_RIGHT 0x8
+#define TGUI_CORNER_ALL          0xf
 
 #define TGUI_BORDER_UNDEFINED  0
 #define TGUI_BORDER_NONE       1
@@ -41,6 +50,10 @@ void tgui_style_set_border_color(tgui_style_t *style, int side, tgui_color_t *co
 tgui_color_t *tgui_style_get_border_color(tgui_style_t *style, int side);
 void tgui_style_set_border_style(tgui_style_t *style, int side, char border_style);
 char tgui_style_get_border_style(tgui_style_t *style, int side);
+void tgui_style_set_rounded_corners(tgui_style_t *style, char corners);
+char tgui_style_get_rounded_corners(tgui_style_t *style);
+void tgui_style_set_rounded_size(tgui_style_t *style, unsigned int size);
+unsigned int tgui_style_get_rounded_size(tgui_style_t *style);
 void tgui_style_set_color(tgui_style_t *style, tgui_color_t *color);
 tgui_color_t *tgui_style_get_color(tgui_style_t *style);
 void tgui_style_set_background_color(tgui_style_t *style, tgui_color_t *color);

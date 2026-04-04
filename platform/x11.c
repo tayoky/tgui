@@ -222,6 +222,9 @@ void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long 
 	XftDrawRect(x11_window->draw, xft_color, x, y, width, height);
 }
 
+void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
+}
+
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
 	printf("render text %ld %ld %s\n", x, y, text);
 	tgui_font_t *font = tgui_widget_get_font(widget);

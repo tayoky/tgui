@@ -333,6 +333,12 @@ static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_styl
 		CHECK_PTR(color);
 		CHECK_PTR(background_color);
 		CHECK_PTR(font);
+		if (style->flags & TGUI_STYLE_FONT_SIZE) {
+			dest_style->font_size = style->font_size;
+		}
+		if (style->flags & TGUI_STYLE_ROUNDED_SIZE) {
+			dest_style->font_size = style->rounded_size;
+		}
 		for (int i=0; i<4; i++) {
 			CHECK_PTR(border_color[i]);
 			if (style->border_style[i] != TGUI_BORDER_UNDEFINED) {
@@ -355,6 +361,7 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 	widget->flags &= ~TGUI_WIDGET_DIRTY_STYLE;
 	memset(style, 0, sizeof(tgui_style_t));
 	// defaults
+	style->rounded_size = 5;
 	style->font_size = 12;
 	style->font = tgui_font_get_default();
 	for (int i=0; i<4; i++) {

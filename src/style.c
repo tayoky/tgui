@@ -95,6 +95,24 @@ char tgui_style_get_border_style(tgui_style_t *style, int side) {
 	if (!style) return TGUI_BORDER_NONE;
 	return style->border_style[side];
 }
+void tgui_style_set_rounded_corners(tgui_style_t *style, char corners) {
+	style->rounded_corners = corners;
+}
+
+char tgui_style_get_rounded_corners(tgui_style_t *style) {
+	if (!style) return 0;
+	return style->rounded_corners;
+}
+
+void tgui_style_set_rounded_size(tgui_style_t *style, unsigned int size) {
+	style->rounded_size = size;
+	style->flags |= TGUI_STYLE_ROUNDED_SIZE;
+}
+
+unsigned int tgui_style_get_rounded_size(tgui_style_t *style) {
+	if (!style) return 0;
+	return style->rounded_size;
+}
 
 void tgui_style_set_color(tgui_style_t *style, tgui_color_t *color) {
 	if (style->color == color) return;

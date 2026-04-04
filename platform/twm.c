@@ -155,6 +155,9 @@ void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long 
 	gfx_draw_rect(stanix_window->clip, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height);
 }
 
+void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
+}
+
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
 	stanix_window_t *stanix_window = window->private;
 	color_t color = (color_t)(uintptr_t)tgui_widget_get_color(widget)->private;
