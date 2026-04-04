@@ -2,6 +2,7 @@
 #include <events.h>
 
 void tgui_input_click(tgui_window_t *window, int button, long x, long y) {
+	window->mouse_pressed = 1;
 	x /= window->scaling;
 	y /= window->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(window), x, y);
@@ -17,6 +18,7 @@ void tgui_input_click(tgui_window_t *window, int button, long x, long y) {
 	tgui_widget_send_event(widget, &event);
 }
 void tgui_input_unclick(tgui_window_t *window, int button, long x, long y) {
+	window->mouse_pressed = 0;
 	x /= window->scaling;
 	y /= window->scaling;
 	tgui_event_t event = {
@@ -38,6 +40,7 @@ void tgui_input_move(tgui_window_t *window, long x, long y) {
 		.move = {
 			.abs_x = x,
 			.abs_y = y,
+			.is_pressed = window->mouse_pressed,
 		},
 	};
 	tgui_widget_send_event(tgui_window_get_focus(window), &event);

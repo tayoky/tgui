@@ -103,12 +103,10 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 }
 
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height) {
-	// do not recalculate if useless
-	if (!tgui_widget_is_dirty_space(widget)) {
-		return;
-	}
-	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 	printf("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, widget->class->name);
+
+	// we alaways need to recalulate the allocated size
+	// because even if we are not dirty the parent could give us a new space
 	long new_x = x;
 	long new_width = width;
 	if ((widget->flags & TGUI_WIDGET_HEXPAND) && width > widget->pref_width) {
@@ -168,7 +166,11 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 		widget->y = new_y;
 		widget->height = new_height;
 		tgui_widget_mark_dirty(widget);
+	} else if (!tgui_widget_is_dirty_space(widget)) {
+		// do not recalculate child if useless
+		return;
 	}
+	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 
 	if (widget->class->allocate_space) {
 		widget->class->allocate_space(widget);

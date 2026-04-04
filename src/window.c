@@ -53,12 +53,9 @@ void tgui_window_set_child(tgui_window_t *window, tgui_widget_t *child) {
 	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(window));
 }
 
-static void tgui_window_update_sizes(tgui_window_t *window) {
-	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
-	if (window->widget.children.first) {
-		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
-		tgui_widget_allocate_space(child, 0, 0, window->widget.width / window->scaling, window->widget.height / window->scaling);
-	}
+tgui_widget_t *tgui_window_get_child(tgui_window_t *window) {
+	if (!window->widget.children.first) return NULL;
+	return TGUI_WIDGET_FROM_NODE(window->widget.children.first);
 }
 
 int tgui_window_resize(tgui_window_t *window, long width, long height) {
@@ -71,7 +68,8 @@ int tgui_window_resize(tgui_window_t *window, long width, long height) {
 	window->widget.width = width;
 	window->widget.height = height;
 
-	tgui_window_update_sizes(window);
+	// now widgets could get more or less space
+	tgui_widget_mark_dirty_space(tgui_window_get_child(window));
 	return 0;
 }
 
@@ -81,17 +79,22 @@ static int tgui_window_is_dirty(tgui_window_t *window) {
 
 void tgui_window_render(tgui_window_t *window) {
 	if (tgui_widget_is_dirty_size(TGUI_WIDGET_CAST(window))) {
-		tgui_window_update_sizes(window);
+		tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
+	}
+	tgui_widget_t *child = tgui_window_get_child(window);
+	if (!child) {
+		tgui_window_reset_dirty(window);
+		return;
+	}
+	if (tgui_widget_is_dirty_space(child)) {
+		tgui_widget_allocate_space(child, 0, 0, window->widget.width / window->scaling, window->widget.height / window->scaling);
 	}
 	if (tgui_window_is_dirty(window)) {
 		printf("got dirty rect from %ld %ld to %ld %ld\n", window->inval_start_x, window->inval_start_y, window->inval_end_x, window->inval_end_y);
 		tgui_platform_set_clip(window, window->inval_start_x, window->inval_start_y, 
 		(window->inval_end_x - window->inval_start_x) * window->scaling, 
 		(window->inval_end_y - window->inval_start_y) * window->scaling);
-		if (window->widget.children.first) {
-			tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(window->widget.children.first);
-			tgui_widget_render(child);
-		}
+		tgui_widget_render(child);
 		tgui_platform_push_window(window);
 	}
 	tgui_window_reset_dirty(window);
@@ -103,7 +106,7 @@ tgui_list_t *tgui_get_windows(void) {
 
 void tgui_window_set_scaling(tgui_window_t *window, long scaling) {
 	window->scaling = scaling;
-	tgui_window_update_sizes(window);
+	tgui_widget_mark_dirty_space(tgui_window_get_child(window));
 }
 
 long tgui_window_get_scaling(tgui_window_t *window) {

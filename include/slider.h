@@ -11,6 +11,7 @@ typedef struct tgui_slider {
 	double max;
 	double value;
 	double size;
+	long offset;
 } tgui_slider_t;
 
 #define TGUI_SLIDER_CAST(w) TGUI_CONTAINER_OF(w, tgui_slider_t, widget)

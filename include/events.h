@@ -23,6 +23,7 @@ typedef struct tgui_event {
 			int rel_y;
 			int abs_x;
 			int abs_y;
+			int is_pressed;
 		} move;
 		struct {
 			int amount;
