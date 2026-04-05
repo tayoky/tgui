@@ -27,11 +27,11 @@ void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t 
 void tgui_platform_free_color(tgui_color_t *color) {
 }
 
-int tgui_platform_load_font(tgui_font_t *font) {
+int tgui_platform_load_font(tgui_font_t *font, tgui_sized_font_t *sized) {
 	return 0;
 }
 
-void tgui_platform_free_font(tgui_font_t *font) {
+void tgui_platform_free_font(tgui_font_t *font, tgui_sized_font_t *sized) {
 }
 
 int tgui_platform_text_width(tgui_widget_t *widget, const char *text) {

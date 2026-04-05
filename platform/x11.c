@@ -172,32 +172,42 @@ void tgui_platform_free_color(tgui_color_t *color) {
 	free(color->private);
 }
 
-int tgui_platform_load_font(tgui_font_t *font) {
+int tgui_platform_load_font(tgui_font_t *font, tgui_sized_font_t *sized) {
+	if (!sized) return 0;
+	
 	// by default use sans
 	const char *name = font->name;
-	if (!name) name = "sans-10";
+	if (!name) name = "sans";
 
-	XftFont *xft_font = XftFontOpenName(display, screen, name);
+	char font_name[64];
+	sprintf(font_name, "%s-%u", name, sized->size);
+
+	XftFont *xft_font = XftFontOpenName(display, screen, font_name);
 	if (!xft_font) return -1;
-	font->private = xft_font;
+	sized->private = xft_font;
 	return 0;
 }
 
-void tgui_platform_free_font(tgui_font_t *font) {
-	XftFontClose(display, font->private);
+void tgui_platform_free_font(tgui_font_t *font, tgui_sized_font_t *sized) {
+	(void)font;
+	if (!sized) return;
+	XftFontClose(display, sized->private);
 }
 
 int tgui_platform_text_width(tgui_widget_t *widget, const char *text) {
 	tgui_font_t *font = tgui_widget_get_font(widget);
+	tgui_sized_font_t *sized_font = tgui_font_get_sized(font, tgui_widget_get_font_size(widget));
+	XftFont *xft_font = sized_font->private;
 	XGlyphInfo extents;
-	XftTextExtentsUtf8(display, font->private, (const FcChar8*)text, strlen(text), &extents);
+	XftTextExtentsUtf8(display, xft_font, (const FcChar8*)text, strlen(text), &extents);
 	return extents.xOff;
 }
 
 int tgui_platform_text_height(tgui_widget_t *widget, const char *text) {
 	(void)text;
 	tgui_font_t *font = tgui_widget_get_font(widget);
-	XftFont *xft_font = font->private;
+	tgui_sized_font_t *sized_font = tgui_font_get_sized(font, tgui_widget_get_font_size(widget));
+	XftFont *xft_font = sized_font->private;
 	return xft_font->ascent + xft_font->descent;
 }
 
@@ -310,7 +320,8 @@ void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
 	printf("render text %ld %ld %s\n", x, y, text);
 	tgui_font_t *font = tgui_widget_get_font(widget);
-	XftFont *xft_font = font->private;
+	tgui_sized_font_t *sized_font = tgui_font_get_sized(font, tgui_widget_get_font_size(widget));
+	XftFont *xft_font = sized_font->private;
 	tgui_color_t *color = tgui_widget_get_color(widget);
 	x11_window_t *x11_window = window->private;
 

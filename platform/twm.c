@@ -119,14 +119,14 @@ void tgui_platform_free_color(tgui_color_t *color) {
 	(void)color;
 }
 
-int tgui_platform_load_font(tgui_font_t *font) {
+int tgui_platform_load_font(tgui_font_t *font, tgui_sized_font_t *sized) {
 	font_t *twm_font = gfx_load_font(font->name);
 	if (!twm_font) return -1;
 	font->private = twm_font;
 	return 0;
 }
 
-void tgui_platform_free_font(tgui_font_t *font) {
+void tgui_platform_free_font(tgui_font_t *font, tgui_sized_font_t *sized) {
 	gfx_free_font(font->private);
 }
 
