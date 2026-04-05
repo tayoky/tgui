@@ -95,6 +95,24 @@ char tgui_style_get_border_style(tgui_style_t *style, int side) {
 	if (!style) return TGUI_BORDER_NONE;
 	return style->border_style[side];
 }
+
+void tgui_style_set_padding(tgui_style_t *style, int side, unsigned int padding) {
+	if (side == TGUI_SIDE_ALL) {
+		for (int i=0; i<4; i++) {
+			style->padding[i] = padding;
+		}
+		style->padding_flags |= 0xf;
+	} else {
+		style->padding[side] = padding;
+		style->padding_flags |= 1 << side;
+	}
+}
+
+unsigned int tgui_style_get_padding(tgui_style_t *style, int side) {
+	if (!style) return 0;
+	return style->padding[side];
+}
+
 void tgui_style_set_rounded_corners(tgui_style_t *style, char corners) {
 	style->rounded_corners = corners;
 	style->flags |= TGUI_STYLE_ROUNDED_CORNERS;

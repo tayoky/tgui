@@ -74,10 +74,12 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 	widget->pref_height += widget->top_margin + widget->bottom_margin;
 
 	// add padding to sizes
-	widget->min_width  += widget->left_padding + widget->right_padding;
-	widget->min_height += widget->top_padding + widget->bottom_padding;
-	widget->pref_width  += widget->left_padding + widget->right_padding;
-	widget->pref_height += widget->top_padding + widget->bottom_padding;
+	long hpadding = tgui_widget_get_padding(widget, TGUI_SIDE_LEFT) + tgui_widget_get_padding(widget, TGUI_SIDE_RIGHT);
+	long vpadding = tgui_widget_get_padding(widget, TGUI_SIDE_TOP) + tgui_widget_get_padding(widget, TGUI_SIDE_BOTTOM);
+	widget->min_width  += hpadding;
+	widget->min_height += vpadding;
+	widget->pref_width  += hpadding;
+	widget->pref_height += vpadding;
 
 	// add border to sizes
 	for (int side=0; side<4; side++) {
@@ -352,6 +354,11 @@ static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_styl
 			if (style->border_width_flags & (1 << i)) {
 				dest_style->border_width[i] = style->border_width[i];
 			}
+			for (int i=0; i<4; i++) {
+				if (style->padding_flags & (1 << i)) {
+					dest_style->padding[i] = style->padding[i];
+				}
+			}
 		}
 	}
 	// TODO : apply state flags
@@ -384,8 +391,11 @@ unsigned int tgui_widget_get_border_size(tgui_widget_t *widget, int side);
 tgui_color_t *tgui_widget_get_border_color(tgui_style_t *style, int side);
 
 
-char tgui_widget_get_border_widget(tgui_widget_t *widget, int side);
+char tgui_widget_get_border_style(tgui_widget_t *widget, int side);
 
+unsigned int tgui_widget_get_padding(tgui_widget_t *widget, int side) {
+	return tgui_widget_get_current_style(widget)->padding[side];
+}
 
 tgui_color_t *tgui_widget_get_color(tgui_widget_t *widget) {
 	return tgui_widget_get_current_style(widget)->color;

@@ -11,12 +11,14 @@ typedef struct tgui_style {
 	tgui_color_t *background_color;
 	tgui_color_t *border_color[4];
 	unsigned int border_width[4];
+	unsigned int padding[4];
 	char border_style[4];
 	char rounded_corners;
 	unsigned int rounded_size;
 	unsigned int font_size;
 	unsigned int flags;
 	unsigned char border_width_flags;
+	unsigned char padding_flags;
 } tgui_style_t;
 
 #define TGUI_STYLE_FONT_SIZE       0x01
@@ -51,6 +53,8 @@ void tgui_style_set_border_color(tgui_style_t *style, int side, tgui_color_t *co
 tgui_color_t *tgui_style_get_border_color(tgui_style_t *style, int side);
 void tgui_style_set_border_style(tgui_style_t *style, int side, char border_style);
 char tgui_style_get_border_style(tgui_style_t *style, int side);
+void tgui_style_set_padding(tgui_style_t *style, int side, unsigned int padding);
+unsigned int tgui_style_get_padding(tgui_style_t *style, int side);
 void tgui_style_set_rounded_corners(tgui_style_t *style, char corners);
 char tgui_style_get_rounded_corners(tgui_style_t *style);
 void tgui_style_set_rounded_size(tgui_style_t *style, unsigned int size);
