@@ -365,7 +365,7 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 	widget->flags &= ~TGUI_WIDGET_DIRTY_STYLE;
 	memset(style, 0, sizeof(tgui_style_t));
 	// defaults
-	style->rounded_size = 5;
+	style->rounded_size = 4;
 	style->font_size = 12;
 	style->font = tgui_font_get_default();
 	for (int i=0; i<4; i++) {

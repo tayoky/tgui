@@ -22,6 +22,7 @@ int tgui_platform_load_image(tgui_image_t *image);
 void tgui_platform_free_image(tgui_image_t *image);
 void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height);
 void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size);
+void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rounded_size);
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text);
 void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image);
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height);

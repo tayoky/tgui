@@ -230,7 +230,7 @@ static Picture create_gradient(long rayon, XRenderColor color) {
 	};
 	XFixed stops[] = {
 		XDoubleToFixed(0),
-		XDoubleToFixed(0.95f),
+		XDoubleToFixed(0.90f),
 		XDoubleToFixed(1)
 	};
 	XRenderColor colors[] = {
@@ -240,6 +240,29 @@ static Picture create_gradient(long rayon, XRenderColor color) {
 	};
 
 	return XRenderCreateRadialGradient(display, &grad, stops, colors, 3);
+}
+
+static Picture create_gradient_outline(long rayon, XRenderColor color, unsigned int border_size) {
+	XFixed f_rayon = XDoubleToFixed(rayon);
+	XRadialGradient grad = {
+		.inner = {f_rayon, f_rayon, 0},
+		.outer = {f_rayon, f_rayon, f_rayon},
+	};
+	XFixed stops[] = {
+		//XDoubleToFixed(0),
+		XDoubleToFixed((rayon - (double)border_size-0.1f)/rayon),
+		XDoubleToFixed((rayon - (double)border_size)/(double)rayon),
+		XDoubleToFixed(((double)rayon-0.1f)/(double)rayon),
+		XDoubleToFixed(1)
+	};
+	XRenderColor colors[] = {
+		{0, 0, 0, 0},
+		color,
+		color,
+		{0, 0, 0, 0},
+	};
+
+	return XRenderCreateRadialGradient(display, &grad, stops, colors, 4);
 }
 
 static void render_corner(Picture gradient, x11_window_t *window, unsigned int rayon, int round, long src_x, long src_y, long x, long y) {
@@ -261,6 +284,25 @@ void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *colo
 	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_TOP_RIGHT, rayon, 0, x + width - rayon, y);
 	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_BOTTOM_LEFT, 0, rayon, x, y + height - rayon);
 	render_corner(gradient, x11_window, rayon, corners & TGUI_CORNER_BOTTOM_RIGHT, rayon, rayon, x + width - rayon, y + height - rayon);
+
+	XRenderFreePicture(display, gradient);
+}
+
+void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rayon) {
+	x11_window_t *x11_window = window->private;
+	XftColor *xft_color = COLOR2XFT(color);
+	XftDrawRect(x11_window->draw, xft_color, x + rayon, y, width - 2 * rayon, border_size);
+	XftDrawRect(x11_window->draw, xft_color, x + rayon, y + height - border_size, width - 2 * rayon, border_size);
+	XftDrawRect(x11_window->draw, xft_color, x, y + rayon, border_size, height - 2 * rayon);
+	XftDrawRect(x11_window->draw, xft_color, x + width - border_size, y + rayon, border_size, height - 2 * rayon);
+
+	// render corners
+	Picture gradient = create_gradient_outline(rayon, xft_color->color, border_size);
+
+	render_corner(gradient, x11_window, rayon, 1, 0, 0, x, y);
+	render_corner(gradient, x11_window, rayon, 1, rayon, 0, x + width - rayon, y);
+	render_corner(gradient, x11_window, rayon, 1, 0, rayon, x, y + height - rayon);
+	render_corner(gradient, x11_window, rayon, 1, rayon, rayon, x + width - rayon, y + height - rayon);
 
 	XRenderFreePicture(display, gradient);
 }
