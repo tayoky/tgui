@@ -156,6 +156,10 @@ void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long 
 }
 
 void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
+	stanix_window_t *stanix_window = window->private;
+	color_t stanix_color = (color_t)(uintptr_t)color->private;
+	gfx_draw_rounded_rect(stanix_window->clip, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height, corners, rounded_size);
+
 }
 
 void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rounded_size) {
