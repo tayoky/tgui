@@ -49,7 +49,12 @@ void tgui_box_allocate_space(tgui_widget_t *widget) {
 	long height = tgui_widget_get_inner_height(widget);
 
 	// first pass, find excess and the number of child that want it
-	long excess = width - (box->widget.children.count - 1) * box->spacing;
+	long excess;
+	if (box->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
+		excess = height - (box->widget.children.count - 1) * box->spacing;
+	} else {
+		excess = width - (box->widget.children.count - 1) * box->spacing;
+	}
 	long pref_amount = 0;
 	long expand_count = 0;
 	TGUI_LIST_FOREACH(node, &box->widget.children) {
