@@ -6,6 +6,7 @@
 static void tgui_stack_calculate_sizes(tgui_widget_t *widget) {
 	tgui_stack_t *stack = TGUI_STACK_CAST(widget);
 	if (!stack->current) return;
+	tgui_widget_calculate_sizes(stack->current);
 	widget->min_width  = stack->current->min_width;
 	widget->min_height = stack->current->min_height;
 	widget->pref_width  = stack->current->pref_width;
@@ -37,7 +38,7 @@ static void tgui_stack_remove_child(tgui_widget_t *widget, tgui_widget_t *child)
 }
 
 static tgui_widget_class_t stack_class = {
-	.size = sizeof(tgui_widget_class_t),
+	.size = sizeof(tgui_stack_t),
 	.name = "stack",
 	.calculate_sizes = tgui_stack_calculate_sizes,
 	.allocate_space  = tgui_stack_allocate_space,
