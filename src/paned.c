@@ -65,6 +65,7 @@ static tgui_widget_class_t paned_class = {
 	.name = "paned",
 	.calculate_sizes = tgui_paned_calculate_sizes,
 	.allocate_space  = tgui_paned_allocate_space,
+	// TODO : remove child
 };
 
 tgui_paned_t *tgui_paned_new(int orientation) {

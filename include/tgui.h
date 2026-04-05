@@ -11,6 +11,7 @@
 #include "text.h"
 #include "paned.h"
 #include "slider.h"
+#include "stack.h"
 #include "expander.h"
 #include "separator.h"
 #include "font.h"

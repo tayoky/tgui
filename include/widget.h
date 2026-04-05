@@ -42,6 +42,7 @@ struct tgui_widget {
 	tgui_widget_t *parent;
 	tgui_widget_class_t *class;
 	char *id;
+	void *layout_data; // usef by parent
 	tgui_list_t css;
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
 	tgui_list_t styles;
@@ -130,12 +131,15 @@ static inline int tgui_widget_is_dirty_space(tgui_widget_t *widget) {
 static inline void tgui_widget_hide(tgui_widget_t *widget) {
 	widget->flags |= TGUI_WIDGET_HIDDEN;
 	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_space(widget->parent);
 	tgui_widget_mark_dirty_size(widget->parent);
 }
 
 static inline void tgui_widget_show(tgui_widget_t *widget) {
 	widget->flags &= ~TGUI_WIDGET_HIDDEN;
-	tgui_widget_mark_dirty(widget);
+	widget->width  = widget->x = 0;
+	widget->height = widget->y = 0;
+	tgui_widget_mark_dirty_space(widget);
 	tgui_widget_mark_dirty_size(widget->parent);
 }
 
