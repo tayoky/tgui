@@ -1,4 +1,5 @@
 #include <titlebar.h>
+#include <platform.h>
 #include <window.h>
 #include <button.h>
 #include <label.h>
@@ -16,12 +17,19 @@ static int tgui_close_click(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
+static int tgui_title_bar_click(tgui_event_t *event) {
+	tgui_window_t *window = tgui_widget_get_window(event->widget);
+	tgui_platform_start_dragging(window, event->click.x, event->click.y);
+	return TGUI_EVENT_HANDLED;
+}
+
 tgui_title_bar_t *tgui_title_bar_new(void) {
 	tgui_widget_t *widget = tgui_widget_new(&title_bar_class);
 	if (!widget) return NULL;
 
 	tgui_title_bar_t *title_bar = TGUI_TITLE_BAR_CAST(widget);
 	tgui_widget_set_orientation(widget, TGUI_ORIENTATION_HORIZONTAL);
+	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_title_bar_click, NULL);
 	title_bar->title = tgui_label_new("tgui window");
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(title_bar->title), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(title_bar->title), TGUI_TRUE);

@@ -184,3 +184,8 @@ void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, l
 	gfx_free(stanix_window->clip);
 	stanix_window->clip = gfx_create_clip(stanix_window->gfx, x, y, width, height);
 }
+
+void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mouse_y) {
+	stanix_window_t *stanix_window = window->private;
+	twm_start_dragging(stanix_window->window, -mouse_x, -mouse_y);
+}

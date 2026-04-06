@@ -26,5 +26,6 @@ void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color
 void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text);
 void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image);
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height);
+void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mouse_y);
 
 #endif

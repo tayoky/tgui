@@ -66,3 +66,6 @@ void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_imag
 
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
 }
+
+void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mouse_y) {
+}
