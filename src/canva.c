@@ -10,8 +10,8 @@ static void tgui_canva_allocate_sapce(tgui_widget_t *widget) {
     tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
 
     // the canva reszied we need to recreate the context
-    tgui_platform_canva_create(canva);
     tgui_platform_canva_destroy(canva);
+    tgui_platform_canva_create(canva);
 }
 
 static tgui_widget_class_t canva_class  = {

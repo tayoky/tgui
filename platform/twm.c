@@ -192,6 +192,7 @@ void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mous
 
 void tgui_platform_canva_create(tgui_canva_t *canva) {
     tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
+	if (!window) return;
 	stanix_window_t *stanix_window = window->private;
 	canva->private = gfx_create_clip(stanix_window->gfx, canva->widget.x, canva->widget.y, canva->widget.width, canva->widget.height);
 }
