@@ -9,6 +9,7 @@ int tgui_theme_load(void) {
 	tgui_color_t *border_color = tgui_color_new_rgb(100, 100, 100);
 	tgui_color_t *accent = tgui_color_new_rgb(0, 150, 0);
 	unsigned int border_width = 2;
+	unsigned int padding      = 4;
 
 	// window
 	tgui_style_t *window_style = tgui_style_new();
@@ -23,7 +24,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(button_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(button_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(button_style, TGUI_SIDE_ALL, border_color);
-	tgui_style_set_padding(button_style, TGUI_SIDE_ALL, 4);
+	tgui_style_set_padding(button_style, TGUI_SIDE_ALL, padding);
 	tgui_style_set_default(button_style, "button");
 
 	// labels
@@ -48,12 +49,20 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(text_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(text_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(text_style, TGUI_SIDE_ALL, border_color);
+	tgui_style_set_padding(text_style, TGUI_SIDE_ALL, padding);
 	tgui_style_set_default(text_style, "text");
 
 	// slider
 	tgui_style_t *slider_style = tgui_style_new();
 	tgui_style_set_background_color(slider_style, border_color);
 	tgui_style_set_default(slider_style, "slider");
+
+	// title bar
+	tgui_style_t *title_bar_style = tgui_style_new();
+	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_SOLID);
+	tgui_style_set_border_width(title_bar_style, TGUI_SIDE_ALL, border_width);
+	tgui_style_set_border_color(title_bar_style, TGUI_SIDE_ALL, border_color);
+	tgui_style_set_default(title_bar_style, "title bar");
 
 	return 0;
 }

@@ -7,6 +7,32 @@
 
 static tgui_list_t windows;
 
+static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
+	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
+	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	if (!tgui_widget_is_hidden(bar)) {
+		tgui_widget_calculate_sizes(bar);
+		widget->min_width  = bar->min_width;
+		widget->min_height = bar->min_height;
+		widget->pref_width  = bar->pref_width;
+		widget->pref_height = bar->pref_height;
+	}
+	if (window->child) {
+		tgui_widget_calculate_sizes(window->child);
+		widget->min_width  += window->child->min_width;
+		widget->min_height += window->child->min_height;
+		widget->pref_width  += window->child->pref_width;
+		widget->pref_height += window->child->pref_height;
+	}
+}
+
+static void tgui_window_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
+	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
+	if (window->child == child) {
+		window->child = NULL;
+	}
+}
+
 static void tgui_window_free(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_list_remove(&windows, &window->node);
@@ -17,8 +43,9 @@ static void tgui_window_free(tgui_widget_t *widget) {
 static tgui_widget_class_t window_class = {
 	.name = "window",
 	.size = sizeof(tgui_window_t),
+	.calculate_sizes = tgui_window_calculate_sizes,
+	.remove_child = tgui_window_remove_child,
 	.free = tgui_window_free,
-	.calculate_sizes = tgui_container_single_calculate_sizes,
 };
 
 static void tgui_window_reset_dirty(tgui_window_t *window) {
@@ -38,6 +65,10 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	window->widget.height = height;
 	window->scaling = 1;
 	window->title = strdup(title ? title : "tgui window");
+	window->title_bar = tgui_title_bar_new();
+	tgui_title_bar_set_title(window->title_bar, window->title);
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window->title_bar), TGUI_TRUE);
+	tgui_widget_set_parent(TGUI_WIDGET_CAST(window->title_bar), TGUI_WIDGET_CAST(window));
 	tgui_list_append(&windows, &window->node);
 
 	tgui_platform_create_window(window);
@@ -47,15 +78,15 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 
 void tgui_window_set_child(tgui_window_t *window, tgui_widget_t *child) {
 	// if we aready have a child destroy it
-	if (window->widget.children.first) {
-		tgui_widget_destroy(TGUI_WIDGET_FROM_NODE(window->widget.children.first));
+	if (window->child) {
+		tgui_widget_destroy(window->child);
 	}
 	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(window));
+	window->child = child;
 }
 
 tgui_widget_t *tgui_window_get_child(tgui_window_t *window) {
-	if (!window->widget.children.first) return NULL;
-	return TGUI_WIDGET_FROM_NODE(window->widget.children.first);
+	return window->child;
 }
 
 int tgui_window_resize(tgui_window_t *window, long width, long height) {
@@ -81,20 +112,29 @@ void tgui_window_render(tgui_window_t *window) {
 	if (tgui_widget_is_dirty_size(TGUI_WIDGET_CAST(window))) {
 		tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
 	}
-	tgui_widget_t *child = tgui_window_get_child(window);
-	if (!child) {
-		tgui_window_reset_dirty(window);
-		return;
-	}
-	if (tgui_widget_is_dirty_space(child)) {
-		tgui_widget_allocate_space(child, 0, 0, window->widget.width / window->scaling, window->widget.height / window->scaling);
+	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	long bar_height = bar->min_height;
+	if (tgui_widget_is_hidden(bar)) {
+		if (tgui_widget_is_dirty_space(window->child)) {
+			tgui_widget_allocate_space(window->child, 0, 0, window->widget.width / window->scaling, window->widget.height / window->scaling);
+		}
+	} else {
+		if (tgui_widget_is_dirty_space(bar)) {
+			tgui_widget_allocate_space(bar, 0, 0, window->widget.width / window->scaling, bar_height);
+		}
+		if (tgui_widget_is_dirty_space(window->child)) {
+			tgui_widget_allocate_space(window->child, 0, bar_height, window->widget.width / window->scaling, window->widget.height / window->scaling - bar_height);
+		}
 	}
 	if (tgui_window_is_dirty(window)) {
 		printf("got dirty rect from %ld %ld to %ld %ld\n", window->inval_start_x, window->inval_start_y, window->inval_end_x, window->inval_end_y);
 		tgui_platform_set_clip(window, window->inval_start_x, window->inval_start_y, 
 		(window->inval_end_x - window->inval_start_x) * window->scaling, 
 		(window->inval_end_y - window->inval_start_y) * window->scaling);
-		tgui_widget_render(child);
+		if (!tgui_widget_is_hidden(bar)) {
+			tgui_widget_render(bar);
+		}
+		tgui_widget_render(window->child);
 		tgui_platform_push_window(window);
 	}
 	tgui_window_reset_dirty(window);
@@ -119,6 +159,10 @@ void tgui_window_set_focus(tgui_window_t *window, tgui_widget_t *widget) {
 
 tgui_widget_t *tgui_window_get_focus(tgui_window_t *window) {
 	return window->focus;
+}
+
+void tgui_window_set_title_bar(tgui_window_t *window, int enabled) {
+	tgui_widget_set_visible(TGUI_WIDGET_CAST(window->title_bar), enabled);
 }
 
 void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, long height) {

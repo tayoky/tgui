@@ -2,6 +2,7 @@
 #define TGUI_WINDOW_H
 
 #include "widget.h"
+#include "titlebar.h"
 
 typedef struct tgui_window {
 	tgui_widget_t widget;
@@ -9,6 +10,8 @@ typedef struct tgui_window {
 	void *private;
 	long scaling;
 	tgui_widget_t *focus;
+	tgui_widget_t *child;
+	tgui_title_bar_t *title_bar;
 	char *title;
 	long inval_start_x;
 	long inval_start_y; 
@@ -29,6 +32,7 @@ void tgui_window_set_scaling(tgui_window_t *window, long scaling);
 long tgui_window_get_scaling(tgui_window_t *window);
 void tgui_window_set_focus(tgui_window_t *window, tgui_widget_t *widget);
 tgui_widget_t *tgui_window_get_focus(tgui_window_t *window);
+void tgui_window_set_title_bar(tgui_window_t *window, int enabled);
 void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, long height);
 
 static inline tgui_window_t *tgui_widget_get_window(tgui_widget_t *widget) {

@@ -1,5 +1,6 @@
 #include <widget.h>
 #include <box.h>
+#include <stdio.h>
 
 void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 	tgui_box_t *box = TGUI_BOX_CAST(widget);

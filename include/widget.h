@@ -141,6 +141,15 @@ static inline void tgui_widget_show(tgui_widget_t *widget) {
 	tgui_widget_mark_dirty_size(widget->parent);
 }
 
+static inline void tgui_widget_set_visible(tgui_widget_t *widget, int visible) {
+	if (!widget) return;
+	if (visible) {
+		tgui_widget_show(widget);
+	} else {
+		tgui_widget_hide(widget);
+		}
+}
+
 static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_HIDDEN;
 }
