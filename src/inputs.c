@@ -2,6 +2,7 @@
 #include <events.h>
 
 void tgui_input_click(tgui_window_t *window, int button, long x, long y) {
+	if (!window) return;
 	window->mouse_pressed = 1;
 	x /= window->scaling;
 	y /= window->scaling;
@@ -18,6 +19,7 @@ void tgui_input_click(tgui_window_t *window, int button, long x, long y) {
 	tgui_widget_send_event(widget, &event);
 }
 void tgui_input_unclick(tgui_window_t *window, int button, long x, long y) {
+	if (!window) return;
 	window->mouse_pressed = 0;
 	x /= window->scaling;
 	y /= window->scaling;
@@ -33,6 +35,7 @@ void tgui_input_unclick(tgui_window_t *window, int button, long x, long y) {
 }
 
 void tgui_input_move(tgui_window_t *window, long x, long y) {
+	if (!window) return;
 	x /= window->scaling;
 	y /= window->scaling;
 	tgui_event_t event = {
@@ -47,6 +50,7 @@ void tgui_input_move(tgui_window_t *window, long x, long y) {
 }
 
 void tgui_input_key_press(tgui_window_t *window, long scancode, long sym) {
+	if (!window) return;
 	tgui_event_t event = {
 		.type = TGUI_EVENT_PRESS,
 		.press = {
@@ -58,6 +62,7 @@ void tgui_input_key_press(tgui_window_t *window, long scancode, long sym) {
 }
 
 void tgui_input_key_release(tgui_window_t *window, long scancode, long sym) {
+	if (!window) return;
 	tgui_event_t event = {
 		.type = TGUI_EVENT_RELEASE,
 		.press = {

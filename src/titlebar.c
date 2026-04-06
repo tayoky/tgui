@@ -1,4 +1,5 @@
 #include <titlebar.h>
+#include <window.h>
 #include <button.h>
 #include <label.h>
 
@@ -8,6 +9,12 @@ static tgui_widget_class_t title_bar_class = {
 	.calculate_sizes = tgui_box_calculate_sizes,
 	.allocate_space  = tgui_box_allocate_space,
 };
+
+static int tgui_close_click(tgui_event_t *event) {
+	tgui_window_t *window = tgui_widget_get_window(event->widget);
+	tgui_widget_destroy(TGUI_WIDGET_CAST(window));
+	return TGUI_EVENT_HANDLED;
+}
 
 tgui_title_bar_t *tgui_title_bar_new(void) {
 	tgui_widget_t *widget = tgui_widget_new(&title_bar_class);
@@ -26,6 +33,7 @@ tgui_title_bar_t *tgui_title_bar_new(void) {
 	tgui_button_set_text(title_bar->maximize, "[]");
 	title_bar->close    = tgui_button_new();
 	tgui_button_set_text(title_bar->close, "X");
+	tgui_widget_set_callback(TGUI_WIDGET_CAST(title_bar->close), TGUI_EVENT_CLICK, tgui_close_click, NULL);
 	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->title));
 	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->minimize));
 	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->maximize));

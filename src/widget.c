@@ -35,13 +35,14 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 		tgui_window_set_focus(window, NULL);
 	}
 
-	tgui_widget_remove_parent(widget);
-
 	// destroy children
-	TGUI_LIST_FOREACH(node, &widget->children) {
+	for (tgui_list_node_t *node=widget->children.first; node; ) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
+		node = node->next;
 		tgui_widget_destroy(child);
 	}
+
+	tgui_widget_remove_parent(widget);
 
 	if (widget->class->free) {
 		widget->class->free(widget);
