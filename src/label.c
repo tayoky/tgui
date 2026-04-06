@@ -36,8 +36,25 @@ static tgui_widget_class_t label_class = {
 	.render = tgui_label_render,
 };
 
+static tgui_widget_class_t title_class = {
+	.name = "title",
+	.size = sizeof(tgui_label_t),
+	.free = tgui_label_free,
+	.calculate_sizes = tgui_label_calculate_sizes,
+	.render = tgui_label_render,
+};
+
 tgui_label_t *tgui_label_new(const char *text) {
 	tgui_widget_t *widget = tgui_widget_new(&label_class);
+	if (!widget) return NULL;
+
+	tgui_label_t *label = TGUI_LABEL_CAST(widget);
+	tgui_label_set_text(label, text);
+	return label;
+}
+
+tgui_label_t *tgui_title_new(const char *text) {
+	tgui_widget_t *widget = tgui_widget_new(&title_class);
 	if (!widget) return NULL;
 
 	tgui_label_t *label = TGUI_LABEL_CAST(widget);

@@ -11,6 +11,7 @@ typedef struct tgui_label {
 #define TGUI_LABEL_CAST(w) TGUI_CONTAINER_OF(w, tgui_label_t, widget)
 
 tgui_label_t *tgui_label_new(const char *text);
+tgui_label_t *tgui_title_new(const char *text);
 void tgui_label_set_text(tgui_label_t *label, const char *text);
 const char *tgui_label_get_text(tgui_label_t *label);
 

@@ -34,6 +34,14 @@ int tgui_theme_load(void) {
 	tgui_style_set_padding(label_style, TGUI_SIDE_ALL, 0);
 	tgui_style_set_default(label_style, "label");
 
+	// labels title
+	tgui_style_t *title_style = tgui_style_new();
+	tgui_style_set_font_size(title_style, 20);
+	tgui_style_set_rounded_corners(title_style, 0);
+	tgui_style_set_border_style(title_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
+	tgui_style_set_padding(title_style, TGUI_SIDE_ALL, 0);
+	tgui_style_set_default(title_style, "title");
+
 	// separators
 	tgui_style_t *separator_style = tgui_style_new();
 	tgui_style_set_border_style(separator_style, TGUI_SIDE_LEFT, TGUI_BORDER_SOLID);
