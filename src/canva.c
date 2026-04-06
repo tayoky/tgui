@@ -6,7 +6,7 @@ static void tgui_canva_free(tgui_widget_t *widget) {
     tgui_platform_canva_destroy(canva);
 }
 
-static void tgui_canva_allocate_sapce(tgui_widget_t *widget) {
+static void tgui_canva_allocate_space(tgui_widget_t *widget) {
     tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
 
     // the canva reszied we need to recreate the context
@@ -18,6 +18,7 @@ static tgui_widget_class_t canva_class  = {
     .size = sizeof(tgui_canva_t),
     .name = "canva",
     .free = tgui_canva_free,
+    .allocate_space = tgui_canva_allocate_space
 };
 
 tgui_canva_t *tgui_canva_new(void) {
