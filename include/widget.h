@@ -25,7 +25,7 @@ typedef struct tgui_widget_class {
 
 #define TGUI_STATE_NORMAL   0
 #define TGUI_STATE_HOVER    1
-#define TGUI_STATE_CLICK    2
+#define TGUI_STATE_PRESSED  2
 #define TGUI_STATE_DISABLED 3
 #define TGUI_STATE_COUNT    4
 

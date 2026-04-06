@@ -1,6 +1,7 @@
 #include <widget.h>
 #include <button.h>
 #include <label.h>
+#include <icon.h>
 
 static tgui_widget_class_t button_class = {
 	.name = "button",
@@ -32,8 +33,19 @@ void tgui_button_set_text(tgui_button_t *button, const char *text) {
 	}
 }
 
-void tgui_button_set_icon(tgui_button_t *button, const char *icon) {
-	// TODO : images and stuff
+void tgui_button_set_icon(tgui_button_t *button, const char *icon_name) {
+	tgui_widget_t *child = tgui_button_get_child(button);
+	if (tgui_widget_is_class(child, "icon")) {
+		// we already have an icon
+		tgui_icon_set(TGUI_ICON_CAST(child), icon_name);
+	} else {
+		tgui_icon_t *icon = tgui_icon_new(icon_name);
+		tgui_button_set_child(button, TGUI_WIDGET_CAST(icon));
+		tgui_widget_set_hexpand(TGUI_WIDGET_CAST(icon), TGUI_TRUE);
+		tgui_widget_set_vexpand(TGUI_WIDGET_CAST(icon), TGUI_TRUE);
+		tgui_widget_set_halign(TGUI_WIDGET_CAST(icon), TGUI_ALIGN_CENTER);
+		tgui_widget_set_valign(TGUI_WIDGET_CAST(icon), TGUI_ALIGN_TOP);
+	}
 }
 
 void tgui_button_set_child(tgui_button_t *button, tgui_widget_t *child) {
@@ -53,7 +65,11 @@ const char *tgui_button_get_text(tgui_button_t *button) {
 	}
 }
 
-const char *tgui_button_get_icon(tgui_button_t *button);
+const char *tgui_button_get_icon(tgui_button_t *button) {
+	(void)button;
+	// TODO
+	return NULL;
+}
 
 tgui_widget_t *tgui_button_get_child(tgui_button_t *button) {
 	if (button->widget.children.first) {

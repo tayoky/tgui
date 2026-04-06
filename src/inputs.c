@@ -8,6 +8,7 @@ void tgui_input_click(tgui_window_t *window, int button, long x, long y) {
 	y /= window->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(window), x, y);
 	tgui_window_set_focus(window, widget);
+	tgui_widget_set_state(widget, TGUI_STATE_PRESSED);
 	tgui_event_t event = {
 		.type = TGUI_EVENT_CLICK,
 		.click = {
@@ -23,6 +24,9 @@ void tgui_input_unclick(tgui_window_t *window, int button, long x, long y) {
 	window->mouse_pressed = 0;
 	x /= window->scaling;
 	y /= window->scaling;
+	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(window), x, y);
+	tgui_widget_set_state(tgui_window_get_focus(window), TGUI_STATE_NORMAL);
+	tgui_widget_set_state(widget, TGUI_STATE_HOVER);
 	tgui_event_t event = {
 		.type = TGUI_EVENT_UNCLICK,
 		.unclick = {
@@ -38,6 +42,8 @@ void tgui_input_move(tgui_window_t *window, long x, long y) {
 	if (!window) return;
 	x /= window->scaling;
 	y /= window->scaling;
+	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(window), x, y);
+	tgui_widget_set_state(widget, TGUI_STATE_HOVER);
 	tgui_event_t event = {
 		.type = TGUI_EVENT_MOVE,
 		.move = {
