@@ -4,6 +4,7 @@
 #include "window.h"
 #include "color.h"
 #include "font.h"
+#include "canva.h"
 #include "image.h"
 
 int tgui_platform_init(void);
@@ -27,5 +28,8 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image);
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height);
 void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mouse_y);
+void tgui_platform_canva_create(tgui_canva_t *canva);
+void tgui_platform_canva_destroy(tgui_canva_t *canva);
+int tgui_platform_get_fd(void);
 
 #endif

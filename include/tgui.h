@@ -14,6 +14,7 @@
 #include "titlebar.h"
 #include "stack.h"
 #include "stackswitcher.h"
+#include "canva.h"
 #include "expander.h"
 #include "separator.h"
 #include "font.h"
@@ -23,5 +24,8 @@ void tgui_quit(void);
 int tgui_init(void);
 void tgui_fini(void);
 void tgui_main(void);
+int tgui_get_fd(void);
+void tgui_render(void);
+void tgui_poll(void);
 
 #endif

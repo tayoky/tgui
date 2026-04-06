@@ -23,12 +23,24 @@ void tgui_quit(void) {
 	quit = 1;
 }
 
+void tgui_render(void) {
+	TGUI_LIST_FOREACH(node, tgui_get_windows()) {
+		tgui_window_t *window = TGUI_CONTAINER_OF(node, tgui_window_t, node);
+		tgui_window_render(window);
+	}
+}
+
+void tgui_poll(void) {
+	tgui_platform_handle_event();
+}
+
 void tgui_main(void) {
 	while (!quit) {
-		TGUI_LIST_FOREACH(node, tgui_get_windows()) {
-			tgui_window_t *window = TGUI_CONTAINER_OF(node, tgui_window_t, node);
-			tgui_window_render(window);
-		}
-		tgui_platform_handle_event();
+		tgui_render();
+		tgui_poll();
 	}
+}
+
+int tgui_get_fd(void) {
+	return tgui_platform_get_fd();
 }
