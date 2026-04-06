@@ -35,6 +35,13 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 		tgui_window_set_focus(window, NULL);
 	}
 
+	// send event first
+	tgui_event_t event = {
+		.type = TGUI_EVENT_DESTROY,
+		.widget = widget,
+	};
+	tgui_widget_send_event(widget, &event);
+
 	// destroy children
 	for (tgui_list_node_t *node=widget->children.first; node; ) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
