@@ -354,5 +354,8 @@ void tgui_platform_canva_create(tgui_canva_t *canva) {
 void tgui_platform_canva_destroy(tgui_canva_t *canva) {
 }
 
+void tgui_platform_push_canva(tgui_canva_t *canva) {
+}
+
 int tgui_platform_get_fd(void) {
 }

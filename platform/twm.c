@@ -194,11 +194,15 @@ void tgui_platform_canva_create(tgui_canva_t *canva) {
     tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
 	if (!window) return;
 	stanix_window_t *stanix_window = window->private;
-	canva->private = gfx_create_clip(stanix_window->gfx, canva->widget.x, canva->widget.y, canva->widget.width, canva->widget.height);
+	canva->private = gfx_create_buffer(stanix_window->gfx, canva->widget.x, canva->widget.y, canva->widget.width, canva->widget.height);
 }
 
 void tgui_platform_canva_destroy(tgui_canva_t *canva) {
 	gfx_free(canva->private);
+}
+
+void tgui_platform_push_canva(tgui_canva_t *canva) {
+	// TODO : push the canva
 }
 
 int tgui_platform_get_fd(void) {

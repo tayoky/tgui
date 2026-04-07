@@ -30,6 +30,7 @@ void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, l
 void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mouse_y);
 void tgui_platform_canva_create(tgui_canva_t *canva);
 void tgui_platform_canva_destroy(tgui_canva_t *canva);
+void tgui_platform_push_canva(tgui_canva_t *canva);
 int tgui_platform_get_fd(void);
 
 #endif

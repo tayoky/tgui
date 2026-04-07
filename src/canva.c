@@ -14,11 +14,17 @@ static void tgui_canva_allocate_space(tgui_widget_t *widget) {
     tgui_platform_canva_create(canva);
 }
 
+static void tgui_canva_render(tgui_widget_t *widget) {
+    tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
+    tgui_platform_push_canva(canva);
+}
+
 static tgui_widget_class_t canva_class  = {
     .size = sizeof(tgui_canva_t),
     .name = "canva",
     .free = tgui_canva_free,
-    .allocate_space = tgui_canva_allocate_space
+    .allocate_space = tgui_canva_allocate_space,
+    .render         = tgui_canva_render,
 };
 
 tgui_canva_t *tgui_canva_new(void) {
