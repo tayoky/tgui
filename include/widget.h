@@ -174,8 +174,10 @@ static inline void tgui_widget_set_vexpand(tgui_widget_t *widget, int hexpand) {
 
 static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 	if (widget->state == state) return;
+	if (widget->state_styles[(int)widget->state].first || widget->state_styles[(int)state].first) {
+		tgui_widget_mark_dirty(widget);
+	}
 	widget->state = state;
-	tgui_widget_mark_dirty(widget);
 }
 
 static inline char tgui_widget_get_state(tgui_widget_t *widget) {
