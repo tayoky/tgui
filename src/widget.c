@@ -176,6 +176,10 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 		widget->y = new_y;
 		widget->height = new_height;
 		tgui_widget_mark_dirty(widget);
+		tgui_event_t event = {
+			.type = TGUI_EVENT_RESIZE,
+		};
+		tgui_widget_send_event(widget, &event);
 	} else if (!tgui_widget_is_dirty_space(widget)) {
 		// do not recalculate child if useless
 		return;
