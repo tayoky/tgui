@@ -72,5 +72,12 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_color(title_bar_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_default(title_bar_style, "title bar");
 
+
+	// icons
+	tgui_style_t *icon_style = tgui_style_new();
+	tgui_style_set_border_style(icon_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
+	tgui_style_set_padding(icon_style, TGUI_SIDE_ALL, 0);
+	tgui_style_set_default(icon_style, "icon");
+
 	return 0;
 }
