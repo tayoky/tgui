@@ -14,8 +14,16 @@ int tgui_theme_load(void) {
 	// window
 	tgui_style_t *window_style = tgui_style_new();
 	tgui_style_set_background_color(window_style, bg);
+	tgui_style_set_border_style(window_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
+	tgui_style_set_border_width(window_style, TGUI_SIDE_ALL, border_width);
+	tgui_style_set_border_color(window_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_color(window_style, color);
 	tgui_style_set_default(window_style, "window");
+
+	// box
+	tgui_style_t *box_style = tgui_style_new();
+	tgui_style_set_border_style(box_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
+	tgui_style_set_default(box_style, "box");
 
 	// buttons
 	tgui_style_t *button_style = tgui_style_new();
@@ -67,6 +75,7 @@ int tgui_theme_load(void) {
 
 	// title bar
 	tgui_style_t *title_bar_style = tgui_style_new();
+	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
 	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(title_bar_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(title_bar_style, TGUI_SIDE_ALL, border_color);

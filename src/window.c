@@ -19,9 +19,13 @@ static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
 	}
 	if (window->child) {
 		tgui_widget_calculate_sizes(window->child);
-		widget->min_width  += window->child->min_width;
+		if (widget->min_width < window->child->min_width) {
+			widget->min_width = window->child->min_width;
+		}
 		widget->min_height += window->child->min_height;
-		widget->pref_width  += window->child->pref_width;
+		if (widget->pref_width < window->child->pref_width) {
+			widget->pref_width = window->child->pref_width;
+		}
 		widget->pref_height += window->child->pref_height;
 	}
 }
@@ -29,12 +33,16 @@ static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
 static void tgui_window_allocate_space(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	long width  = tgui_widget_get_inner_width(widget);
+	long height = tgui_widget_get_inner_height(widget);
 	long bar_height = bar->min_height;
 	if (tgui_widget_is_hidden(bar)) {
-		tgui_widget_allocate_space(window->child, 0, 0, window->widget.width, window->widget.height);
+		tgui_widget_allocate_space(window->child, x, y, width, height);
 	} else {
-		tgui_widget_allocate_space(bar, 0, 0, window->widget.width, bar_height);
-		tgui_widget_allocate_space(window->child, 0, bar_height, window->widget.width, window->widget.height - bar_height);
+		tgui_widget_allocate_space(bar, x, y, width, bar_height);
+		tgui_widget_allocate_space(window->child, x, y + bar_height, width, height - bar_height);
 	}
 }
 
@@ -84,6 +92,8 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 
 
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(window), TGUI_TRUE);
 	window->width  = width;
 	window->height = height;
 	window->scaling = 1;
