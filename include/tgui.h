@@ -14,6 +14,7 @@
 #include "titlebar.h"
 #include "stack.h"
 #include "stackswitcher.h"
+#include "icon.h"
 #include "canva.h"
 #include "expander.h"
 #include "separator.h"
