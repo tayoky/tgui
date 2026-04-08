@@ -55,11 +55,152 @@ void send_button_event(tgui_window_t *window, int button, twm_event_input_t *inp
 	}
 }
 
+void send_key_event(tgui_window_t *window, twm_event_input_t *input_event) {
+	long key;
+	switch (input_event->key.key) {
+	case INPUT_KEY_MOUSE_LEFT:
+		key = TGUI_KEY_MOUSE_LEFT;
+		break;
+	case INPUT_KEY_MOUSE_MIDDLE:
+		key = TGUI_KEY_MOUSE_MIDDLE;
+		break;
+	case INPUT_KEY_MOUSE_RIGHT:
+		key = TGUI_KEY_MOUSE_RIGHT;
+		break;
+	case INPUT_KEY_ESC:
+		key = TGUI_KEY_ESC;
+		break;
+	case INPUT_KEY_TAB:
+		key = TGUI_KEY_TAB;
+		break;
+	case INPUT_KEY_BACKSPACE:
+		key = TGUI_KEY_BACKSPACE;
+		break;
+	case INPUT_KEY_ENTER:
+		key = TGUI_KEY_ENTER;
+		break;
+	case INPUT_KEY_DELETE:
+		key = TGUI_KEY_DELETE;
+		break;
+	case INPUT_KEY_INSERT:
+		key = TGUI_KEY_INSERT;
+		break;
+	case INPUT_KEY_HOME:
+		key = TGUI_KEY_HOME;
+		break;
+	case INPUT_KEY_END:
+		key = TGUI_KEY_END;
+		break;
+	case INPUT_KEY_ARROW_UP:
+		key = TGUI_KEY_ARROW_UP;
+		break;
+	case INPUT_KEY_ARROW_DOWN:
+		key = TGUI_KEY_ARROW_DOWN;
+		break;
+	case INPUT_KEY_ARROW_LEFT:
+		key = TGUI_KEY_ARROW_LEFT;
+		break;
+	case INPUT_KEY_ARROW_RIGHT:
+		key = TGUI_KEY_ARROW_RIGHT;
+		break;
+	case INPUT_KEY_PAGE_UP:
+		key = TGUI_KEY_PAGE_UP;
+		break;
+	case INPUT_KEY_PAGE_DOWN:
+		key = TGUI_KEY_PAGE_DOWN;
+		break;
+	case INPUT_KEY_LSHIFT:
+		key = TGUI_KEY_LSHIFT;
+		break;
+	case INPUT_KEY_RSHIFT:
+		key = TGUI_KEY_RSHIFT;
+		break;
+	case INPUT_KEY_LCRTL:
+		key = TGUI_KEY_LCRTL;
+		break;
+	case INPUT_KEY_RCRTL:
+		key = TGUI_KEY_RCRTL;
+		break;
+	case INPUT_KEY_LALT:
+		key = TGUI_KEY_LALT;
+		break;
+	case INPUT_KEY_RALT:
+		key = TGUI_KEY_RALT;
+		break;
+	case INPUT_KEY_ALTGR:
+		key = TGUI_KEY_ALTGR;
+		break;
+	case INPUT_KEY_NUM_LOCK:
+		key = TGUI_KEY_NUM_LOCK;
+		break;
+	case INPUT_KEY_SCROLL_LOCK:
+		key = TGUI_KEY_SCROLL_LOCK;
+		break;
+	case INPUT_KEY_CAPS_LOCK:
+		key = TGUI_KEY_CAPS_LOCK;
+		break;
+	case INPUT_KEY_F1:
+		key = TGUI_KEY_F1;
+		break;
+	case INPUT_KEY_F2:
+		key = TGUI_KEY_F2;
+		break;
+	case INPUT_KEY_F3:
+		key = TGUI_KEY_F3;
+		break;
+	case INPUT_KEY_F4:
+		key = TGUI_KEY_F4;
+		break;
+	case INPUT_KEY_F5:
+		key = TGUI_KEY_F5;
+		break;
+	case INPUT_KEY_F6:
+		key = TGUI_KEY_F6;
+		break;
+	case INPUT_KEY_F7:
+		key = TGUI_KEY_F7;
+		break;
+	case INPUT_KEY_F8:
+		key = TGUI_KEY_F8;
+		break;
+	case INPUT_KEY_F9:
+		key = TGUI_KEY_F9;
+		break;
+	case INPUT_KEY_F10:
+		key = TGUI_KEY_F10;
+		break;
+	case INPUT_KEY_F11:
+		key = TGUI_KEY_F11;
+		break;
+	case INPUT_KEY_F12:
+		key = TGUI_KEY_F12;
+		break;
+	case INPUT_KEY_GUI:
+		key = TGUI_KEY_GUI;
+		break;
+	case INPUT_KEY_VOLUME_UP:
+		key = TGUI_KEY_VOLUME_UP;
+		break;
+	case INPUT_KEY_VOLUME_DOWN:
+		key = TGUI_KEY_VOLUME_DOWN;
+		break;
+	default:
+		key = input_event->key.key;
+		break;
+	}
+
+	if (input_event->key.flags & TWM_INPUT_PRESS) {
+		tgui_input_key_press(window, input_event->key.scancode, key);
+	} else {
+		tgui_input_key_release(window, input_event->key.scancode, key);
+	}
+}
+
 void tgui_platform_handle_event(void) {
 	twm_event_t *event = twm_poll_event();
 	switch (event->type) {
 	case TWM_EVENT_INPUT:;
-		twm_event_input_t *input_event = (twm_event_input_t*)event;
+		twm_event_input_t *input_event = (twm_event_input_t *)event;
 		tgui_window_t *window = get_window(input_event->window);
 		stanix_window_t *stanix_window = window->private;
 		switch (input_event->type) {
@@ -77,6 +218,9 @@ void tgui_platform_handle_event(void) {
 				break;
 			case INPUT_KEY_MOUSE_MIDDLE:
 				send_button_event(window, TGUI_BUTTON_MIDDLE, input_event);
+				break;
+			default:
+				send_key_event(window, input_event);
 				break;
 			}
 		}
@@ -112,7 +256,7 @@ void tgui_platform_push_window(tgui_window_t *window) {
 }
 
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	color->private = (void*)(uintptr_t)gfx_color_rgba(&gfx, r, g, b, a);
+	color->private = (void *)(uintptr_t)gfx_color_rgba(&gfx, r, g, b, a);
 }
 
 void tgui_platform_free_color(tgui_color_t *color) {
@@ -191,7 +335,7 @@ void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mous
 }
 
 void tgui_platform_canva_create(tgui_canva_t *canva) {
-    tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
+	tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
 	if (!window) return;
 	stanix_window_t *stanix_window = window->private;
 	canva->private = gfx_create_buffer(stanix_window->gfx, canva->widget.width, canva->widget.height);
@@ -202,7 +346,7 @@ void tgui_platform_canva_destroy(tgui_canva_t *canva) {
 }
 
 void tgui_platform_push_canva(tgui_canva_t *canva) {
-    tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
+	tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
 	stanix_window_t *stanix_window = window->private;
 	gfx_draw_buffer(stanix_window->clip, canva->widget.x - stanix_window->clip_x, canva->widget.y - stanix_window->clip_y, canva->private);
 }

@@ -19,6 +19,7 @@
 #include "separator.h"
 #include "font.h"
 #include "color.h"
+#include "inputs.h"
 
 void tgui_quit(void);
 int tgui_init(void);
