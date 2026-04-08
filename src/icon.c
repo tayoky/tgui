@@ -1,4 +1,5 @@
 #include <widget.h>
+#include <platform.h>
 #include <icon.h>
 
 static void tgui_icon_calculate_sizes(tgui_widget_t *widget) {
@@ -13,6 +14,8 @@ static void tgui_icon_calculate_sizes(tgui_widget_t *widget) {
 static void tgui_icon_render(tgui_widget_t *widget) {
 	tgui_icon_t *icon = TGUI_ICON_CAST(widget);
 	if (!icon->image) return;
+	tgui_window_t *window = tgui_widget_get_window(widget);
+	tgui_platform_render_image(window, widget->x, widget->y, icon->image);
 }
 
 static tgui_widget_class_t icon_class = {
@@ -34,7 +37,7 @@ tgui_icon_t *tgui_icon_new(const char *name) {
 void tgui_icon_set(tgui_icon_t *icon, const char *name) {
 	tgui_image_t *image = NULL;
 	if (name) {
-		tgui_image_load_icon(name);
+		image = tgui_image_load_icon(name);
 		if (!image) {
 			image = tgui_image_load_icon("image-missing");
 			if (!image) return;

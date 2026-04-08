@@ -286,6 +286,8 @@ int tgui_platform_load_image(tgui_image_t *image) {
 	texture_t *texture = gfx_load_texture(&gfx, image->filename);
 	if (!texture) return -1;
 	image->private = texture;
+	image->width  = texture->width;
+	image->height = texture->height;
 	return 0;
 }
 
