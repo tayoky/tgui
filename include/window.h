@@ -17,6 +17,8 @@ typedef struct tgui_window {
 	long inval_start_y; 
 	long inval_end_x;
 	long inval_end_y;
+	long width;
+	long height;
 	int mouse_pressed;
 } tgui_window_t;
 

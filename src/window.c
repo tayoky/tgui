@@ -26,6 +26,27 @@ static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
 	}
 }
 
+static void tgui_window_allocate_space(tgui_widget_t *widget) {
+	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
+	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	long bar_height = bar->min_height;
+	if (tgui_widget_is_hidden(bar)) {
+		tgui_widget_allocate_space(window->child, 0, 0, window->widget.width, window->widget.height);
+	} else {
+		tgui_widget_allocate_space(bar, 0, 0, window->widget.width, bar_height);
+		tgui_widget_allocate_space(window->child, 0, bar_height, window->widget.width, window->widget.height - bar_height);
+	}
+}
+
+static void tgui_window_widget_render(tgui_widget_t *widget) {
+	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
+	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	if (!tgui_widget_is_hidden(bar)) {
+		tgui_widget_render(bar);
+	}
+	tgui_widget_render(window->child);
+}
+
 static void tgui_window_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	if (window->child == child) {
@@ -44,6 +65,8 @@ static tgui_widget_class_t window_class = {
 	.name = "window",
 	.size = sizeof(tgui_window_t),
 	.calculate_sizes = tgui_window_calculate_sizes,
+	.allocate_space  = tgui_window_allocate_space,
+	.render          = tgui_window_widget_render,
 	.remove_child = tgui_window_remove_child,
 	.free = tgui_window_free,
 };
@@ -61,8 +84,8 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 
 
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
-	window->widget.width  = width;
-	window->widget.height = height;
+	window->width  = width;
+	window->height = height;
 	window->scaling = 1;
 	window->title = strdup(title ? title : "tgui window");
 	window->title_bar = tgui_title_bar_new();
@@ -96,11 +119,11 @@ int tgui_window_resize(tgui_window_t *window, long width, long height) {
 		// too small
 		return -1;
 	}
-	window->widget.width = width;
-	window->widget.height = height;
+	window->width = width;
+	window->height = height;
 
 	// now widgets could get more or less space
-	tgui_widget_mark_dirty_space(tgui_window_get_child(window));
+	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(window));
 	return 0;
 }
 
@@ -109,32 +132,15 @@ static int tgui_window_is_dirty(tgui_window_t *window) {
 }
 
 void tgui_window_render(tgui_window_t *window) {
-	if (tgui_widget_is_dirty_size(TGUI_WIDGET_CAST(window))) {
-		tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
-	}
-	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
-	long bar_height = bar->min_height;
-	if (tgui_widget_is_hidden(bar)) {
-		if (tgui_widget_is_dirty_space(window->child)) {
-			tgui_widget_allocate_space(window->child, 0, 0, window->widget.width / window->scaling, window->widget.height / window->scaling);
-		}
-	} else {
-		if (tgui_widget_is_dirty_space(bar)) {
-			tgui_widget_allocate_space(bar, 0, 0, window->widget.width / window->scaling, bar_height);
-		}
-		if (tgui_widget_is_dirty_space(window->child)) {
-			tgui_widget_allocate_space(window->child, 0, bar_height, window->widget.width / window->scaling, window->widget.height / window->scaling - bar_height);
-		}
-	}
+	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
+	tgui_widget_allocate_space(TGUI_WIDGET_CAST(window), 0, 0, window->width / window->scaling, window->height / window->scaling);
+
 	if (tgui_window_is_dirty(window)) {
 		printf("got dirty rect from %ld %ld to %ld %ld\n", window->inval_start_x, window->inval_start_y, window->inval_end_x, window->inval_end_y);
 		tgui_platform_set_clip(window, window->inval_start_x, window->inval_start_y, 
 		(window->inval_end_x - window->inval_start_x) * window->scaling, 
 		(window->inval_end_y - window->inval_start_y) * window->scaling);
-		if (!tgui_widget_is_hidden(bar)) {
-			tgui_widget_render(bar);
-		}
-		tgui_widget_render(window->child);
+		tgui_widget_render(TGUI_WIDGET_CAST(window));
 		tgui_platform_push_window(window);
 	}
 	tgui_window_reset_dirty(window);

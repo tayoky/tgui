@@ -127,13 +127,13 @@ void tgui_platform_handle_event(void) {
 
 int tgui_platform_create_window(tgui_window_t *window) {
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
-	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, window->widget.width, window->widget.height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
+	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, window->width, window->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
 	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | KeyReleaseMask);
 
 	// setup pixmap and GC
 	XGCValues values;
 	x11_window->gc = XCreateGC(display, x11_window->window, 0, &values);
-	x11_window->pixmap = XCreatePixmap(display, x11_window->window, window->widget.width, window->widget.height, DefaultDepth(display, screen));
+	x11_window->pixmap = XCreatePixmap(display, x11_window->window, window->width, window->height, DefaultDepth(display, screen));
 	x11_window->draw = XftDrawCreate(display, x11_window->pixmap, visual, colormap);
 	XMapWindow(display, x11_window->window);
 	XFlush(display);
