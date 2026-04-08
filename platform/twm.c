@@ -320,7 +320,7 @@ void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, lon
 
 void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
 	stanix_window_t *stanix_window = window->private;
-	gfx_draw_texture(stanix_window->clip, image->private, x - stanix_window->clip_x, y - stanix_window->clip_y);
+	gfx_draw_texture_alpha(stanix_window->clip, image->private, x - stanix_window->clip_x, y - stanix_window->clip_y);
 }
 
 void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {

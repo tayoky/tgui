@@ -36,9 +36,9 @@ tgui_title_bar_t *tgui_title_bar_new(void) {
 	tgui_widget_set_halign(TGUI_WIDGET_CAST(title_bar->title), TGUI_ALIGN_LEFT);
 	tgui_widget_set_valign(TGUI_WIDGET_CAST(title_bar->title), TGUI_ALIGN_CENTER);
 	title_bar->minimize = tgui_button_new();
-	tgui_button_set_text(title_bar->minimize, "-");
+	tgui_button_set_icon(title_bar->minimize, "minimize");
 	title_bar->maximize = tgui_button_new();
-	tgui_button_set_text(title_bar->maximize, "[]");
+	tgui_button_set_icon(title_bar->maximize, "maximize");
 	title_bar->close    = tgui_button_new();
 	tgui_button_set_text(title_bar->close, "X");
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(title_bar->close), TGUI_EVENT_CLICK, tgui_close_click, NULL);
