@@ -194,7 +194,7 @@ void tgui_platform_canva_create(tgui_canva_t *canva) {
     tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
 	if (!window) return;
 	stanix_window_t *stanix_window = window->private;
-	canva->private = gfx_create_buffer(stanix_window->gfx, canva->widget.x, canva->widget.y, canva->widget.width, canva->widget.height);
+	canva->private = gfx_create_buffer(stanix_window->gfx, canva->widget.width, canva->widget.height);
 }
 
 void tgui_platform_canva_destroy(tgui_canva_t *canva) {
@@ -202,7 +202,9 @@ void tgui_platform_canva_destroy(tgui_canva_t *canva) {
 }
 
 void tgui_platform_push_canva(tgui_canva_t *canva) {
-	// TODO : push the canva
+    tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
+	stanix_window_t *stanix_window = window->private;
+	gfx_draw_buffer(stanix_window->clip, canva->widget.x - stanix_window->clip_x, canva->widget.y - stanix_window->clip_y, canva->private);
 }
 
 int tgui_platform_get_fd(void) {
