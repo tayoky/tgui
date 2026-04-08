@@ -40,6 +40,7 @@ tgui_image_t *tgui_image_ref(tgui_image_t *image) {
 }
 
 void tgui_image_release(tgui_image_t *image) {
+	if (!image) return;
 	if (image->ref_count > 1) {
 		image->ref_count--;
 		return;
