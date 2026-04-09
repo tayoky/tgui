@@ -252,7 +252,10 @@ void tgui_platform_close_window(tgui_window_t *window) {
 
 void tgui_platform_push_window(tgui_window_t *window) {
 	stanix_window_t *stanix_window = window->private;
-	twm_redraw_window(stanix_window->window, 0, 0, TWM_WHOLE_WIDTH, TWM_WHOLE_HEIGHT);
+	long width  = window->inval_end_x - window->inval_start_x;
+	long height = window->inval_end_y - window->inval_start_y;
+	gfx_push_rect(stanix_window->gfx, window->inval_start_x, window->inval_start_y, width, height);
+	twm_redraw_window(stanix_window->window, window->inval_start_x, window->inval_start_y, width, height);
 }
 
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
