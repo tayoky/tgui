@@ -10,6 +10,7 @@ static tgui_list_t windows;
 static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	tgui_widget_t *child = tgui_window_get_child(window);
 	if (!tgui_widget_is_hidden(bar)) {
 		tgui_widget_calculate_sizes(bar);
 		widget->min_width  = bar->min_width;
@@ -17,54 +18,40 @@ static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
 		widget->pref_width  = bar->pref_width;
 		widget->pref_height = bar->pref_height;
 	}
-	if (window->child) {
-		tgui_widget_calculate_sizes(window->child);
-		if (widget->min_width < window->child->min_width) {
-			widget->min_width = window->child->min_width;
+	if (child) {
+		tgui_widget_calculate_sizes(child);
+		if (widget->min_width < child->min_width) {
+			widget->min_width = child->min_width;
 		}
-		widget->min_height += window->child->min_height;
-		if (widget->pref_width < window->child->pref_width) {
-			widget->pref_width = window->child->pref_width;
+		widget->min_height += child->min_height;
+		if (widget->pref_width < child->pref_width) {
+			widget->pref_width = child->pref_width;
 		}
-		widget->pref_height += window->child->pref_height;
+		widget->pref_height += child->pref_height;
 	}
 }
 
 static void tgui_window_allocate_space(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
+	tgui_widget_t *child = tgui_window_get_child(window);
 	long x = tgui_widget_get_inner_x(widget);
 	long y = tgui_widget_get_inner_y(widget);
 	long width  = tgui_widget_get_inner_width(widget);
 	long height = tgui_widget_get_inner_height(widget);
 	long bar_height = bar->min_height;
 	if (tgui_widget_is_hidden(bar)) {
-		tgui_widget_allocate_space(window->child, x, y, width, height);
+		tgui_widget_allocate_space(child, x, y, width, height);
 	} else {
 		tgui_widget_allocate_space(bar, x, y, width, bar_height);
-		tgui_widget_allocate_space(window->child, x, y + bar_height, width, height - bar_height);
-	}
-}
-
-static void tgui_window_widget_render(tgui_widget_t *widget) {
-	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
-	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
-	if (!tgui_widget_is_hidden(bar)) {
-		tgui_widget_render(bar);
-	}
-	tgui_widget_render(window->child);
-}
-
-static void tgui_window_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
-	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
-	if (window->child == child) {
-		window->child = NULL;
+		tgui_widget_allocate_space(child, x, y + bar_height, width, height - bar_height);
 	}
 }
 
 static void tgui_window_free(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_list_remove(&windows, &window->node);
+	tgui_surface_unregister(&window->surface);
 	tgui_platform_close_window(window);
 	free(window->title);
 }
@@ -74,17 +61,9 @@ static tgui_widget_class_t window_class = {
 	.size = sizeof(tgui_window_t),
 	.calculate_sizes = tgui_window_calculate_sizes,
 	.allocate_space  = tgui_window_allocate_space,
-	.render          = tgui_window_widget_render,
-	.remove_child = tgui_window_remove_child,
+	.remove_child = tgui_surface_remove_child,
 	.free = tgui_window_free,
 };
-
-static void tgui_window_reset_dirty(tgui_window_t *window) {
-	window->inval_start_x = LONG_MAX;
-	window->inval_start_y = LONG_MAX;
-	window->inval_end_x = 0;
-	window->inval_end_y = 0;
-}
 
 tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_widget_t *widget = tgui_widget_new(&window_class);
@@ -94,66 +73,36 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(window), TGUI_TRUE);
-	window->width  = width;
-	window->height = height;
-	window->scaling = 1;
+	window->surface.width  = width;
+	window->surface.height = height;
+	window->surface.scaling = 1;
 	window->title = strdup(title ? title : "tgui window");
 	window->title_bar = tgui_title_bar_new();
 	tgui_title_bar_set_title(window->title_bar, window->title);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window->title_bar), TGUI_TRUE);
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(window->title_bar), TGUI_WIDGET_CAST(window));
-	tgui_list_append(&windows, &window->node);
-
 	tgui_platform_create_window(window);
-	tgui_window_invalidate(window, 0, 0, width, height);
+	tgui_list_append(&windows, &window->node);
+	tgui_surface_register(&window->surface);
+
+	tgui_surface_invalidate(&window->surface, 0, 0, width, height);
 	return window;
 }
 
 void tgui_window_set_child(tgui_window_t *window, tgui_widget_t *child) {
-	// if we aready have a child destroy it
-	if (window->child) {
-		tgui_widget_destroy(window->child);
-	}
-	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(window));
-	window->child = child;
+	tgui_surface_set_child(&window->surface, child);
 }
 
 tgui_widget_t *tgui_window_get_child(tgui_window_t *window) {
-	return window->child;
+	return tgui_surface_get_child(&window->surface);
 }
 
 int tgui_window_resize(tgui_window_t *window, long width, long height) {
-	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
-	if (width < window->widget.min_width || width < window->widget.min_height) {
-		// won't do it
-		// too small
-		return -1;
-	}
-	window->width = width;
-	window->height = height;
-
-	// now widgets could get more or less space
-	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(window));
-	return 0;
+	return tgui_surface_resize(&window->surface, width, height);
 }
 
-static int tgui_window_is_dirty(tgui_window_t *window) {
-	return window->inval_start_x != LONG_MAX;
-}
-
-void tgui_window_render(tgui_window_t *window) {
-	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(window));
-	tgui_widget_allocate_space(TGUI_WIDGET_CAST(window), 0, 0, window->width / window->scaling, window->height / window->scaling);
-
-	if (tgui_window_is_dirty(window)) {
-		printf("got dirty rect from %ld %ld to %ld %ld\n", window->inval_start_x, window->inval_start_y, window->inval_end_x, window->inval_end_y);
-		tgui_platform_set_clip(window, window->inval_start_x, window->inval_start_y, 
-		(window->inval_end_x - window->inval_start_x) * window->scaling, 
-		(window->inval_end_y - window->inval_start_y) * window->scaling);
-		tgui_widget_render(TGUI_WIDGET_CAST(window));
-		tgui_platform_push_window(window);
-	}
-	tgui_window_reset_dirty(window);
+tgui_surface_t *tgui_window_get_surface(tgui_window_t *window) {
+	return &window->surface;
 }
 
 tgui_list_t *tgui_get_windows(void) {
@@ -161,40 +110,21 @@ tgui_list_t *tgui_get_windows(void) {
 }
 
 void tgui_window_set_scaling(tgui_window_t *window, long scaling) {
-	window->scaling = scaling;
-	tgui_widget_mark_dirty_space(tgui_window_get_child(window));
+	tgui_surface_set_scaling(&window->surface, scaling);
 }
 
 long tgui_window_get_scaling(tgui_window_t *window) {
-	return window->scaling;
+	return tgui_surface_get_scaling(&window->surface);
 }
 
 void tgui_window_set_focus(tgui_window_t *window, tgui_widget_t *widget) {
-	window->focus = widget;
+	tgui_surface_set_focus(&window->surface, widget);
 }
 
 tgui_widget_t *tgui_window_get_focus(tgui_window_t *window) {
-	return window->focus;
+	return tgui_surface_get_focus(&window->surface);
 }
 
 void tgui_window_set_title_bar(tgui_window_t *window, int enabled) {
 	tgui_widget_set_visible(TGUI_WIDGET_CAST(window->title_bar), enabled);
-}
-
-void tgui_window_invalidate(tgui_window_t *window, long x, long y, long width, long height) {
-	if (width == 0 || height == 0) return;
-	long end_x = x + width;
-	long end_y = y + height;
-	if (x < window->inval_start_x) {
-		window->inval_start_x = x;
-	}
-	if (y < window->inval_start_y) {
-		window->inval_start_y = y;
-	}
-	if (end_x > window->inval_end_x) {
-		window->inval_end_x = end_x;
-	}
-	if (end_y > window->inval_end_y) {
-		window->inval_end_y = end_y;
-	}
 }

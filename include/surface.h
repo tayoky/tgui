@@ -1,0 +1,49 @@
+#ifndef TGUI_SURFACE_H
+#define TGUI_SURFACE_H
+
+#include "widget.h"
+
+typedef struct tgui_surface {
+	tgui_widget_t widget;
+	tgui_list_node_t node;
+	void *private;
+	long scaling;
+	tgui_widget_t *focus;
+	tgui_widget_t *child;
+	long inval_start_x;
+	long inval_start_y; 
+	long inval_end_x;
+	long inval_end_y;
+	long width;
+	long height;
+	int mouse_pressed;
+} tgui_surface_t;
+
+#define TGUI_SURFACE_CAST(w) TGUI_CONTAINER_OF(w, tgui_surface_t, widget)
+
+tgui_surface_t *tgui_surface_new(long width, long height);
+void tgui_surface_set_child(tgui_surface_t *surface, tgui_widget_t *child);
+tgui_widget_t *tgui_surface_get_child(tgui_surface_t *surface);
+int tgui_surface_resize(tgui_surface_t *surface, long width, long height);
+void tgui_surface_render(tgui_surface_t *surface);
+tgui_list_t *tgui_get_surfaces(void);
+void tgui_surface_set_scaling(tgui_surface_t *surface, long scaling);
+long tgui_surface_get_scaling(tgui_surface_t *surface);
+void tgui_surface_set_focus(tgui_surface_t *surface, tgui_widget_t *widget);
+tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface);
+void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width, long height);
+void tgui_surface_register(tgui_surface_t *surface);
+void tgui_surface_unregister(tgui_surface_t *surface);
+void tgui_surface_remove_child(tgui_widget_t *widget, tgui_widget_t *child);
+
+static inline tgui_surface_t *tgui_widget_get_surface(tgui_widget_t *widget) {
+	while (widget) {
+		if (tgui_widget_is_class(widget, "surface") || tgui_widget_is_class(widget, "window")) {
+			return TGUI_SURFACE_CAST(widget);
+		}
+		widget = widget->parent;
+	}
+	return NULL;
+}
+
+#endif

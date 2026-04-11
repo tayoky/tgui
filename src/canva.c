@@ -41,6 +41,6 @@ void *tgui_canva_get_ctx(tgui_canva_t *canva) {
 }
 
 void tgui_canva_set_dirty(tgui_canva_t *canva, long x, long y, long width, long height) {
-    tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
-    tgui_window_invalidate(window, canva->widget.x + x, canva->widget.y + y, width, height);
+    tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(canva));
+    tgui_surface_invalidate(surface, canva->widget.x + x, canva->widget.y + y, width, height);
 }

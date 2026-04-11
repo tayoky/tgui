@@ -17,12 +17,12 @@ typedef struct stanix_window {
 	long clip_y;
 } stanix_window_t;
 
-static tgui_window_t *get_window(twm_window_t window_id) {
-	TGUI_LIST_FOREACH(node, tgui_get_windows()) {
-		tgui_window_t *window = TGUI_CONTAINER_OF(node, tgui_window_t, node);
-		stanix_window_t *stanix_window = window->private;
+static tgui_surface_t *get_surface(twm_window_t window_id) {
+	TGUI_LIST_FOREACH(node, tgui_get_surfaces()) {
+		tgui_surface_t *surface = TGUI_CONTAINER_OF(node, tgui_surface_t, node);
+		stanix_window_t *stanix_window = surface->private;
 		if (stanix_window->window == window_id) {
-			return window;
+			return surface;
 		}
 	}
 	return NULL;
@@ -46,16 +46,16 @@ void tgui_platform_fini(void) {
 	twm_fini();
 }
 
-void send_button_event(tgui_window_t *window, int button, twm_event_input_t *input_event) {
-	stanix_window_t *stanix_window = window->private;
+void send_button_event(tgui_surface_t *surface, int button, twm_event_input_t *input_event) {
+	stanix_window_t *stanix_window = surface->private;
 	if (input_event->key.flags & TWM_INPUT_PRESS) {
-		tgui_input_click(window, button, stanix_window->cursor_x, stanix_window->cursor_y);
+		tgui_input_click(surface, button, stanix_window->cursor_x, stanix_window->cursor_y);
 	} else {
-		tgui_input_unclick(window, button, stanix_window->cursor_x, stanix_window->cursor_y);
+		tgui_input_unclick(surface, button, stanix_window->cursor_x, stanix_window->cursor_y);
 	}
 }
 
-void send_key_event(tgui_window_t *window, twm_event_input_t *input_event) {
+void send_key_event(tgui_surface_t *surface, twm_event_input_t *input_event) {
 	long key;
 	switch (input_event->key.key) {
 	case INPUT_KEY_MOUSE_LEFT:
@@ -190,9 +190,9 @@ void send_key_event(tgui_window_t *window, twm_event_input_t *input_event) {
 	}
 
 	if (input_event->key.flags & TWM_INPUT_PRESS) {
-		tgui_input_key_press(window, input_event->key.scancode, key);
+		tgui_input_key_press(surface, input_event->key.scancode, key);
 	} else {
-		tgui_input_key_release(window, input_event->key.scancode, key);
+		tgui_input_key_release(surface, input_event->key.scancode, key);
 	}
 }
 
@@ -201,8 +201,8 @@ void tgui_platform_handle_event(void) {
 	switch (event->type) {
 	case TWM_EVENT_INPUT:;
 		twm_event_input_t *input_event = (twm_event_input_t *)event;
-		tgui_window_t *window = get_window(input_event->window);
-		stanix_window_t *stanix_window = window->private;
+		tgui_surface_t *surface = get_surface(input_event->window);
+		stanix_window_t *stanix_window = surface->private;
 		switch (input_event->type) {
 		case TWM_INPUT_MOVE:
 			stanix_window->cursor_x = input_event->move.abs_x;
@@ -211,16 +211,16 @@ void tgui_platform_handle_event(void) {
 		case TWM_INPUT_KEY:
 			switch (input_event->key.scancode) {
 			case INPUT_KEY_MOUSE_LEFT:
-				send_button_event(window, TGUI_BUTTON_LEFT, input_event);
+				send_button_event(surface, TGUI_BUTTON_LEFT, input_event);
 				break;
 			case INPUT_KEY_MOUSE_RIGHT:
-				send_button_event(window, TGUI_BUTTON_RIGHT, input_event);
+				send_button_event(surface, TGUI_BUTTON_RIGHT, input_event);
 				break;
 			case INPUT_KEY_MOUSE_MIDDLE:
-				send_button_event(window, TGUI_BUTTON_MIDDLE, input_event);
+				send_button_event(surface, TGUI_BUTTON_MIDDLE, input_event);
 				break;
 			default:
-				send_key_event(window, input_event);
+				send_key_event(surface, input_event);
 				break;
 			}
 		}
@@ -233,24 +233,40 @@ void tgui_platform_handle_event(void) {
 
 int tgui_platform_create_window(tgui_window_t *window) {
 	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
-	stanix_window->window = twm_create_window(window->title, window->width, window->height);
+	stanix_window->window = twm_create_window(window->title, window->surface.width, window->surface.height);
 	if (stanix_window->window < 0) {
 		free(stanix_window);
 		return -1;
 	}
 	stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
-	window->private = stanix_window;
+	window->surface.private = stanix_window;
 	return 0;
 }
 
 void tgui_platform_close_window(tgui_window_t *window) {
+	tgui_platform_close_surface(&window->surface);
+}
+
+int tgui_platform_create_surface(tgui_surface_t *surface) {
+	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
+	stanix_window->window = twm_create_window("surface", surface->width, surface->height);
+	if (stanix_window->window < 0) {
+		free(stanix_window);
+		return -1;
+	}
+	stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
+	surface->private = stanix_window;
+	return 0;
+}
+
+void tgui_platform_close_surface(tgui_surface_t *surface) {
 	stanix_window_t *stanix_window = window->private;
 	gfx_free(stanix_window->gfx);
 	twm_destroy_window(stanix_window->window);
 	free(stanix_window);
 }
 
-void tgui_platform_push_window(tgui_window_t *window) {
+void tgui_platform_push_surface(tgui_surface_t *surface) {
 	stanix_window_t *stanix_window = window->private;
 	long width  = window->inval_end_x - window->inval_start_x;
 	long height = window->inval_end_y - window->inval_start_y;
@@ -298,36 +314,36 @@ void tgui_platform_free_image(tgui_image_t *image) {
 	gfx_free_texture(image->private);
 }
 
-void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height) {
-	stanix_window_t *stanix_window = window->private;
+void tgui_platform_render_rect(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height) {
+	stanix_window_t *stanix_window = surface->private;
 	color_t stanix_color = (color_t)(uintptr_t)color->private;
 	gfx_draw_rect(stanix_window->clip, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height);
 }
 
-void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
-	stanix_window_t *stanix_window = window->private;
+void tgui_platform_render_rounded_rect(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
+	stanix_window_t *stanix_window = surface->private;
 	color_t stanix_color = (color_t)(uintptr_t)color->private;
 	gfx_draw_rounded_rect(stanix_window->clip, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height, corners, rounded_size);
 
 }
 
-void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rounded_size) {
+void tgui_platform_render_rounded_rect_outline(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rounded_size) {
 }
 
-void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
-	stanix_window_t *stanix_window = window->private;
+void tgui_platform_render_text(tgui_surface_t *surface, tgui_widget_t *widget, long x, long y, const char *text) {
+	stanix_window_t *stanix_window = surface->private;
 	color_t color = (color_t)(uintptr_t)tgui_widget_get_color(widget)->private;
 	gfx_draw_string(stanix_window->clip, tgui_widget_get_font(widget)->private, color, x - stanix_window->clip_x, y - stanix_window->clip_y, text);
 }
 
 
-void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
-	stanix_window_t *stanix_window = window->private;
+void tgui_platform_render_image(tgui_surface_t *surface, long x, long y, tgui_image_t *image) {
+	stanix_window_t *stanix_window = surface->private;
 	gfx_draw_texture_alpha(stanix_window->clip, image->private, x - stanix_window->clip_x, y - stanix_window->clip_y);
 }
 
-void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
-	stanix_window_t *stanix_window = window->private;
+void tgui_platform_set_clip(tgui_surface_t *surface, long x, long y, long width, long height) {
+	stanix_window_t *stanix_window = surface->private;
 	stanix_window->clip_x = x;
 	stanix_window->clip_y = y;
 	gfx_free(stanix_window->clip);

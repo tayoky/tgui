@@ -14,8 +14,8 @@ static void tgui_icon_calculate_sizes(tgui_widget_t *widget) {
 static void tgui_icon_render(tgui_widget_t *widget) {
 	tgui_icon_t *icon = TGUI_ICON_CAST(widget);
 	if (!icon->image) return;
-	tgui_window_t *window = tgui_widget_get_window(widget);
-	tgui_platform_render_image(window, widget->x, widget->y, icon->image);
+	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+	tgui_platform_render_image(surface, widget->x, widget->y, icon->image);
 }
 
 static tgui_widget_class_t icon_class = {

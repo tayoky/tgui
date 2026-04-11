@@ -24,9 +24,9 @@ void tgui_quit(void) {
 }
 
 void tgui_render(void) {
-	TGUI_LIST_FOREACH(node, tgui_get_windows()) {
-		tgui_window_t *window = TGUI_CONTAINER_OF(node, tgui_window_t, node);
-		tgui_window_render(window);
+	TGUI_LIST_FOREACH(node, tgui_get_surfaces()) {
+		tgui_surface_t *surface = TGUI_CONTAINER_OF(node, tgui_surface_t, node);
+		tgui_surface_render(surface);
 	}
 }
 

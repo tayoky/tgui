@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <window.h>
+#include <surface.h>
 #include <widget.h>
 #include <render.h>
 #include <stdio.h>
@@ -30,9 +30,9 @@ tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 void tgui_widget_destroy(tgui_widget_t *widget) {
 	if (!widget) return;
 	// make sure to unfocus
-	tgui_window_t *window = tgui_widget_get_window(widget);
-	if (tgui_window_get_focus(window) == widget) {
-		tgui_window_set_focus(window, NULL);
+	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+	if (tgui_surface_get_focus(surface) == widget) {
+		tgui_surface_set_focus(surface, NULL);
 	}
 
 	// send event first
@@ -206,15 +206,15 @@ void tgui_widget_set_id(tgui_widget_t *widget, const char *id) {
 }
 
 void tgui_widget_mark_dirty(tgui_widget_t *widget) {
-	tgui_window_invalidate(tgui_widget_get_window(widget), widget->x, widget->y, widget->width, widget->height);
+	tgui_surface_invalidate(tgui_widget_get_surface(widget), widget->x, widget->y, widget->width, widget->height);
 }
 
 static int tgui_widget_is_dirty(tgui_widget_t *widget) {
-	tgui_window_t *window = tgui_widget_get_window(widget);
-	if (widget->x >= window->inval_end_x) return 0;
-	if (widget->y >= window->inval_end_y) return 0;
-	if (widget->x + widget->width <= window->inval_start_x) return 0;
-	if (widget->y + widget->height <= window->inval_start_y) return 0;
+	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+	if (widget->x >= surface->inval_end_x) return 0;
+	if (widget->y >= surface->inval_end_y) return 0;
+	if (widget->x + widget->width <= surface->inval_start_x) return 0;
+	if (widget->y + widget->height <= surface->inval_start_y) return 0;
 	return 1;
 }
 

@@ -31,12 +31,12 @@ static int screen;
 
 #define COLOR2XFT(color) (XftColor*)(color->private)
 
-static tgui_window_t *get_window(Window window_id) {
-	TGUI_LIST_FOREACH(node, tgui_get_windows()) {
-		tgui_window_t *window = TGUI_CONTAINER_OF(node, tgui_window_t, node);
-		x11_window_t *x11_window = window->private;
+static tgui_surface_t *get_surface(Window window_id) {
+	TGUI_LIST_FOREACH(node, tgui_get_surfaces()) {
+		tgui_surface_t *surface = TGUI_CONTAINER_OF(node, tgui_surface_t, node);
+		x11_window_t *x11_window = surface->private;
 		if (x11_window->window == window_id) {
-			return window;
+			return surface;
 		}
 	}
 	return NULL;
@@ -102,47 +102,55 @@ void tgui_platform_handle_event(void) {
 	switch (event.type) {
 	case Expose:
 		if (event.xexpose.count == 0) {
-			tgui_window_t *window = get_window(event.xexpose.window);
-			tgui_platform_push_window(window);
+			tgui_surface_t *surface = get_surface(event.xexpose.window);
+			tgui_platform_push_surface(surface);
 		}
 		break;
 	case ButtonPress:;
-		tgui_window_t *window = get_window(event.xbutton.window);
-		tgui_input_click(window, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
+		tgui_surface_t *surface = get_surface(event.xbutton.window);
+		tgui_input_click(surface, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
 		break;
 	case ButtonRelease:;
-		window = get_window(event.xbutton.window);
-		tgui_input_unclick(window, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
+		surface = get_surface(event.xbutton.window);
+		tgui_input_unclick(surface, x11_button2tgui(event.xbutton.button), event.xbutton.x, event.xbutton.y);
 		break;
 	case MotionNotify:
-		window = get_window(event.xmotion.window);
-		tgui_input_move(window, event.xmotion.x, event.xmotion.y);
+		surface = get_surface(event.xmotion.window);
+		tgui_input_move(surface, event.xmotion.x, event.xmotion.y);
 		break;
 	case KeyPress:
-		window = get_window(event.xkey.window);
-		tgui_input_key_press(window, 0, x11_sym2tgui(XLookupKeysym(&event.xkey, 0)));
+		surface = get_surface(event.xkey.window);
+		tgui_input_key_press(surface, 0, x11_sym2tgui(XLookupKeysym(&event.xkey, 0)));
 		break;
 	}	
 }
 
 int tgui_platform_create_window(tgui_window_t *window) {
+	return tgui_platform_create_surface(&window->surface);
+}
+
+void tgui_platform_close_window(tgui_window_t *window) {
+	tgui_platform_close_surface(&window->surface);
+}
+
+int tgui_platform_create_surface(tgui_surface_t *surface) {
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
-	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, window->width, window->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
+	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, surface->width, surface->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
 	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | KeyReleaseMask);
 
 	// setup pixmap and GC
 	XGCValues values;
 	x11_window->gc = XCreateGC(display, x11_window->window, 0, &values);
-	x11_window->pixmap = XCreatePixmap(display, x11_window->window, window->width, window->height, DefaultDepth(display, screen));
+	x11_window->pixmap = XCreatePixmap(display, x11_window->window, surface->width, surface->height, DefaultDepth(display, screen));
 	x11_window->draw = XftDrawCreate(display, x11_window->pixmap, visual, colormap);
 	XMapWindow(display, x11_window->window);
 	XFlush(display);
-	window->private = x11_window;
+	surface->private = x11_window;
 	return 0;
-	
 }
-void tgui_platform_close_window(tgui_window_t *window) {
-	x11_window_t *x11_window = window->private;
+
+void tgui_platform_close_surface(tgui_surface_t *surface) {
+	x11_window_t *x11_window = surface->private;
 	XUnmapWindow(display, x11_window->window);
 	XftDrawDestroy(x11_window->draw);
 	XFreeGC(display, x11_window->gc);
@@ -151,9 +159,9 @@ void tgui_platform_close_window(tgui_window_t *window) {
 	free(x11_window);
 }
 
-void tgui_platform_push_window(tgui_window_t *window) {
-	x11_window_t *x11_window = window->private;
-	XCopyArea(display, x11_window->pixmap, x11_window->window, x11_window->gc, 0, 0, window->widget.width, window->widget.height, 0, 0);
+void tgui_platform_push_surface(tgui_surface_t *surface) {
+	x11_window_t *x11_window = surface->private;
+	XCopyArea(display, x11_window->pixmap, x11_window->window, x11_window->gc, 0, 0, surface->width, surface->height, 0, 0);
 }
 
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -225,9 +233,9 @@ void tgui_platform_free_image(tgui_image_t *image) {
 	stbi_image_free(image->private);
 }
 
-void tgui_platform_render_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height) {
+void tgui_platform_render_rect(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height) {
 	printf("render rect %ld %ld %ld %ld\n", x, y, width, height);
-	x11_window_t *x11_window = window->private;
+	x11_window_t *x11_window = surface->private;
 	XftColor *xft_color = COLOR2XFT(color);
 	XftDrawRect(x11_window->draw, xft_color, x, y, width, height);
 }
@@ -281,8 +289,8 @@ static void render_corner(Picture gradient, x11_window_t *window, unsigned int r
 	}
 }
 
-void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rayon) {
-	x11_window_t *x11_window = window->private;
+void tgui_platform_render_rounded_rect(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rayon) {
+	x11_window_t *x11_window = surface->private;
 	XftColor *xft_color = COLOR2XFT(color);
 	XftDrawRect(x11_window->draw, xft_color, x, y + rayon, width, height - 2 * rayon);
 	XftDrawRect(x11_window->draw, xft_color, x + rayon, y, width - 2 * rayon, height);
@@ -298,8 +306,8 @@ void tgui_platform_render_rounded_rect(tgui_window_t *window, tgui_color_t *colo
 	XRenderFreePicture(display, gradient);
 }
 
-void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rayon) {
-	x11_window_t *x11_window = window->private;
+void tgui_platform_render_rounded_rect_outline(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height, unsigned int border_size, unsigned int rayon) {
+	x11_window_t *x11_window = surface->private;
 	XftColor *xft_color = COLOR2XFT(color);
 	XftDrawRect(x11_window->draw, xft_color, x + rayon, y, width - 2 * rayon, border_size);
 	XftDrawRect(x11_window->draw, xft_color, x + rayon, y + height - border_size, width - 2 * rayon, border_size);
@@ -317,23 +325,23 @@ void tgui_platform_render_rounded_rect_outline(tgui_window_t *window, tgui_color
 	XRenderFreePicture(display, gradient);
 }
 
-void tgui_platform_render_text(tgui_window_t *window, tgui_widget_t *widget, long x, long y, const char *text) {
+void tgui_platform_render_text(tgui_surface_t *surface, tgui_widget_t *widget, long x, long y, const char *text) {
 	printf("render text %ld %ld %s\n", x, y, text);
 	tgui_font_t *font = tgui_widget_get_font(widget);
 	tgui_sized_font_t *sized_font = tgui_font_get_sized(font, tgui_widget_get_font_size(widget));
 	XftFont *xft_font = sized_font->private;
 	tgui_color_t *color = tgui_widget_get_color(widget);
-	x11_window_t *x11_window = window->private;
+	x11_window_t *x11_window = surface->private;
 
 	XftDrawStringUtf8(x11_window->draw, color->private, xft_font, x, y + xft_font->ascent, (const FcChar8*)text, strlen(text));
 }
 
-void tgui_platform_render_image(tgui_window_t *window, long x, long y, tgui_image_t *image) {
-	x11_window_t *x11_window = window->private;
+void tgui_platform_render_image(tgui_surface_t *surface, long x, long y, tgui_image_t *image) {
+	x11_window_t *x11_window = surface->private;
 }
 
-void tgui_platform_set_clip(tgui_window_t *window, long x, long y, long width, long height) {
-	x11_window_t *x11_window = window->private;
+void tgui_platform_set_clip(tgui_surface_t *surface, long x, long y, long width, long height) {
+	x11_window_t *x11_window = surface->private;
 	XRectangle rect = {
 		.x = x,
 		.y = y,
