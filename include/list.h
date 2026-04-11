@@ -1,6 +1,8 @@
 #ifndef TGUI_LIST_H
 #define TGUI_LIST_H
 
+#include <stddef.h>
+
 typedef struct tgui_list_node {
 	struct tgui_list_node *prev;
 	struct tgui_list_node *next;
