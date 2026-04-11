@@ -247,7 +247,7 @@ void tgui_platform_close_window(tgui_window_t *window) {
 	tgui_platform_close_surface(&window->surface);
 }
 
-int tgui_platform_create_surface(tgui_surface_t *surface) {
+int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent) {
 	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
 	stanix_window->window = twm_create_window("surface", surface->width, surface->height);
 	if (stanix_window->window < 0) {
@@ -275,6 +275,9 @@ void tgui_platform_push_surface(tgui_surface_t *surface) {
 }
 
 void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible) {
+}
+
+void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y) {
 }
 
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {

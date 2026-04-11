@@ -22,7 +22,7 @@ typedef struct tgui_surface {
 
 #define TGUI_SURFACE_CAST(w) TGUI_CONTAINER_OF(w, tgui_surface_t, widget)
 
-tgui_surface_t *tgui_surface_new(long width, long height);
+tgui_surface_t *tgui_surface_new(long width, long height, tgui_surface_t *parent);
 void tgui_surface_set_child(tgui_surface_t *surface, tgui_widget_t *child);
 tgui_widget_t *tgui_surface_get_child(tgui_surface_t *surface);
 int tgui_surface_resize(tgui_surface_t *surface, long width, long height);
@@ -30,6 +30,7 @@ void tgui_surface_render(tgui_surface_t *surface);
 tgui_list_t *tgui_get_surfaces(void);
 void tgui_surface_set_scaling(tgui_surface_t *surface, long scaling);
 long tgui_surface_get_scaling(tgui_surface_t *surface);
+void tgui_surface_set_position(tgui_surface_t *surface, long x, long y);
 void tgui_surface_set_focus(tgui_surface_t *surface, tgui_widget_t *widget);
 tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface);
 void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width, long height);

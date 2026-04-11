@@ -36,7 +36,7 @@ static void tgui_surface_reset_dirty(tgui_surface_t *surface) {
 	surface->inval_end_y = 0;
 }
 
-tgui_surface_t *tgui_surface_new(long width, long height) {
+tgui_surface_t *tgui_surface_new(long width, long height, tgui_surface_t *parent) {
 	tgui_widget_t *widget = tgui_widget_new(&surface_class);
 	if (!widget) return NULL;
 
@@ -48,7 +48,7 @@ tgui_surface_t *tgui_surface_new(long width, long height) {
 	surface->height = height;
 	surface->scaling = 1;
 
-	tgui_platform_create_surface(surface);
+	tgui_platform_create_surface(surface, parent);
 	tgui_surface_register(surface);
 	tgui_surface_invalidate(surface, 0, 0, width, height);
 	return surface;
@@ -122,6 +122,10 @@ void tgui_surface_set_scaling(tgui_surface_t *surface, long scaling) {
 
 long tgui_surface_get_scaling(tgui_surface_t *surface) {
 	return surface->scaling;
+}
+
+void tgui_surface_set_position(tgui_surface_t *surface, long x, long y) {
+	tgui_platform_set_surface_position(surface, x, y);
 }
 
 void tgui_surface_set_focus(tgui_surface_t *surface, tgui_widget_t *widget) {

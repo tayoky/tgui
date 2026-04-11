@@ -126,16 +126,23 @@ void tgui_platform_handle_event(void) {
 }
 
 int tgui_platform_create_window(tgui_window_t *window) {
-	return tgui_platform_create_surface(&window->surface);
+	return tgui_platform_create_surface(&window->surface, NULL);
 }
 
 void tgui_platform_close_window(tgui_window_t *window) {
 	tgui_platform_close_surface(&window->surface);
 }
 
-int tgui_platform_create_surface(tgui_surface_t *surface) {
+int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent) {
+	Window x11_parent;
+	if (parent) {
+		x11_window_t *x11_window = parent->private;
+		x11_parent = x11_window->window;
+	} else {
+		x11_parent = RootWindow(display, screen);
+	}
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
-	x11_window->window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, surface->width, surface->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
+	x11_window->window = XCreateSimpleWindow(display, x11_parent, 0, 0, surface->width, surface->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
 	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | KeyReleaseMask);
 
 	// setup pixmap and GC
@@ -171,6 +178,11 @@ void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible) {
 	} else {
 		XUnmapWindow(display, x11_window->window);
 	}
+}
+
+void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y) {
+	x11_window_t *x11_window = surface->private;
+	XMoveWindow(display, x11_window->window, x, y);
 }
 
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {

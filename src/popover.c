@@ -34,7 +34,9 @@ void tgui_popover_set_child(tgui_popover_t *popover, tgui_widget_t *child) {
 void tgui_popover_set_position(tgui_popover_t *popover, long x, long y) {
 	popover->x = x;
 	popover->y = y;
-	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(popover));
+	if (popover->surface) {
+		tgui_surface_set_position(popover->surface, x, y);
+	}
 }
 
 tgui_widget_t *tgui_popover_get_child(tgui_popover_t *popover) {
@@ -47,6 +49,7 @@ void tgui_popover_popdown(tgui_popover_t *popover) {
 }
 
 void tgui_popover_popup(tgui_popover_t *popover) {
+	tgui_surface_t *parent = tgui_widget_get_surface(TGUI_WIDGET_CAST(popover));
 	popover->popped = 1;
 	if (popover->surface) {
 		tgui_widget_show(TGUI_WIDGET_CAST(popover->surface));
@@ -54,6 +57,7 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 	}
 
 	tgui_widget_calculate_sizes(popover->child);
-	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height);
+	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height, parent);
+	tgui_surface_set_position(popover->surface, popover->x, popover->y);
 	tgui_surface_set_child(popover->surface, popover->child);
 }
