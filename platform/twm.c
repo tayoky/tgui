@@ -248,6 +248,7 @@ void tgui_platform_close_window(tgui_window_t *window) {
 }
 
 int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent) {
+	(void)parent;
 	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
 	stanix_window->window = twm_create_window("surface", surface->width, surface->height);
 	if (stanix_window->window < 0) {
@@ -260,21 +261,27 @@ int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent
 }
 
 void tgui_platform_close_surface(tgui_surface_t *surface) {
-	stanix_window_t *stanix_window = window->private;
+	stanix_window_t *stanix_window = surface->private;
 	gfx_free(stanix_window->gfx);
 	twm_destroy_window(stanix_window->window);
 	free(stanix_window);
 }
 
 void tgui_platform_push_surface(tgui_surface_t *surface) {
-	stanix_window_t *stanix_window = window->private;
-	long width  = window->inval_end_x - window->inval_start_x;
-	long height = window->inval_end_y - window->inval_start_y;
-	gfx_push_rect(stanix_window->gfx, window->inval_start_x, window->inval_start_y, width, height);
-	twm_redraw_window(stanix_window->window, window->inval_start_x, window->inval_start_y, width, height);
+	stanix_window_t *stanix_window = surface->private;
+	long width  = surface->inval_end_x - surface->inval_start_x;
+	long height = surface->inval_end_y - surface->inval_start_y;
+	gfx_push_rect(stanix_window->gfx, surface->inval_start_x, surface->inval_start_y, width, height);
+	twm_redraw_window(stanix_window->window, surface->inval_start_x, surface->inval_start_y, width, height);
 }
 
 void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible) {
+	stanix_window_t *stanix_window = surface->private;
+	if (visible) {
+		twm_set_window_attr(stanix_window->window, TWM_ADD_ATTR, TWM_ATTR_SHOW);
+	} else {
+		twm_set_window_attr(stanix_window->window, TWM_REMOVE_ATTR, TWM_ATTR_SHOW);
+	}
 }
 
 void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y) {
@@ -357,14 +364,14 @@ void tgui_platform_set_clip(tgui_surface_t *surface, long x, long y, long width,
 }
 
 void tgui_platform_start_dragging(tgui_window_t *window, long mouse_x, long mouse_y) {
-	stanix_window_t *stanix_window = window->private;
+	stanix_window_t *stanix_window = window->surface.private;
 	twm_start_dragging(stanix_window->window, -mouse_x, -mouse_y);
 }
 
 void tgui_platform_canva_create(tgui_canva_t *canva) {
-	tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
-	if (!window) return;
-	stanix_window_t *stanix_window = window->private;
+	tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(canva));
+	if (!surface) return;
+	stanix_window_t *stanix_window = surface->private;
 	canva->private = gfx_create_buffer(stanix_window->gfx, canva->widget.width, canva->widget.height);
 }
 
@@ -373,8 +380,8 @@ void tgui_platform_canva_destroy(tgui_canva_t *canva) {
 }
 
 void tgui_platform_push_canva(tgui_canva_t *canva) {
-	tgui_window_t *window = tgui_widget_get_window(TGUI_WIDGET_CAST(canva));
-	stanix_window_t *stanix_window = window->private;
+	tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(canva));
+	stanix_window_t *stanix_window = surface->private;
 	gfx_draw_buffer(stanix_window->clip, canva->widget.x - stanix_window->clip_x, canva->widget.y - stanix_window->clip_y, canva->private);
 }
 
