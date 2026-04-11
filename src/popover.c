@@ -1,4 +1,5 @@
 #include <popover.h>
+#include <surface.h>
 
 static void tgui_popover_allocate_space(tgui_widget_t *widget) {
 

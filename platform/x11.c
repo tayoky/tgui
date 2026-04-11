@@ -164,6 +164,15 @@ void tgui_platform_push_surface(tgui_surface_t *surface) {
 	XCopyArea(display, x11_window->pixmap, x11_window->window, x11_window->gc, 0, 0, surface->width, surface->height, 0, 0);
 }
 
+void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible) {
+	x11_window_t *x11_window = surface->private;
+	if (visible) {
+		XMapWindow(display, x11_window->window);
+	} else {
+		XUnmapWindow(display, x11_window->window);
+	}
+}
+
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	XRenderColor x11_color = {
 		.red    = r * 257,

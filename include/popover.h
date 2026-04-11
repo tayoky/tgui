@@ -2,10 +2,12 @@
 #define TGUI_POPOVER_H
 
 #include "widget.h"
+#include "surface.h"
 
 typedef struct tgui_popover {
 	tgui_widget_t widget;
 	tgui_widget_t *child;
+	tgui_surface_t *surface;
 	long x;
 	long y;
 	int popped;

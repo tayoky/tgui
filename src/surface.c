@@ -87,6 +87,16 @@ static int tgui_surface_is_dirty(tgui_surface_t *surface) {
 }
 
 void tgui_surface_render(tgui_surface_t *surface) {
+	// update show/hide
+	if ((surface->widget.flags & TGUI_WIDGET_HIDDEN) != (surface->old_flags & TGUI_WIDGET_HIDDEN)) {
+		tgui_platform_set_surface_visible(surface, !tgui_widget_is_hidden(TGUI_WIDGET_CAST(surface)));
+	}
+	surface->old_flags = surface->widget.flags;
+
+	if (tgui_widget_is_hidden(TGUI_WIDGET_CAST(surface))) {
+		return;
+	}
+
 	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(surface));
 	tgui_widget_allocate_space(TGUI_WIDGET_CAST(surface), 0, 0, surface->width / surface->scaling, surface->height / surface->scaling);
 

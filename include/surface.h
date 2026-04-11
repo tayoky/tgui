@@ -16,6 +16,7 @@ typedef struct tgui_surface {
 	long inval_end_y;
 	long width;
 	long height;
+	long old_flags;
 	int mouse_pressed;
 } tgui_surface_t;
 
