@@ -19,6 +19,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_color(window_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_color(window_style, color);
 	tgui_style_set_default(window_style, "window");
+	tgui_style_set_default(window_style, "surface");
 
 	// box
 	tgui_style_t *box_style = tgui_style_new();
