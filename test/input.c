@@ -46,6 +46,11 @@ tgui_widget_t *input_tab() {
 	tgui_slider_t *slider = tgui_slider_new(TGUI_ORIENTATION_HORIZONTAL);
 	tgui_slider_set_value(slider, 0.3f);
 	add_element(box, TGUI_WIDGET_CAST(slider));
+
+	tgui_scrollbar_t *scrollbar = tgui_scrollbar_new(TGUI_ORIENTATION_HORIZONTAL);
+	tgui_scrollbar_set_total_size(scrollbar, 600);
+	tgui_scrollbar_set_view_size(scrollbar, 100);
+	add_element(box, TGUI_WIDGET_CAST(scrollbar));
 	return TGUI_WIDGET_CAST(box);
 }
 

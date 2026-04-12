@@ -14,6 +14,7 @@
 #include "text.h"
 #include "paned.h"
 #include "slider.h"
+#include "scrollbar.h"
 #include "titlebar.h"
 #include "stack.h"
 #include "stackswitcher.h"
