@@ -13,10 +13,11 @@ static void tgui_label_free(tgui_widget_t *widget) {
 static void tgui_label_calculate_sizes(tgui_widget_t *widget) {
 	tgui_label_t *label = TGUI_LABEL_CAST(widget);
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+	long scaling = tgui_surface_get_scaling(surface);
 	int real_width = tgui_platform_text_width(widget, label->text);
 	int real_height = tgui_platform_text_height(widget, label->text);
-	int width  = (real_width + surface->scaling - 1) / surface->scaling;
-	int height = (real_height + surface->scaling - 1) / surface->scaling;
+	int width  = (real_width + scaling - 1) / scaling;
+	int height = (real_height + scaling - 1) / scaling;
 	label->widget.min_width = width;
 	label->widget.min_height = height;
 	label->widget.pref_width = width;

@@ -121,6 +121,7 @@ void tgui_surface_set_scaling(tgui_surface_t *surface, long scaling) {
 }
 
 long tgui_surface_get_scaling(tgui_surface_t *surface) {
+	if (!surface) return 1;
 	return surface->scaling;
 }
 

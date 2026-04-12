@@ -81,6 +81,20 @@ tgui_widget_t *list_tab() {
 	return TGUI_WIDGET_CAST(box);
 }
 
+tgui_widget_t *menu_tab() {
+	tgui_box_t *box = tgui_box_new();
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
+	tgui_widget_set_orientation(TGUI_WIDGET_CAST(box), TGUI_ORIENTATION_HORIZONTAL);
+
+	tgui_popover_t *popover = tgui_popover_new();
+	tgui_popover_set_child(popover, TGUI_WIDGET_CAST(tgui_label_new("this is a popover")));
+	add_element(box, TGUI_WIDGET_CAST(tgui_submenu_button_new(popover, "popover")));
+
+
+	return TGUI_WIDGET_CAST(box);
+}
+
 int main() {
 	if (tgui_init() < 0) {
 		puts("fail to init twm");
@@ -108,6 +122,7 @@ int main() {
 	tgui_stack_add_child(stack, input_tab(), "inputs");
 	tgui_stack_add_child(stack, align_tab(), "aligns");
 	tgui_stack_add_child(stack, list_tab(), "lists");
+	tgui_stack_add_child(stack, menu_tab(), "menus");
 	tgui_stack_switcher_update(tabs);
 	tgui_main();
 	tgui_fini();
