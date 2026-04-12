@@ -21,6 +21,7 @@
 #include "canva.h"
 #include "expander.h"
 #include "separator.h"
+#include "listview.h"
 #include "font.h"
 #include "color.h"
 #include "inputs.h"

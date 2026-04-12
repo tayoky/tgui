@@ -4,7 +4,7 @@
 #include "list.h"
 
 typedef struct tgui_string_item {
-	tgui_list_node_t *node;
+	tgui_list_node_t node;
 	char *str;
 } tgui_string_item_t;
 

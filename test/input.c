@@ -66,6 +66,21 @@ tgui_widget_t *align_tab() {
 	return TGUI_WIDGET_CAST(box);
 }
 
+tgui_widget_t *list_tab() {
+	tgui_box_t *box = tgui_box_new();
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
+	static tgui_list_t list;
+	tgui_list_append(&list, &tgui_string_item_new("item1")->node);
+	tgui_list_append(&list, &tgui_string_item_new("item2")->node);
+	tgui_list_append(&list, &tgui_string_item_new("item3")->node);
+
+	tgui_list_view_t *list_view = tgui_list_view_new(tgui_string_factory(), &list);
+	add_element(box, TGUI_WIDGET_CAST(list_view));
+
+	return TGUI_WIDGET_CAST(box);
+}
+
 int main() {
 	if (tgui_init() < 0) {
 		puts("fail to init twm");
@@ -92,6 +107,7 @@ int main() {
 
 	tgui_stack_add_child(stack, input_tab(), "inputs");
 	tgui_stack_add_child(stack, align_tab(), "aligns");
+	tgui_stack_add_child(stack, list_tab(), "lists");
 	tgui_stack_switcher_update(tabs);
 	tgui_main();
 	tgui_fini();
