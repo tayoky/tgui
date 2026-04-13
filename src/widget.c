@@ -16,10 +16,6 @@ typedef struct tgui_style_default {
 static tgui_list_t default_styles;
 static tgui_list_t default_state_styles[TGUI_STATE_COUNT];
 
-static void tgui_widget_mark_dirty_style(tgui_widget_t *widget) {
-		widget->flags |= TGUI_WIDGET_DIRTY_STYLE;
-}
-
 tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 	if (class->new) {
 		return class->new();
@@ -333,14 +329,12 @@ static void add_style(tgui_list_t *list, tgui_style_t *style) {
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style) {
 	if (!style) return;
 	add_style(&widget->state_styles[(int)state], style);
-	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_style(widget);
 }
 
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style) {
 	if (!style) return;
 	add_style(&widget->styles, style);
-	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_style(widget);
 }
 
@@ -370,6 +364,10 @@ void tgui_widget_remove_style(tgui_widget_t *widget, tgui_style_t *style) {
 	tgui_widget_mark_dirty_style(widget);
 }
 
+tgui_list_t *tgui_widget_get_state_styles(tgui_widget_t *widget, char state) {
+	return &widget->state_styles[(int)state];
+}
+
 tgui_list_t *tgui_widget_get_styles(tgui_widget_t *widget) {
 	return &widget->styles;
 }
@@ -378,42 +376,52 @@ tgui_list_t *tgui_widget_get_styles(tgui_widget_t *widget) {
 	dest_style->ptr = style->ptr;\
 }
 
+static void tgui_widget_apply_style(tgui_style_t *style, tgui_style_t *dest_style) {
+	CHECK_PTR(color);
+	CHECK_PTR(background_color);
+	CHECK_PTR(font);
+	if (style->flags & TGUI_STYLE_FONT_SIZE) {
+		dest_style->font_size = style->font_size;
+	}
+	if (style->flags & TGUI_STYLE_ROUNDED_SIZE) {
+		dest_style->rounded_size = style->rounded_size;
+	}
+	if (style->flags & TGUI_STYLE_ROUNDED_CORNERS) {
+		dest_style->rounded_corners = style->rounded_corners;
+	}
+	for (int i=0; i<4; i++) {
+		CHECK_PTR(border_color[i]);
+		if (style->border_style[i] != TGUI_BORDER_UNDEFINED) {
+			dest_style->border_style[i] = style->border_style[i];
+		}
+		if (style->border_width_flags & (1 << i)) {
+			dest_style->border_width[i] = style->border_width[i];
+		}
+		for (int i=0; i<4; i++) {
+			if (style->padding_flags & (1 << i)) {
+				dest_style->padding[i] = style->padding[i];
+			}
+		}
+	}
+}
+
 static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_style_t *dest_style) {
 	if (widget->parent) {
 		tgui_widget_get_current_style_recur(widget->parent, dest_style);
 	}
 
-	// apply all styles
+	// apply base styles
 	TGUI_LIST_FOREACH(node, tgui_widget_get_styles(widget)) {
 		tgui_style_t *style = TGUI_STYLE_FROM_NODE(node);
-		CHECK_PTR(color);
-		CHECK_PTR(background_color);
-		CHECK_PTR(font);
-		if (style->flags & TGUI_STYLE_FONT_SIZE) {
-			dest_style->font_size = style->font_size;
-		}
-		if (style->flags & TGUI_STYLE_ROUNDED_SIZE) {
-			dest_style->rounded_size = style->rounded_size;
-		}
-		if (style->flags & TGUI_STYLE_ROUNDED_CORNERS) {
-			dest_style->rounded_corners = style->rounded_corners;
-		}
-		for (int i=0; i<4; i++) {
-			CHECK_PTR(border_color[i]);
-			if (style->border_style[i] != TGUI_BORDER_UNDEFINED) {
-				dest_style->border_style[i] = style->border_style[i];
-			}
-			if (style->border_width_flags & (1 << i)) {
-				dest_style->border_width[i] = style->border_width[i];
-			}
-			for (int i=0; i<4; i++) {
-				if (style->padding_flags & (1 << i)) {
-					dest_style->padding[i] = style->padding[i];
-				}
-			}
-		}
+		tgui_widget_apply_style(style, dest_style);
 	}
-	// TODO : apply state flags
+
+	// apply state styles
+	TGUI_LIST_FOREACH(node, tgui_widget_get_state_styles(widget, widget->state)) {
+		tgui_style_t *style = TGUI_STYLE_FROM_NODE(node);
+		puts("apply a style");
+		tgui_widget_apply_style(style, dest_style);
+	}
 }
 
 tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {

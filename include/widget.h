@@ -124,6 +124,17 @@ static inline int tgui_widget_is_dirty_space(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_DIRTY_SPACE;
 }
 
+static inline void tgui_widget_mark_dirty_style(tgui_widget_t *widget) {
+	if (!widget) return;
+	widget->flags |= TGUI_WIDGET_DIRTY_STYLE;
+	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_size(widget->parent);
+}
+
+static inline int tgui_widget_is_dirty_style(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_DIRTY_STYLE;
+}
+
 static inline void tgui_widget_hide(tgui_widget_t *widget) {
 	if (!widget) return;
 	widget->flags |= TGUI_WIDGET_HIDDEN;
@@ -177,6 +188,7 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 	if (widget->state == state) return;
 	if (widget->state_styles[(int)widget->state].first || widget->state_styles[(int)state].first) {
 		tgui_widget_mark_dirty(widget);
+		tgui_widget_mark_dirty_style(widget);
 	}
 	widget->state = state;
 }
@@ -210,6 +222,7 @@ void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style);
 void tgui_widget_remove_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
 void tgui_widget_remove_style(tgui_widget_t *widget, tgui_style_t *style);
+tgui_list_t *tgui_widget_get_state_styles(tgui_widget_t *widget, char state);
 tgui_list_t *tgui_widget_get_styles(tgui_widget_t *widget);
 tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget);
 

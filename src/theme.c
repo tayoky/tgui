@@ -7,6 +7,8 @@ int tgui_theme_load(void) {
 	tgui_color_t *bg = tgui_color_new_rgb(200, 200, 200);
 	tgui_color_t *color = tgui_color_new_rgb(0, 0, 0);
 	tgui_color_t *button_color = tgui_color_new_rgb(150, 150, 150);
+	tgui_color_t *button_clicked_color = tgui_color_new_rgb(120, 120, 120);
+	tgui_color_t *button_hover_color = tgui_color_new_rgb(170, 170, 170);
 	tgui_color_t *border_color = tgui_color_new_rgb(100, 100, 100);
 	tgui_color_t *accent = tgui_color_new_rgb(0, 150, 0);
 	unsigned int border_width = 2;
@@ -36,6 +38,14 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_color(button_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_padding(button_style, TGUI_SIDE_ALL, padding);
 	tgui_widget_set_default_style(button_style, "button");
+
+	tgui_style_t *button_clicked_style = tgui_style_new();
+	tgui_style_set_background_color(button_clicked_style, button_clicked_color);
+	tgui_widget_set_default_state_style(button_clicked_style, "button", TGUI_STATE_PRESSED);
+
+	tgui_style_t *button_hover_style = tgui_style_new();
+	tgui_style_set_background_color(button_hover_style, button_hover_color);
+	tgui_widget_set_default_state_style(button_hover_style, "button", TGUI_STATE_HOVER);
 
 	// labels
 	tgui_style_t *label_style = tgui_style_new();
