@@ -405,25 +405,6 @@ static void tgui_widget_apply_style(tgui_style_t *style, tgui_style_t *dest_styl
 	}
 }
 
-static void tgui_widget_get_current_style_recur(tgui_widget_t *widget, tgui_style_t *dest_style) {
-	if (widget->parent) {
-		tgui_widget_get_current_style_recur(widget->parent, dest_style);
-	}
-
-	// apply base styles
-	TGUI_LIST_FOREACH(node, tgui_widget_get_styles(widget)) {
-		tgui_style_t *style = TGUI_STYLE_FROM_NODE(node);
-		tgui_widget_apply_style(style, dest_style);
-	}
-
-	// apply state styles
-	TGUI_LIST_FOREACH(node, tgui_widget_get_state_styles(widget, widget->state)) {
-		tgui_style_t *style = TGUI_STYLE_FROM_NODE(node);
-		puts("apply a style");
-		tgui_widget_apply_style(style, dest_style);
-	}
-}
-
 tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 	tgui_style_t *style = &widget->cache_style;
 	if (!(widget->flags & TGUI_WIDGET_DIRTY_STYLE)) {
@@ -441,7 +422,24 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 	static tgui_color_t *color = NULL;
 	if (!color) color = tgui_color_new_rgb(0, 0, 0);
 	style->color = color;
-	tgui_widget_get_current_style_recur(widget, style);
+
+	// apply style of parent
+	if (widget->parent) {
+		tgui_style_t *parent_style = tgui_widget_get_current_style(widget->parent);
+		*style = *parent_style;
+	}
+	
+	// apply base styles
+	TGUI_LIST_FOREACH(node, tgui_widget_get_styles(widget)) {
+		tgui_style_t *src_style = TGUI_STYLE_FROM_NODE(node);
+		tgui_widget_apply_style(src_style, style);
+	}
+
+	// apply state styles
+	TGUI_LIST_FOREACH(node, tgui_widget_get_state_styles(widget, widget->state)) {
+		tgui_style_t *src_style = TGUI_STYLE_FROM_NODE(node);
+		tgui_widget_apply_style(src_style, style);
+	}
 	return style;
 }
 

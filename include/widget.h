@@ -129,6 +129,10 @@ static inline void tgui_widget_mark_dirty_style(tgui_widget_t *widget) {
 	widget->flags |= TGUI_WIDGET_DIRTY_STYLE;
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_size(widget->parent);
+	TGUI_LIST_FOREACH(node, &widget->children) {
+		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
+		tgui_widget_mark_dirty_style(child);
+	}
 }
 
 static inline int tgui_widget_is_dirty_style(tgui_widget_t *widget) {
