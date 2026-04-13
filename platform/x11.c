@@ -143,7 +143,7 @@ int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent
 	}
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
 	x11_window->window = XCreateSimpleWindow(display, x11_parent, 0, 0, surface->width, surface->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
-	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | KeyReleaseMask);
+	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | KeyPressMask | KeyReleaseMask);
 
 	// setup pixmap and GC
 	XGCValues values;

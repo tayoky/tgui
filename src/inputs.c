@@ -43,7 +43,15 @@ void tgui_input_move(tgui_surface_t *surface, long x, long y) {
 	x /= surface->scaling;
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
-	tgui_widget_set_state(widget, TGUI_STATE_HOVER);
+	if (widget != surface->hover) {
+		if (surface->hover && tgui_widget_get_state(surface->hover) == TGUI_STATE_HOVER) {
+			tgui_widget_set_state(surface->hover, TGUI_STATE_NORMAL);
+		}
+		if (widget && tgui_widget_get_state(widget) == TGUI_STATE_NORMAL) {
+			tgui_widget_set_state(widget, TGUI_STATE_HOVER);
+		}
+		surface->hover = widget;
+	}
 	tgui_event_t event = {
 		.type = TGUI_EVENT_MOVE,
 		.move = {

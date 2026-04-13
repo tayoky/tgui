@@ -10,6 +10,7 @@ typedef struct tgui_surface {
 	long scaling;
 	tgui_widget_t *focus;
 	tgui_widget_t *child;
+	tgui_widget_t *hover;
 	long inval_start_x;
 	long inval_start_y; 
 	long inval_end_x;
