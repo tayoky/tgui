@@ -5,6 +5,17 @@
 #include <render.h>
 #include <stdio.h>
 
+typedef struct tgui_style_default {
+	tgui_list_node_t node;
+	tgui_style_t *style;
+	char *class;
+} tgui_style_default_t;
+
+#define TGUI_STYLE_DEFAULT_CAST(n) TGUI_CONTAINER_OF(n, tgui_style_default_t, node)
+
+static tgui_list_t default_styles;
+static tgui_list_t default_state_styles[TGUI_STATE_COUNT];
+
 static void tgui_widget_mark_dirty_style(tgui_widget_t *widget) {
 		widget->flags |= TGUI_WIDGET_DIRTY_STYLE;
 }
@@ -19,10 +30,7 @@ tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
 		tgui_widget_mark_dirty(widget);
 		tgui_widget_mark_dirty_size(widget);
 		tgui_widget_mark_dirty_style(widget);
-		tgui_style_t *style = tgui_style_get_default(class->name);
-		if (style) {
-			tgui_widget_add_style(widget, style);
-		}
+		tgui_widget_apply_default_styles(widget);
 		return widget;
 	}
 }
@@ -282,6 +290,38 @@ tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {
 		return child;
 	}
 	return NULL;
+}
+
+static void add_default(tgui_list_t *list, tgui_style_t *style, const char *class) {
+	tgui_style_default_t *style_default = malloc(sizeof(tgui_style_default_t));
+	style_default->style = tgui_style_ref(style);
+	style_default->class = strdup(class);
+	tgui_list_append(list, &style_default->node);
+}
+
+void tgui_widget_set_default_style(tgui_style_t *style, const char *class) {
+	add_default(&default_styles, style, class);
+}
+
+void tgui_widget_set_default_state_style(tgui_style_t *style, const char *class, char state) {
+	add_default(&default_state_styles[(int)state], style, class);
+}
+
+void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
+	TGUI_LIST_FOREACH(node, &default_styles) {
+		tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
+		if (!strcmp(style_default->class, widget->class->name)) {
+			tgui_widget_add_style(widget, style_default->style);
+		}
+	}
+	for (int i=0; i<TGUI_STATE_COUNT; i++) {
+		TGUI_LIST_FOREACH(node, &default_state_styles[i]) {
+			tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
+			if (!strcmp(style_default->class, widget->class->name)) {
+				tgui_widget_add_state_style(widget, i, style_default->style);
+			}
+		}
+	}
 }
 
 static void add_style(tgui_list_t *list, tgui_style_t *style) {

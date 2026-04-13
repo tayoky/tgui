@@ -203,6 +203,9 @@ int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event);
 
 tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y);
 
+void tgui_widget_set_default_style(tgui_style_t *style, const char *class);
+void tgui_widget_set_default_state_style(tgui_style_t *style, const char *class, char state);
+void tgui_widget_apply_default_styles(tgui_widget_t *widget);
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style);
 void tgui_widget_remove_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
