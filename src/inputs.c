@@ -8,7 +8,7 @@ void tgui_input_click(tgui_surface_t *surface, int button, long x, long y) {
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
 	tgui_surface_set_focus(surface, widget);
-	tgui_widget_set_state(widget, TGUI_STATE_PRESSED);
+	tgui_widget_set_state_parent(widget, TGUI_STATE_PRESSED);
 	tgui_event_t event = {
 		.type = TGUI_EVENT_CLICK,
 		.click = {
@@ -25,8 +25,8 @@ void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y) {
 	x /= surface->scaling;
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
-	tgui_widget_set_state(tgui_surface_get_focus(surface), TGUI_STATE_NORMAL);
-	tgui_widget_set_state(widget, TGUI_STATE_HOVER);
+	tgui_widget_set_state_parent(tgui_surface_get_focus(surface), TGUI_STATE_NORMAL);
+	tgui_widget_set_state_parent(widget, TGUI_STATE_HOVER);
 	tgui_event_t event = {
 		.type = TGUI_EVENT_UNCLICK,
 		.unclick = {
@@ -45,10 +45,10 @@ void tgui_input_move(tgui_surface_t *surface, long x, long y) {
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
 	if (widget != surface->hover) {
 		if (surface->hover && tgui_widget_get_state(surface->hover) == TGUI_STATE_HOVER) {
-			tgui_widget_set_state(surface->hover, TGUI_STATE_NORMAL);
+			tgui_widget_set_state_parent(surface->hover, TGUI_STATE_NORMAL);
 		}
 		if (widget && tgui_widget_get_state(widget) == TGUI_STATE_NORMAL) {
-			tgui_widget_set_state(widget, TGUI_STATE_HOVER);
+			tgui_widget_set_state_parent(widget, TGUI_STATE_HOVER);
 		}
 		surface->hover = widget;
 	}
@@ -74,7 +74,7 @@ void tgui_input_focus(tgui_surface_t *surface) {
 void tgui_input_unfocus(tgui_surface_t *surface) {
 	if (!surface) return;
 	if (surface->hover && tgui_widget_get_state(surface->hover) == TGUI_STATE_HOVER) {
-		tgui_widget_set_state(surface->hover, TGUI_STATE_NORMAL);
+		tgui_widget_set_state_parent(surface->hover, TGUI_STATE_NORMAL);
 		surface->hover = NULL;
 	}
 	tgui_event_t event = {

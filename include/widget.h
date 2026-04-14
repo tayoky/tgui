@@ -197,6 +197,13 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 	widget->state = state;
 }
 
+static inline void tgui_widget_set_state_parent(tgui_widget_t *widget, char state) {
+	while (widget) {
+		tgui_widget_set_state(widget, state);
+		widget = widget->parent;
+	}
+}
+
 static inline char tgui_widget_get_state(tgui_widget_t *widget) {
 	return widget->state;
 }
