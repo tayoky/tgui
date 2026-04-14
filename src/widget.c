@@ -275,6 +275,9 @@ int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event) {
 tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {
 	TGUI_LIST_FOREACH(node, &parent->children) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
+		if (tgui_widget_is_hidden(child)) {
+			continue;
+		}
 		if (x < child->x || x >= child->x + child->width) {
 			continue;
 		}
