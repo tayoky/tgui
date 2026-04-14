@@ -63,6 +63,26 @@ void tgui_input_move(tgui_surface_t *surface, long x, long y) {
 	tgui_widget_send_event(tgui_surface_get_focus(surface), &event);
 }
 
+void tgui_input_focus(tgui_surface_t *surface) {
+	if (!surface) return;
+	tgui_event_t event = {
+		.type = TGUI_EVENT_FOCUS,
+	};
+	tgui_widget_send_event(TGUI_WIDGET_CAST(surface), &event);
+}
+
+void tgui_input_unfocus(tgui_surface_t *surface) {
+	if (!surface) return;
+	if (surface->hover && tgui_widget_get_state(surface->hover) == TGUI_STATE_HOVER) {
+		tgui_widget_set_state(surface->hover, TGUI_STATE_NORMAL);
+		surface->hover = NULL;
+	}
+	tgui_event_t event = {
+		.type = TGUI_EVENT_UNFOCUS,
+	};
+	tgui_widget_send_event(TGUI_WIDGET_CAST(surface), &event);
+}
+
 void tgui_input_key_press(tgui_surface_t *surface, long scancode, long sym) {
 	if (!surface) return;
 	tgui_event_t event = {

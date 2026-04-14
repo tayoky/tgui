@@ -55,6 +55,8 @@
 void tgui_input_click(tgui_surface_t *surface, int button, long x, long y);
 void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y);
 void tgui_input_move(tgui_surface_t *surface, long x, long y);
+void tgui_input_focus(tgui_surface_t *surface);
+void tgui_input_unfocus(tgui_surface_t *surface);
 void tgui_input_key_press(tgui_surface_t *surface, long scancode, long sym);
 void tgui_input_key_release(tgui_surface_t *surface, long scancode, long sym);
 

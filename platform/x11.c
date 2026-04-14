@@ -118,6 +118,14 @@ void tgui_platform_handle_event(void) {
 		surface = get_surface(event.xmotion.window);
 		tgui_input_move(surface, event.xmotion.x, event.xmotion.y);
 		break;
+	case FocusIn:
+		surface = get_surface(event.xmotion.window);
+		tgui_input_focus(surface);
+		break;
+	case FocusOut:
+		surface = get_surface(event.xmotion.window);
+		tgui_input_unfocus(surface);
+		break;
 	case KeyPress:
 		surface = get_surface(event.xkey.window);
 		tgui_input_key_press(surface, 0, x11_sym2tgui(XLookupKeysym(&event.xkey, 0)));
@@ -143,7 +151,7 @@ int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent
 	}
 	x11_window_t *x11_window = malloc(sizeof(x11_window_t));
 	x11_window->window = XCreateSimpleWindow(display, x11_parent, 0, 0, surface->width, surface->height, 1, XBlackPixel(display, screen), XWhitePixel(display, screen));
-	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | KeyPressMask | KeyReleaseMask);
+	XSelectInput(display, x11_window->window, ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | KeyPressMask | KeyReleaseMask | FocusChangeMask);
 
 	// setup pixmap and GC
 	XGCValues values;

@@ -47,7 +47,9 @@ typedef struct tgui_event {
 #define TGUI_EVENT_RELEASE 5
 #define TGUI_EVENT_DESTROY 6
 #define TGUI_EVENT_RESIZE  7
-#define TGUI_EVENT_COUNT   8
+#define TGUI_EVENT_FOCUS   8
+#define TGUI_EVENT_UNFOCUS 9
+#define TGUI_EVENT_COUNT   10
 
 #define TGUI_EVENT_NOT_HANDLED 0
 #define TGUI_EVENT_HANDLED     1

@@ -7,6 +7,12 @@ static void tgui_popover_remove_child(tgui_widget_t *widget, tgui_widget_t *chil
 	// TODO : find a way
 }
 
+static int tgui_popover_unfocus(tgui_event_t *event) {
+	// hide the popup on unfocus
+	tgui_widget_hide(event->widget);
+	return TGUI_EVENT_HANDLED;
+}
+
 static tgui_widget_class_t popover_class = {
 	.size = sizeof(tgui_popover_t),
 	.name = "popover",
@@ -58,6 +64,7 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 
 	tgui_widget_calculate_sizes(popover->child);
 	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height, parent);
+	tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_UNFOCUS, tgui_popover_unfocus, NULL);
 	tgui_surface_set_position(popover->surface, popover->x, popover->y);
 	tgui_surface_set_child(popover->surface, popover->child);
 }
