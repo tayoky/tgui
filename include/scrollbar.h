@@ -24,17 +24,38 @@ typedef struct tgui_scrollbar {
 tgui_scrollbar_t *tgui_scrollbar_new(int orientation);
 
 /**
- * @brief set the total lenght of the content
+ * @brief set the total lenght of the content of a scrollbar
  * @param scrollbar the scrollbar to set the content lenght of
  * @param total_size the total size
  */
 void tgui_scrollbar_set_total_size(tgui_scrollbar_t *scrollbar, long total_size);
 
 /**
- * @brief set the lenght of the view
+ * @brief set the lenght of the view of a scrollbar
  * @param scrollbar the scrollbar to set the lenght of
  * @param view_size the size of the view
  */
 void tgui_scrollbar_set_view_size(tgui_scrollbar_t *scrollbar, long view_size);
+
+/**
+ * @brief set the value of a scrollbar
+ * @param scrollbar the scrollbar to change the value of
+ * @param value the new value
+ */
+void tgui_scrollbar_set_value(tgui_scrollbar_t *scrollbar, long value);
+
+/**
+ * @brief add to the value of a scrollbar
+ * @param scrollbar the scrollbar to change the value of
+ * @param value how much to add to the value
+ */
+void tgui_scrollbar_add_value(tgui_scrollbar_t *scrollbar, long value);
+
+/**
+ * @brief get the value of a scrollbar
+ * @param scrollbar the scrollbar to get the value of
+ * @return the value of the scrollbar
+ */
+long tgui_scrollbar_get_value(tgui_scrollbar_t *scrollbar);
 
 #endif
