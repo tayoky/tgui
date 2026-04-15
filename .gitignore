@@ -1,5 +1,6 @@
 config.mk
 build
+docs
 *.out
 *.so
 *.a
