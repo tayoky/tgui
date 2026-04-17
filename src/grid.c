@@ -3,6 +3,8 @@
 #include <widget.h>
 #include <grid.h>
 
+TOBJECT_DEFINE_CLASS(tgui_grid, TGUI_GRID, tgui_widget_get_type())
+
 static void tgui_grid_calculate_column_sizes(tgui_grid_t *grid, unsigned int x, long *col_min_width, long *col_pref_width) {
 	*col_min_width  = 0;
 	*col_pref_width = 0;
@@ -114,18 +116,35 @@ static void tgui_grid_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
-static tgui_widget_class_t grid_class = {
-	.size = sizeof(tgui_grid_t),
-	.name = "grid",
-	.calculate_sizes = tgui_grid_calculate_sizes,
-	.allocate_space  = tgui_grid_allocate_space,
-};
+static int tgui_grid_constructor(void *object) {
+	tgui_grid_get_parent_class()->constructor(object);
+
+	tgui_grid_t *grid = TGUI_GRID_CAST(object);
+	(void)grid;
+	// TODO : do init here instead of in tgui_grid_new
+	return 0;
+}
+
+static int tgui_grid_destructor(void *object) {
+	tgui_grid_t *grid = TGUI_GRID_CAST(object);
+	free(grid->grid);
+
+	return tgui_grid_get_parent_class()->destructor(object);
+}
+
+static void tgui_grid_class_init(tgui_grid_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_grid_calculate_sizes;
+	widget_class->allocate_space  = tgui_grid_allocate_space;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_grid_constructor;
+	tobject_class->destructor  = tgui_grid_destructor;
+}
 
 tgui_grid_t *tgui_grid_new(unsigned int columns, unsigned int rows) {
-	tgui_widget_t *widget = tgui_widget_new(&grid_class);
-	if (!widget) return NULL;
-
-	tgui_grid_t *grid = TGUI_GRID_CAST(widget);
+	// TODO : move this constructor
+	tgui_grid_t *grid = tobject_new(tgui_grid_get_type());
 	grid->columns = columns;
 	grid->rows    = rows;
 	grid->grid = malloc(sizeof(tgui_widget_t*) * columns * rows);

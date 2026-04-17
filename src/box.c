@@ -2,7 +2,9 @@
 #include <box.h>
 #include <stdio.h>
 
-void tgui_box_calculate_sizes(tgui_widget_t *widget) {
+TOBJECT_DEFINE_CLASS(tgui_box, TGUI_BOX, tgui_widget_get_type())
+
+static void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 	tgui_box_t *box = TGUI_BOX_CAST(widget);
 	long min_width = 0;
 	long min_height = 0;
@@ -41,7 +43,7 @@ void tgui_box_calculate_sizes(tgui_widget_t *widget) {
 	box->widget.pref_height = pref_height;
 }
 
-void tgui_box_allocate_space(tgui_widget_t *widget) {
+static void tgui_box_allocate_space(tgui_widget_t *widget) {
 	tgui_box_t *box = TGUI_BOX_CAST(widget);
 	if (box->widget.children.count == 0) return;
 	long x = tgui_widget_get_inner_x(widget);
@@ -123,18 +125,14 @@ void tgui_box_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
-static tgui_widget_class_t box_class = {
-	.name = "box",
-	.size = sizeof(tgui_box_t),
-	.calculate_sizes = tgui_box_calculate_sizes,
-	.allocate_space  = tgui_box_allocate_space,
-};
+static void tgui_box_class_init(tgui_box_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_box_calculate_sizes;
+	widget_class->allocate_space  = tgui_box_allocate_space;
+}
 
 tgui_box_t *tgui_box_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&box_class);
-	if (!widget) return NULL;
-
-	return TGUI_BOX_CAST(widget);
+	return tobject_new(tgui_box_get_type());
 }
 
 void tgui_box_prepend_widget(tgui_box_t *box, tgui_widget_t *widget) {

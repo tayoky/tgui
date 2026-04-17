@@ -16,19 +16,19 @@ typedef struct tgui_style_default {
 static tgui_list_t default_styles;
 static tgui_list_t default_state_styles[TGUI_STATE_COUNT];
 
-tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class) {
-	if (class->new) {
-		return class->new();
-	} else {
-		tgui_widget_t *widget = malloc(class->size);
-		memset(widget, 0, class->size);
-		widget->class = class;
-		tgui_widget_mark_dirty(widget);
-		tgui_widget_mark_dirty_size(widget);
-		tgui_widget_mark_dirty_style(widget);
-		tgui_widget_apply_default_styles(widget);
-		return widget;
-	}
+TOBJECT_DEFINE_CLASS(tgui_widget, TGUI_WIDGET, tobject_get_type())
+
+static int tgui_widget_constructor(void *ptr) {
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(ptr);
+	tgui_widget_mark_dirty(widget);
+	tgui_widget_mark_dirty_size(widget);
+	tgui_widget_mark_dirty_style(widget);
+	tgui_widget_apply_default_styles(widget);
+	return 0;
+}
+
+static void tgui_widget_class_init(tgui_widget_class_t *class) {
+	class->parent_class.constructor = tgui_widget_constructor;
 }
 
 void tgui_widget_destroy(tgui_widget_t *widget) {
@@ -54,12 +54,8 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 	}
 
 	tgui_widget_remove_parent(widget);
-
-	if (widget->class->free) {
-		widget->class->free(widget);
-	}
 	// TODO : free styles
-	free(widget);
+	tobject_free(widget);
 }
 
 void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
@@ -112,12 +108,12 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 			break;
 		}
 	}
-	printf("got min size of %ldx%ld for %s\n", widget->min_width, widget->min_height, widget->class->name);
+	printf("got min size of %ldx%ld for %s\n", widget->min_width, widget->min_height, tgui_widget_type_from_object(widget)->name);
 	tgui_widget_mark_dirty_space(widget);
 }
 
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height) {
-	printf("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, widget->class->name);
+	printf("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, tgui_widget_type_from_object(widget)->name);
 
 	// we alaways need to recalulate the allocated size
 	// because even if we are not dirty the parent could give us a new space
@@ -193,11 +189,6 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 	if (widget->class->allocate_space) {
 		widget->class->allocate_space(widget);
 	}
-}
-
-int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name) {
-	if (!widget) return 0;
-	return !strcmp(widget->class->name, class_name);
 }
 
 void tgui_widget_set_id(tgui_widget_t *widget, const char *id) {
@@ -307,16 +298,17 @@ void tgui_widget_set_default_state_style(tgui_style_t *style, const char *class,
 }
 
 void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
+	const char *name = tgui_widget_type_from_object(widget)->name;
 	TGUI_LIST_FOREACH(node, &default_styles) {
 		tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
-		if (!strcmp(style_default->class, widget->class->name)) {
+		if (!strcmp(style_default->class, name)) {
 			tgui_widget_add_style(widget, style_default->style);
 		}
 	}
 	for (int i=0; i<TGUI_STATE_COUNT; i++) {
 		TGUI_LIST_FOREACH(node, &default_state_styles[i]) {
 			tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
-			if (!strcmp(style_default->class, widget->class->name)) {
+			if (!strcmp(style_default->class, name)) {
 				tgui_widget_add_state_style(widget, i, style_default->style);
 			}
 		}

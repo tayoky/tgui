@@ -1,17 +1,17 @@
 #include <factory.h>
 
-static tgui_widget_class_t list_item_class = {
-	.size = sizeof(tgui_list_item_t),
-	.name = "list item",
-	.calculate_sizes = tgui_container_single_calculate_sizes,
-	.allocate_space  = tgui_container_single_allocate_space,
-};
+TOBJECT_DEFINE_CLASS(tgui_list_item, TGUI_LIST_ITEM, tgui_widget_get_type())
+
+static void tgui_list_item_class_init(tgui_list_item_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
+	widget_class->allocate_space  = tgui_container_single_allocate_space;
+}
 
 tgui_list_item_t *tgui_factory_setup(tgui_factory_t *factory) {
-	tgui_widget_t *widget = tgui_widget_new(&list_item_class);
-	if (!widget) return NULL;
-	
-	tgui_list_item_t *list_item = TGUI_LIST_ITEM_CAST(widget);
+	tgui_list_item_t *list_item = tobject_new(tgui_list_item_get_type());
+	if (!list_item) return NULL;
+
 	if (factory->setup) {
 		factory->setup(factory, list_item);
 	}

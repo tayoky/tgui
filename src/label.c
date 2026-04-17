@@ -5,10 +5,8 @@
 #include <label.h>
 #include <platform.h>
 
-static void tgui_label_free(tgui_widget_t *widget) {
-	tgui_label_t *label = TGUI_LABEL_CAST(widget);
-	free(label->text);
-}
+TOBJECT_DEFINE_CLASS(tgui_label, TGUI_LABEL, tgui_widget_get_type())
+TOBJECT_DEFINE_CLASS(tgui_title, TGUI_TITLE, tgui_label_get_type())
 
 static void tgui_label_calculate_sizes(tgui_widget_t *widget) {
 	tgui_label_t *label = TGUI_LABEL_CAST(widget);
@@ -29,36 +27,37 @@ static void tgui_label_render(tgui_widget_t *widget) {
 	tgui_render_text(widget, label->widget.x, label->widget.y, label->text);
 }
 
-static tgui_widget_class_t label_class = {
-	.name = "label",
-	.size = sizeof(tgui_label_t),
-	.free = tgui_label_free,
-	.calculate_sizes = tgui_label_calculate_sizes,
-	.render = tgui_label_render,
-};
+static int tgui_label_destructor(void *object) {
+	tgui_label_t *label = TGUI_LABEL_CAST(object);
+	free(label->text);
 
-static tgui_widget_class_t title_class = {
-	.name = "title",
-	.size = sizeof(tgui_label_t),
-	.free = tgui_label_free,
-	.calculate_sizes = tgui_label_calculate_sizes,
-	.render = tgui_label_render,
-};
+	return tgui_label_get_parent_class()->destructor(object);
+}
+
+static void tgui_label_class_init(tgui_label_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_label_calculate_sizes,
+	widget_class->render = tgui_label_render;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->destructor = tgui_label_destructor;
+}
+
+static void tgui_title_class_init(tgui_title_class_t *class) {
+	(void)class;
+}
 
 tgui_label_t *tgui_label_new(const char *text) {
-	tgui_widget_t *widget = tgui_widget_new(&label_class);
-	if (!widget) return NULL;
-
-	tgui_label_t *label = TGUI_LABEL_CAST(widget);
+	tgui_label_t *label = tobject_new(tgui_label_get_type());
+	if (!label) return NULL;
 	tgui_label_set_text(label, text);
 	return label;
 }
 
 tgui_label_t *tgui_title_new(const char *text) {
-	tgui_widget_t *widget = tgui_widget_new(&title_class);
-	if (!widget) return NULL;
 
-	tgui_label_t *label = TGUI_LABEL_CAST(widget);
+	tgui_label_t *label = tobject_new(tgui_title_get_type());
+	if (!label) return NULL;
 	tgui_label_set_text(label, text);
 	return label;
 }

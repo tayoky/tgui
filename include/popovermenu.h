@@ -6,10 +6,12 @@
 #include "widget.h"
 #include "box.h"
 
-typedef struct tgui_popover_menu {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_popover_menu, TGUI_POPOVER_MENU, tgui_popover)
+
+struct tgui_popover_menu {
 	tgui_popover_t popover;
 	tgui_box_t *box;
-} tgui_popover_menu_t;
+};
 
 tgui_popover_menu_t *tgui_popover_menu_new(void);
 void tgui_popover_menu_append(tgui_popover_menu_t *menu, tgui_widget_t *child);

@@ -3,12 +3,12 @@
 
 #include "widget.h"
 
-typedef struct tgui_list_item {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_list_item, TGUI_LIST_ITEM, tgui_widget)
+
+struct tgui_list_item {
 	tgui_widget_t widget;
 	void *item;
-} tgui_list_item_t;
-
-#define TGUI_LIST_ITEM_CAST(w) TGUI_CONTAINER_OF(w, tgui_list_item_t, widget)
+};
 
 typedef struct tgui_factory tgui_factory_t;
 

@@ -3,16 +3,16 @@
 
 #include "widget.h"
 
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_canva, TGUI_CANVA, tgui_widget)
+
 /**
  * @struct tgui_canva
  * A canva is a widget on which drawing can be done by using higly platform dependant functions.
  */
-typedef struct tgui_canva {
+struct tgui_canva {
     tgui_widget_t widget;
     void *private;
-} tgui_canva_t;
-
-#define TGUI_CANVA_CAST(w) TGUI_CONTAINER_OF(w, tgui_canva_t, widget)
+};
 
 /**
  * @relates tgui_canva

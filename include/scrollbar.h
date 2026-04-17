@@ -5,20 +5,20 @@
 #include "slider.h"
 #include "button.h"
 
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_scrollbar, TGUI_SCROLLBAR, tgui_box)
+
 /**
  * @struct tgui_scrollbar
  * A scrollbar is a special type of slider with buttons at the edges intended for scrolling or zooming.
  */
-typedef struct tgui_scrollbar {
+struct tgui_scrollbar {
 	tgui_box_t box;
 	tgui_button_t *top;
 	tgui_button_t *bottom;
 	tgui_slider_t *slider;
 	long view_size;
 	long total_size;
-} tgui_scrollbar_t;
-
-#define TGUI_SCROLLBAR_CAST(w) TGUI_CONTAINER_OF(w, tgui_scrollbar_t, box.widget)
+};
 
 /**
  * @relates tgui_scrollbar

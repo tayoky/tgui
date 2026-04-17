@@ -4,12 +4,12 @@
 #include "widget.h"
 #include "image.h"
 
-typedef struct tgui_icon {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_icon, TGUI_ICON, tgui_widget)
+
+struct tgui_icon {
 	tgui_widget_t widget;
 	tgui_image_t *image;
-} tgui_icon_t;
-
-#define TGUI_ICON_CAST(w) TGUI_CONTAINER_OF(w, tgui_icon_t, widget)
+};
 
 tgui_icon_t *tgui_icon_new(const char *name);
 void tgui_icon_set(tgui_icon_t *icon, const char *name);

@@ -1,12 +1,14 @@
 #include <popovermenu.h>
 #include <menuitem.h>
 
-static tgui_widget_class_t popover_menu_class = {
-	.size = sizeof(tgui_popover_menu_t),
-	.name = "popover menu",
-};
+TOBJECT_DEFINE_CLASS(tgui_popover_menu, TGUI_POPOVER_MENU, tgui_popover_get_type())
+
+static void tgui_popover_menu_class_init(tgui_popover_menu_class_t *class) {
+	(void)class;
+}
 
 tgui_popover_menu_t *tgui_popover_menu_new(void) {
+	return tobject_new(tgui_popover_menu_get_type());
 }
 
 void tgui_popover_menu_append(tgui_popover_menu_t *menu, tgui_widget_t *child) {

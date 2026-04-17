@@ -3,7 +3,9 @@
 
 #include "widget.h"
 
-typedef struct tgui_surface {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_surface, TGUI_SURFACE, tgui_widget)
+
+struct tgui_surface {
 	tgui_widget_t widget;
 	tgui_list_node_t node;
 	void *private;
@@ -19,9 +21,8 @@ typedef struct tgui_surface {
 	long height;
 	long old_flags;
 	int mouse_pressed;
-} tgui_surface_t;
+};
 
-#define TGUI_SURFACE_CAST(w) TGUI_CONTAINER_OF(w, tgui_surface_t, widget)
 
 tgui_surface_t *tgui_surface_new(long width, long height, tgui_surface_t *parent);
 void tgui_surface_set_child(tgui_surface_t *surface, tgui_widget_t *child);
@@ -41,7 +42,7 @@ void tgui_surface_remove_child(tgui_widget_t *widget, tgui_widget_t *child);
 
 static inline tgui_surface_t *tgui_widget_get_surface(tgui_widget_t *widget) {
 	while (widget) {
-		if (tgui_widget_is_class(widget, "surface") || tgui_widget_is_class(widget, "window")) {
+		if (tgui_widget_is_type(widget, tgui_surface_get_type())) {
 			return TGUI_SURFACE_CAST(widget);
 		}
 		widget = widget->parent;

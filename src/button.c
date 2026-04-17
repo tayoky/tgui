@@ -3,24 +3,21 @@
 #include <label.h>
 #include <icon.h>
 
-static tgui_widget_class_t button_class = {
-	.name = "button",
-	.size = sizeof(tgui_button_t),
-	.calculate_sizes = tgui_container_single_calculate_sizes,
-	.allocate_space = tgui_container_single_allocate_space,
-};
+TOBJECT_DEFINE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget_get_type())
 
-tgui_button_t *tgui_button_new(void){
-	tgui_widget_t *widget = tgui_widget_new(&button_class);
-	if (!widget) return NULL;
+static void tgui_button_class_init(tgui_button_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
+	widget_class->allocate_space = tgui_container_single_allocate_space;
+}
 
-	tgui_button_t *button = TGUI_BUTTON_CAST(widget);
-	return button;
+tgui_button_t *tgui_button_new(void) {
+	return tobject_new(tgui_button_get_type());
 }
 
 void tgui_button_set_text(tgui_button_t *button, const char *text) {
 	tgui_widget_t *child = tgui_button_get_child(button);
-	if (tgui_widget_is_class(child, "label")) {
+	if (tgui_widget_is_type(child, tgui_label_get_type())) {
 		// we already have a label
 		tgui_label_set_text(TGUI_LABEL_CAST(child), text);
 	} else {
@@ -35,7 +32,7 @@ void tgui_button_set_text(tgui_button_t *button, const char *text) {
 
 void tgui_button_set_icon(tgui_button_t *button, const char *icon_name) {
 	tgui_widget_t *child = tgui_button_get_child(button);
-	if (tgui_widget_is_class(child, "icon")) {
+	if (tgui_widget_is_type(child, tgui_icon_get_type())) {
 		// we already have an icon
 		tgui_icon_set(TGUI_ICON_CAST(child), icon_name);
 	} else {
@@ -58,7 +55,7 @@ void tgui_button_set_child(tgui_button_t *button, tgui_widget_t *child) {
 
 const char *tgui_button_get_text(tgui_button_t *button) {
 	tgui_widget_t *child = tgui_button_get_child(button);
-	if (tgui_widget_is_class(child, "label")) {
+	if (tgui_widget_is_type(child, tgui_label_get_type())) {
 		return tgui_label_get_text(TGUI_LABEL_CAST(child));
 	} else {
 		return NULL;

@@ -1,6 +1,10 @@
 #include <popover.h>
 #include <surface.h>
 
+TOBJECT_DEFINE_CLASS(tgui_popover, TGUI_POPOVER, tgui_widget_get_type())
+
+// TODO : destructor
+
 static void tgui_popover_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
 	tgui_popover_t *popover = TGUI_POPOVER_CAST(widget);
 	if (popover->child != child) return;
@@ -13,18 +17,13 @@ static int tgui_popover_unfocus(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-static tgui_widget_class_t popover_class = {
-	.size = sizeof(tgui_popover_t),
-	.name = "popover",
-	.remove_child = tgui_popover_remove_child,
-};
+static void tgui_popover_class_init(tgui_popover_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->remove_child = tgui_popover_remove_child;
+}
 
 tgui_popover_t *tgui_popover_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&popover_class);
-	if (!widget) return NULL;
-
-	tgui_popover_t *popover = TGUI_POPOVER_CAST(widget);
-	return popover;
+	return tobject_new(tgui_popover_get_type());
 }
 
 void tgui_popover_set_child(tgui_popover_t *popover, tgui_widget_t *child) {

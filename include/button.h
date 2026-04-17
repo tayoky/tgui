@@ -3,13 +3,15 @@
 
 #include "widget.h"
 
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget)
+
 /**
  * @struct tgui_button
  * A button is a widget that display a visual button with text, icon or any child widget on which the user can click.
  */
-typedef struct tgui_button {
+struct tgui_button {
 	tgui_widget_t widget;
-} tgui_button_t;
+};
 
 #define TGUI_BUTTON_CAST(w) TGUI_CONTAINER_OF(w, tgui_button_t, widget)
 

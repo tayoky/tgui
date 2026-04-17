@@ -5,13 +5,13 @@
 #include "action.h"
 #include "label.h"
 
-typedef struct tgui_menu_item {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_menu_item, TGUI_MENU_ITEM, tgui_widget)
+
+struct tgui_menu_item {
 	tgui_widget_t widget;
 	tgui_action_t *action;
 	tgui_label_t *label;
-} tgui_menu_item_t;
-
-#define TGUI_MENU_ITEM_CAST(w) TGUI_CONTAINER_OF(w, tgui_menu_item_t, widget)
+};
 
 /**
  * @brief create a new menu item

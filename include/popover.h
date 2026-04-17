@@ -4,16 +4,16 @@
 #include "widget.h"
 #include "surface.h"
 
-typedef struct tgui_popover {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_popover, TGUI_POPOVER, tgui_widget)
+
+struct tgui_popover {
 	tgui_widget_t widget;
 	tgui_widget_t *child;
 	tgui_surface_t *surface;
 	long x;
 	long y;
 	int popped;
-} tgui_popover_t;
-
-#define TGUI_POPOVER_CAST(w) TGUI_CONTAINER_OF(w, tgui_popover_t, widget)
+};
 
 tgui_popover_t *tgui_popover_new(void);
 void tgui_popover_set_child(tgui_popover_t *popover, tgui_widget_t *child);

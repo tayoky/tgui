@@ -4,14 +4,14 @@
 #include "widget.h"
 #include "box.h"
 
-typedef struct tgui_expander {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_expander, TGUI_EXPANDER, tgui_box)
+
+struct tgui_expander {
 	tgui_box_t box;
 	tgui_widget_t *title;
 	tgui_widget_t *child;
 	int expanded;
-} tgui_expander_t;
-
-#define TGUI_EXPANDER_CAST(w) TGUI_CONTAINER_OF(w, tgui_expander_t, box.widget)
+};
 
 tgui_expander_t *tgui_expander_new(void);
 void tgui_expander_set_title_text(tgui_expander_t *expander, const char *text);

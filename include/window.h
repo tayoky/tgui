@@ -5,14 +5,14 @@
 #include "surface.h"
 #include "titlebar.h"
 
-typedef struct tgui_window {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_window, TGUI_WINDOW, tgui_surface)
+
+struct tgui_window {
 	tgui_surface_t surface;
 	tgui_list_node_t node;
 	tgui_title_bar_t *title_bar;
 	char *title;
-} tgui_window_t;
-
-#define TGUI_WINDOW_CAST(w) TGUI_CONTAINER_OF(w, tgui_window_t, surface.widget)
+};
 
 tgui_window_t *tgui_window_new(const char *title, long width, long height);
 void tgui_window_set_child(tgui_window_t *window, tgui_widget_t *child);
@@ -28,7 +28,7 @@ tgui_surface_t *tgui_window_get_surface(tgui_window_t *window);
 
 static inline tgui_window_t *tgui_widget_get_window(tgui_widget_t *widget) {
 	while (widget) {
-		if (tgui_widget_is_class(widget, "window")) {
+		if (tgui_widget_is_type(widget, tgui_window_get_type())) {
 			return TGUI_WINDOW_CAST(widget);
 		}
 		widget = widget->parent;

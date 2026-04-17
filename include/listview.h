@@ -5,13 +5,13 @@
 #include "list.h"
 #include "widget.h"
 
-typedef struct tgui_list_view {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_widget)
+
+struct tgui_list_view {
 	tgui_widget_t widget;
 	tgui_list_t *list;
 	tgui_factory_t *factory;
-} tgui_list_view_t;
-
-#define TGUI_LIST_VIEW_CAST(w) TGUI_CONTAINER_OF(w, tgui_list_view_t, widget)
+};
 
 tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_t *list);
 void tgui_list_view_update(tgui_list_view_t *list_view);

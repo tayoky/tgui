@@ -1,6 +1,8 @@
 #include <expander.h>
 #include <label.h>
 
+TOBJECT_DEFINE_CLASS(tgui_expander, TGUI_EXPANDER, tgui_box_get_type())
+
 static void tgui_expander_remove_child(tgui_widget_t *parent, tgui_widget_t *child) {
 	tgui_expander_t *expander = TGUI_EXPANDER_CAST(parent);
 	if (expander->title == child) {
@@ -21,27 +23,28 @@ static int tgui_expander_click(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-static tgui_widget_class_t expander_class = {
-	.name = "expander",
-	.size = sizeof(tgui_expander_t),
-	.remove_child = tgui_expander_remove_child,
+static int tgui_expander_constructor(void *object) {
+	tgui_expander_get_parent_class()->constructor(object);
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
+	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_expander_click, NULL);
+	return 0;
+}
 
-	// the expander is basicly a box
-	.calculate_sizes = tgui_box_calculate_sizes,
-	.allocate_space  = tgui_box_allocate_space,
-};
+static void tgui_expander_class_init(tgui_expander_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->remove_child = tgui_expander_remove_child;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_expander_constructor;
+}
 
 tgui_expander_t *tgui_expander_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&expander_class);
-	if (!widget) return NULL;
+	return tobject_new(tgui_expander_get_type());
 
-	tgui_expander_t *expander = TGUI_EXPANDER_CAST(widget);
-	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_expander_click, NULL);
-	return expander;
 }
 
 void tgui_expander_set_title_text(tgui_expander_t *expander, const char *text) {
-	if (tgui_widget_is_class(expander->title, "label")) {
+	if (tgui_widget_is_type(expander->title, tgui_label_get_type())) {
 		// we already have a label
 		tgui_label_set_text(TGUI_LABEL_CAST(expander->title), text);
 	} else {
@@ -55,7 +58,7 @@ void tgui_expander_set_title_child(tgui_expander_t *expander, tgui_widget_t *chi
 	if (expander->title) {
 		tgui_widget_destroy(expander->title);
 	}
-	tgui_box_prepend_widget(&expander->box, child);
+	tgui_box_prepend_widget(TGUI_BOX_CAST(expander), child);
 	expander->title = child;
 }
 
@@ -64,7 +67,7 @@ void tgui_expander_set_child(tgui_expander_t *expander, tgui_widget_t *child) {
 	if (expander->child) {
 		tgui_widget_destroy(expander->child);
 	}
-	tgui_box_append_widget(&expander->box, child);
+	tgui_box_append_widget(TGUI_BOX_CAST(expander), child);
 	expander->child = child;
 	if (tgui_expander_is_expanded(expander)) {
 		tgui_widget_show(child);

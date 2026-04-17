@@ -3,8 +3,12 @@
 #include <paned.h>
 #include <box.h>
 
+TOBJECT_DEFINE_CLASS(tgui_paned, TGUI_PANED, tgui_box_get_type())
+
 static void tgui_paned_calculate_sizes(tgui_widget_t *widget) {
-	tgui_box_calculate_sizes(widget);
+	// use the parent class's calculate size
+	TGUI_WIDGET_CLASS_CAST(tgui_paned_get_parent_class())->calculate_sizes(widget);
+
 	tgui_paned_t *paned = TGUI_PANED_CAST(widget);
 	if (widget->orientation == TGUI_ORIENTATION_VERTICAL) {
 		if (paned->amount < paned->first->min_height) {
@@ -39,6 +43,15 @@ static void tgui_paned_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
+static void tgui_paned_set_orientation(tgui_widget_t *widget, int orientation) {
+	tgui_paned_t *paned = TGUI_PANED_CAST(widget);
+	if (orientation == TGUI_ORIENTATION_VERTICAL) {
+		tgui_widget_set_orientation(TGUI_WIDGET_CAST(paned->handle), TGUI_ORIENTATION_HORIZONTAL);
+	} else {
+		tgui_widget_set_orientation(TGUI_WIDGET_CAST(paned->handle), TGUI_ORIENTATION_VERTICAL);
+	}
+}
+
 static int tgui_paned_click(tgui_event_t *event) {
 	tgui_paned_t *paned = TGUI_PANED_CAST(event->widget->parent);
 	if (paned->box.widget.orientation == TGUI_ORIENTATION_VERTICAL) {
@@ -60,28 +73,34 @@ static int tgui_paned_move(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-static tgui_widget_class_t paned_class = {
-	.size = sizeof(tgui_paned_t),
-	.name = "paned",
-	.calculate_sizes = tgui_paned_calculate_sizes,
-	.allocate_space  = tgui_paned_allocate_space,
+static int tgui_paned_constructor(void *object) {
+	tgui_paned_get_parent_class()->constructor(object);
+
+	tgui_paned_t *paned = TGUI_PANED_CAST(object);
+	paned->handle = tgui_separator_new(TGUI_ORIENTATION_VERTICAL);
+	tgui_box_append_widget(TGUI_BOX_CAST(object), TGUI_WIDGET_CAST(paned->handle));
+
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
+	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_paned_click, NULL);
+	tgui_widget_set_callback(widget, TGUI_EVENT_MOVE, tgui_paned_move, NULL);
+	return 0;
+}
+
+static void tgui_paned_class_init(tgui_paned_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_paned_calculate_sizes,
+	widget_class->allocate_space  = tgui_paned_allocate_space;
+	widget_class->set_orientation = tgui_paned_set_orientation;
 	// TODO : remove child
-};
+	
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_paned_constructor;
+}
 
 tgui_paned_t *tgui_paned_new(int orientation) {
-	tgui_widget_t *widget = tgui_widget_new(&paned_class);
-	if (!widget) return NULL;
-
-	tgui_paned_t *paned = TGUI_PANED_CAST(widget);
-	if (orientation == TGUI_ORIENTATION_VERTICAL) {
-		paned->handle = tgui_separator_new(TGUI_ORIENTATION_HORIZONTAL);
-	} else {
-		paned->handle = tgui_separator_new(TGUI_ORIENTATION_VERTICAL);
-	}
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(paned->handle), TGUI_EVENT_CLICK, tgui_paned_click, NULL);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(paned->handle), TGUI_EVENT_MOVE, tgui_paned_move, NULL);
+	tgui_paned_t *paned = tobject_new(tgui_paned_get_type());
+	if (!paned) return NULL;
 	tgui_widget_set_orientation(TGUI_WIDGET_CAST(paned), orientation);
-	tgui_box_append_widget(&paned->box, TGUI_WIDGET_CAST(paned->handle));
 
 	return paned;
 }

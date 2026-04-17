@@ -2,6 +2,8 @@
 #include <platform.h>
 #include <icon.h>
 
+TOBJECT_DEFINE_CLASS(tgui_icon, TGUI_ICON, tgui_widget_get_type())
+
 static void tgui_icon_calculate_sizes(tgui_widget_t *widget) {
 	tgui_icon_t *icon = TGUI_ICON_CAST(widget);
 	if (!icon->image) return;
@@ -18,18 +20,15 @@ static void tgui_icon_render(tgui_widget_t *widget) {
 	tgui_platform_render_image(surface, widget->x, widget->y, icon->image);
 }
 
-static tgui_widget_class_t icon_class = {
-	.size = sizeof(tgui_icon_t),
-	.name = "icon",
-	.calculate_sizes = tgui_icon_calculate_sizes,
-	.render          = tgui_icon_render,
-};
+static void tgui_icon_class_init(tgui_icon_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_icon_calculate_sizes;
+	widget_class->render          = tgui_icon_render;
+}
 
 tgui_icon_t *tgui_icon_new(const char *name) {
-	tgui_widget_t *widget = tgui_widget_new(&icon_class);
-	if (!widget) return NULL;
-
-	tgui_icon_t *icon = TGUI_ICON_CAST(widget);
+	tgui_icon_t *icon = tobject_new(tgui_icon_get_type());
+	if (!icon) return NULL;
 	tgui_icon_set(icon, name);
 	return icon;
 }

@@ -3,15 +3,15 @@
 
 #include "widget.h"
 
-typedef struct tgui_grid {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_grid, TGUI_GRID, tgui_widget)
+
+struct tgui_grid {
 	tgui_widget_t widget;
 	unsigned int columns;
 	unsigned int rows;
 	tgui_widget_t **grid;
 	int flags;
-} tgui_grid_t;
-
-#define TGUI_GRID_CAST(w) TGUI_CONTAINER_OF(w, tgui_grid_t, widget)
+};
 
 #define TGUI_GRID_SAME_WIDTH  0x01
 #define TGUI_GRID_SAME_HEIGHT 0x02

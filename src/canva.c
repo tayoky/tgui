@@ -1,46 +1,53 @@
 #include <canva.h>
 #include <platform.h>
 
-static void tgui_canva_free(tgui_widget_t *widget) {
-    tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
-    tgui_platform_canva_destroy(canva);
+TOBJECT_DEFINE_CLASS(tgui_canva, TGUI_CANVA, tgui_widget_get_type())
+
+static int tgui_canva_destructor(void *object) {
+	tgui_canva_t *canva = TGUI_CANVA_CAST(object);
+	tgui_platform_canva_destroy(canva);
+	return tgui_canva_get_parent_class()->destructor(object);
+}
+
+static int tgui_canva_constructor(void *object) {
+	tgui_canva_get_parent_class()->constructor(object);
+	tgui_canva_t *canva = TGUI_CANVA_CAST(object);
+	tgui_platform_canva_create(canva);
+	return 0;
 }
 
 static void tgui_canva_allocate_space(tgui_widget_t *widget) {
-    tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
+	tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
 
-    // the canva reszied we need to recreate the context
-    tgui_platform_canva_destroy(canva);
-    tgui_platform_canva_create(canva);
+	// the canva reszied we need to recreate the context
+	tgui_platform_canva_destroy(canva);
+	tgui_platform_canva_create(canva);
 }
 
 static void tgui_canva_render(tgui_widget_t *widget) {
-    tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
-    tgui_platform_push_canva(canva);
+	tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
+	tgui_platform_push_canva(canva);
 }
 
-static tgui_widget_class_t canva_class  = {
-    .size = sizeof(tgui_canva_t),
-    .name = "canva",
-    .free = tgui_canva_free,
-    .allocate_space = tgui_canva_allocate_space,
-    .render         = tgui_canva_render,
-};
+static void tgui_canva_class_init(tgui_canva_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->allocate_space = tgui_canva_allocate_space;
+	widget_class->render         = tgui_canva_render;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_canva_constructor;
+	tobject_class->destructor  = tgui_canva_destructor;
+}
 
 tgui_canva_t *tgui_canva_new(void) {
-    tgui_widget_t *widget = tgui_widget_new(&canva_class);
-    if (!widget) return NULL;
-    
-    tgui_canva_t *canva = TGUI_CANVA_CAST(widget);
-    tgui_platform_canva_create(canva);
-    return canva;
+	return tobject_new(tgui_canva_get_type());
 }
 
 void *tgui_canva_get_ctx(tgui_canva_t *canva) {
-    return canva->private;
+	return canva->private;
 }
 
 void tgui_canva_set_dirty(tgui_canva_t *canva, long x, long y, long width, long height) {
-    tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(canva));
-    tgui_surface_invalidate(surface, canva->widget.x + x, canva->widget.y + y, width, height);
+	tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(canva));
+	tgui_surface_invalidate(surface, canva->widget.x + x, canva->widget.y + y, width, height);
 }

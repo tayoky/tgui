@@ -1,5 +1,7 @@
 #include <listview.h>
 
+TOBJECT_DEFINE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_widget_get_type())
+
 static void tgui_list_view_calculate_sizes(tgui_widget_t *widget) {
 	// the idea is pretty simple
 	// take the average size of visible widgets
@@ -100,17 +102,15 @@ static void tgui_list_view_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
-static tgui_widget_class_t list_view_class = {
-	.size = sizeof(tgui_list_view_t),
-	.name = "list view",
-	.calculate_sizes = tgui_list_view_calculate_sizes,
-	.allocate_space = tgui_list_view_allocate_space,
-};
+static void tgui_list_view_class_init(tgui_list_view_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_list_view_calculate_sizes;
+	widget_class->allocate_space = tgui_list_view_allocate_space;
+}
 
 tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_t *list) {
-	tgui_widget_t *widget = tgui_widget_new(&list_view_class);
-
-	tgui_list_view_t *list_view = TGUI_LIST_VIEW_CAST(widget);
+	tgui_list_view_t *list_view = tobject_new(tgui_list_view_get_type());
+	if (!list_view) return NULL;
 	list_view->factory = factory;
 	list_view->list    = list;
 	return list_view;

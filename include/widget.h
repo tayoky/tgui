@@ -7,21 +7,18 @@
 #include "font.h"
 #include "style.h"
 #include "events.h"
+#include "tobject.h"
 
-struct tgui_css;
-typedef struct tgui_widget tgui_widget_t;
+TOBJECT_DECLARE_CLASS(tgui_widget, TGUI_WIDGET)
 
-typedef struct tgui_widget_class {
-	size_t size;
-	const char *name;
-	tgui_widget_t *(*new)(void);
-	void (*free)(tgui_widget_t *);
+struct tgui_widget_class {
+	tobject_class_t parent_class;
 	void (*calculate_sizes)(tgui_widget_t *);
 	void (*allocate_space)(tgui_widget_t *);
 	void (*remove_child)(tgui_widget_t *, tgui_widget_t *child);
 	void (*render)(tgui_widget_t *);
 	void (*set_orientation)(tgui_widget_t *, int);
-} tgui_widget_class_t;
+};
 
 #define TGUI_STATE_NORMAL   0
 #define TGUI_STATE_HOVER    1
@@ -37,13 +34,13 @@ typedef struct tgui_style_node {
 #define TGUI_STYLE_FROM_NODE(n) (TGUI_CONTAINER_OF(n, tgui_style_node_t, node)->style)
 
 struct tgui_widget {
+	tobject_t tobject;
 	tgui_list_node_t node;
 	tgui_list_t children;
 	tgui_widget_t *parent;
 	tgui_widget_class_t *class;
 	char *id;
 	void *layout_data; // usef by parent
-	tgui_list_t css;
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
 	tgui_list_t styles;
 	tgui_style_t cache_style;
@@ -85,19 +82,16 @@ struct tgui_widget {
 #define TGUI_ORIENTATION_VERTICAL   0
 #define TGUI_ORIENTATION_HORIZONTAL 1
 
-#define TGUI_WIDGET_CAST(w) ((tgui_widget_t*)w)
 #define TGUI_CONTAINER_OF(ptr, type, member) ((type *)((char*)(ptr) - offsetof(type, member)))
 #define TGUI_WIDGET_FROM_NODE(n) TGUI_CONTAINER_OF(n, tgui_widget_t, node)
 
 #define TGUI_FALSE 0
 #define TGUI_TRUE  1
 
-tgui_widget_t *tgui_widget_new(tgui_widget_class_t *class);
 void tgui_widget_destroy(tgui_widget_t *widget);
 void tgui_widget_calculate_sizes(tgui_widget_t *widget);
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height);
 void tgui_widget_render(tgui_widget_t *widget);
-int tgui_widget_is_class(tgui_widget_t *widget, const char *class_name);
 void tgui_widget_set_id(tgui_widget_t *widget, const char *id);
 
 void tgui_widget_mark_dirty(tgui_widget_t *widget);
