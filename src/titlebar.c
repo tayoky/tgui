@@ -36,7 +36,7 @@ static int tgui_title_bar_constructor(void *object) {
 	title_bar->maximize = tgui_button_new();
 	tgui_button_set_icon(title_bar->maximize, "window-maximize");
 	title_bar->close    = tgui_button_new();
-	tgui_button_set_text(title_bar->close, "X");
+	tgui_button_set_icon(title_bar->close, "window-close");
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(title_bar->close), TGUI_EVENT_CLICK, tgui_close_click, NULL);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(title_bar->title));
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(title_bar->minimize));
