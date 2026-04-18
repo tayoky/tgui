@@ -207,6 +207,7 @@ void tgui_platform_handle_event(void) {
 		case TWM_INPUT_MOVE:
 			stanix_window->cursor_x = input_event->move.abs_x;
 			stanix_window->cursor_y = input_event->move.abs_y;
+			tgui_input_move(surface, input_event->move.abs_x, input_event->move.abs_y);
 			break;
 		case TWM_INPUT_KEY:
 			switch (input_event->key.scancode) {
