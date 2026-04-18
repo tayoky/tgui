@@ -5,15 +5,15 @@
 #include "button.h"
 #include "label.h"
 
-typedef struct tgui_title_bar {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_title_bar, TGUI_TITLE_BAR, tgui_box)
+
+struct tgui_title_bar {
 	tgui_box_t box;
 	tgui_label_t *title;
 	tgui_button_t *minimize;
 	tgui_button_t *maximize;
 	tgui_button_t *close;
-} tgui_title_bar_t;
-
-#define TGUI_TITLE_BAR_CAST(w) TGUI_CONTAINER_OF(w, tgui_title_bar_t, box.widget)
+};
 
 tgui_title_bar_t *tgui_title_bar_new(void);
 void tgui_title_bar_set_minimizable(tgui_title_bar_t *bar, int enabled);

@@ -7,6 +7,8 @@
 
 static tgui_list_t windows;
 
+TOBJECT_DEFINE_CLASS(tgui_window, TGUI_WINDOW, tgui_surface_get_type())
+
 static void tgui_window_calculate_sizes(tgui_widget_t *widget) {
 	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
 	tgui_widget_t *bar = TGUI_WIDGET_CAST(window->title_bar);
@@ -48,43 +50,51 @@ static void tgui_window_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
-static void tgui_window_free(tgui_widget_t *widget) {
-	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
-	tgui_list_remove(&windows, &window->node);
-	tgui_surface_unregister(&window->surface);
-	tgui_platform_close_window(window);
-	free(window->title);
-}
-
-static tgui_widget_class_t window_class = {
-	.name = "window",
-	.size = sizeof(tgui_window_t),
-	.calculate_sizes = tgui_window_calculate_sizes,
-	.allocate_space  = tgui_window_allocate_space,
-	.remove_child = tgui_surface_remove_child,
-	.free = tgui_window_free,
-};
-
-tgui_window_t *tgui_window_new(const char *title, long width, long height) {
-	tgui_widget_t *widget = tgui_widget_new(&window_class);
-	if (!widget) return NULL;
-
-
-	tgui_window_t *window = TGUI_WINDOW_CAST(widget);
+static int tgui_window_constructor(void *object) {
+	// skip the surface constructor
+	tgui_widget_get_type()->class->constructor(object);
+	
+	tgui_window_t *window = TGUI_WINDOW_CAST(object);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(window), TGUI_TRUE);
-	window->surface.width  = width;
-	window->surface.height = height;
 	window->surface.scaling = 1;
-	window->title = strdup(title ? title : "tgui window");
 	window->title_bar = tgui_title_bar_new();
-	tgui_title_bar_set_title(window->title_bar, window->title);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window->title_bar), TGUI_TRUE);
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(window->title_bar), TGUI_WIDGET_CAST(window));
+	return 0;
+}
+
+static int tgui_window_destructor(void *object) {
+	tgui_window_t *window = TGUI_WINDOW_CAST(object);
+	tgui_list_remove(&windows, &window->node);
+	tgui_surface_unregister(TGUI_SURFACE_CAST(window));
+	tgui_platform_close_window(window);
+	free(window->title);
+	return 0;
+}
+
+static void tgui_window_class_init(tgui_window_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_window_calculate_sizes;
+	widget_class->allocate_space  = tgui_window_allocate_space;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_window_constructor;
+	tobject_class->destructor  = tgui_window_destructor;
+}
+
+tgui_window_t *tgui_window_new(const char *title, long width, long height) {
+	tgui_window_t *window = tobject_new(tgui_window_get_type());
+	if (!window) return NULL;
+
+	// TODO : move this to constructor
+	window->surface.width  = width;
+	window->surface.height = height;
+	window->title = strdup(title ? title : "tgui window");
+	tgui_title_bar_set_title(window->title_bar, window->title);
 	tgui_platform_create_window(window);
 	tgui_list_append(&windows, &window->node);
 	tgui_surface_register(&window->surface);
-
 	tgui_surface_invalidate(&window->surface, 0, 0, width, height);
 	return window;
 }

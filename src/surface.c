@@ -7,27 +7,46 @@
 
 static tgui_list_t surfaces;
 
-void tgui_surface_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
+TOBJECT_DEFINE_CLASS(tgui_surface, TGUI_SURFACE, tgui_widget_get_type())
+
+static void tgui_surface_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
 	tgui_surface_t *surface = TGUI_SURFACE_CAST(widget);
 	if (surface->child == child) {
 		surface->child = NULL;
 	}
 }
 
-static void tgui_surface_free(tgui_widget_t *widget) {
-	tgui_surface_t *surface = TGUI_SURFACE_CAST(widget);
-	tgui_surface_unregister(surface);
-	tgui_platform_close_surface(surface);
+static int tgui_surface_constructor(void *object) {
+	tgui_surface_get_parent_class()->constructor(object);
+
+	tgui_surface_t *surface = TGUI_SURFACE_CAST(object);
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(surface), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(surface), TGUI_TRUE);
+	surface->scaling = 1;
+
+	// TODO : do more init here
+
+	return 0;
 }
 
-static tgui_widget_class_t surface_class = {
-	.name = "surface",
-	.size = sizeof(tgui_surface_t),
-	.calculate_sizes = tgui_container_single_calculate_sizes,
-	.allocate_space  = tgui_container_single_allocate_space,
-	.remove_child = tgui_surface_remove_child,
-	.free = tgui_surface_free,
-};
+static int tgui_surface_destructor(void *object) {
+	tgui_surface_t *surface = TGUI_SURFACE_CAST(object);
+	tgui_surface_unregister(surface);
+	tgui_platform_close_surface(surface);
+
+	return tgui_surface_get_parent_class()->destructor(object);
+}
+
+static void tgui_surface_class_init(tgui_surface_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
+	widget_class->allocate_space  = tgui_container_single_allocate_space;
+	widget_class->remove_child    = tgui_surface_remove_child;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_surface_constructor;
+	tobject_class->destructor  = tgui_surface_destructor;
+}
 
 static void tgui_surface_reset_dirty(tgui_surface_t *surface) {
 	surface->inval_start_x = LONG_MAX;
@@ -37,16 +56,12 @@ static void tgui_surface_reset_dirty(tgui_surface_t *surface) {
 }
 
 tgui_surface_t *tgui_surface_new(long width, long height, tgui_surface_t *parent) {
-	tgui_widget_t *widget = tgui_widget_new(&surface_class);
-	if (!widget) return NULL;
+	tgui_surface_t *surface = tobject_new(tgui_surface_get_type());
+	if (!surface) return NULL;
 
-
-	tgui_surface_t *surface = TGUI_SURFACE_CAST(widget);
-	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(surface), TGUI_TRUE);
-	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(surface), TGUI_TRUE);
+	// TODO : move this to constructor
 	surface->width  = width;
 	surface->height = height;
-	surface->scaling = 1;
 
 	tgui_platform_create_surface(surface, parent);
 	tgui_surface_register(surface);

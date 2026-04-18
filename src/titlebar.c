@@ -4,12 +4,7 @@
 #include <button.h>
 #include <label.h>
 
-static tgui_widget_class_t title_bar_class = {
-	.size = sizeof(tgui_title_bar_t),
-	.name = "title bar",
-	.calculate_sizes = tgui_box_calculate_sizes,
-	.allocate_space  = tgui_box_allocate_space,
-};
+TOBJECT_DEFINE_CLASS(tgui_title_bar, TGUI_TITLE_BAR, tgui_box_get_type())
 
 static int tgui_close_click(tgui_event_t *event) {
 	tgui_window_t *window = tgui_widget_get_window(event->widget);
@@ -23,11 +18,12 @@ static int tgui_title_bar_click(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-tgui_title_bar_t *tgui_title_bar_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&title_bar_class);
-	if (!widget) return NULL;
+static int tgui_title_bar_constructor(void *object) {
+	tgui_title_bar_get_parent_class()->constructor(object);
 
-	tgui_title_bar_t *title_bar = TGUI_TITLE_BAR_CAST(widget);
+	tgui_title_bar_t *title_bar = TGUI_TITLE_BAR_CAST(object);
+	tgui_box_t *box = TGUI_BOX_CAST(object);
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
 	tgui_widget_set_orientation(widget, TGUI_ORIENTATION_HORIZONTAL);
 	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_title_bar_click, NULL);
 	title_bar->title = tgui_label_new("tgui window");
@@ -42,11 +38,20 @@ tgui_title_bar_t *tgui_title_bar_new(void) {
 	title_bar->close    = tgui_button_new();
 	tgui_button_set_text(title_bar->close, "X");
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(title_bar->close), TGUI_EVENT_CLICK, tgui_close_click, NULL);
-	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->title));
-	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->minimize));
-	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->maximize));
-	tgui_box_append_widget(&title_bar->box, TGUI_WIDGET_CAST(title_bar->close));
-	return title_bar;
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(title_bar->title));
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(title_bar->minimize));
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(title_bar->maximize));
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(title_bar->close));
+	return 0;
+}
+
+static void tgui_title_bar_class_init(tgui_title_bar_class_t *class) {
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_title_bar_constructor;
+}
+
+tgui_title_bar_t *tgui_title_bar_new(void) {
+	return tobject_new(tgui_title_bar_get_type());
 }
 
 void tgui_title_bar_set_minimizable(tgui_title_bar_t *bar, int enabled) {

@@ -4,12 +4,12 @@
 #include "box.h"
 #include "stack.h"
 
-typedef struct tgui_stack_switcher {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_stack_switcher, TGUI_STACK_SWITCHER, tgui_box)
+
+struct tgui_stack_switcher {
 	tgui_box_t box;
 	tgui_stack_t *stack;
-} tgui_stack_switcher_t;
-
-#define TGUI_STACK_SWITCHER_CAST(w) TGUI_CONTAINER_OF(w, tgui_stack_switcher_t, box.widget)
+};
 
 tgui_stack_switcher_t *tgui_stack_switcher_new(void);
 void tgui_stack_switcher_update(tgui_stack_switcher_t *stack_switcher);

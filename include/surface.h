@@ -38,7 +38,6 @@ tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface);
 void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width, long height);
 void tgui_surface_register(tgui_surface_t *surface);
 void tgui_surface_unregister(tgui_surface_t *surface);
-void tgui_surface_remove_child(tgui_widget_t *widget, tgui_widget_t *child);
 
 static inline tgui_surface_t *tgui_widget_get_surface(tgui_widget_t *widget) {
 	while (widget) {

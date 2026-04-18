@@ -64,8 +64,10 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 		return;
 	}
 	widget->flags &= ~TGUI_WIDGET_DIRTY_SIZE;
-	if (widget->class->calculate_sizes) {
-		widget->class->calculate_sizes(widget);
+
+	tgui_widget_class_t *class = tgui_widget_get_class(widget);
+	if (class->calculate_sizes) {
+		class->calculate_sizes(widget);
 	} else {
 		widget->min_width = 0;
 		widget->min_height = 0;
@@ -186,8 +188,9 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 	}
 	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 
-	if (widget->class->allocate_space) {
-		widget->class->allocate_space(widget);
+	tgui_widget_class_t *class = tgui_widget_get_class(widget);
+	if (class->allocate_space) {
+		class->allocate_space(widget);
 	}
 }
 
@@ -218,8 +221,9 @@ void tgui_widget_render(tgui_widget_t *widget) {
 	if (tgui_widget_is_hidden(widget)) return;
 	if (!tgui_widget_is_dirty(widget)) return;
 	tgui_render_widget_base(widget);
-	if (widget->class->render) {
-		widget->class->render(widget);
+	tgui_widget_class_t *class = tgui_widget_get_class(widget);
+	if (class->render) {
+		class->render(widget);
 	}
 	TGUI_LIST_FOREACH(node, &widget->children) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
@@ -231,8 +235,9 @@ void tgui_widget_remove_parent(tgui_widget_t *child) {
 	if (!child) return;
 	tgui_widget_t *parent = child->parent;
 	if (!parent) return;
-	if (parent->class->remove_child) {
-		parent->class->remove_child(parent, child);
+	tgui_widget_class_t *class = tgui_widget_get_class(parent);
+	if (class->remove_child) {
+		class->remove_child(parent, child);
 	}
 	child->parent = NULL;
 	tgui_list_remove(&parent->children, &child->node);

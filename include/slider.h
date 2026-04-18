@@ -4,7 +4,9 @@
 #include "widget.h"
 #include "button.h"
 
-typedef struct tgui_slider {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_slider, TGUI_SLIDER, tgui_widget)
+
+struct tgui_slider {
 	tgui_widget_t widget;
 	tgui_button_t *button;
 	double min;
@@ -12,9 +14,8 @@ typedef struct tgui_slider {
 	double value;
 	double size;
 	long offset;
-} tgui_slider_t;
+};
 
-#define TGUI_SLIDER_CAST(w) TGUI_CONTAINER_OF(w, tgui_slider_t, widget)
 #define TGUI_SLIDER_SIZE_AUTO -1
 
 tgui_slider_t *tgui_slider_new(int orientation);

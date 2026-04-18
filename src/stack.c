@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+TOBJECT_DEFINE_CLASS(tgui_stack, TGUI_STACK, tgui_widget_get_type())
+
 static void tgui_stack_calculate_sizes(tgui_widget_t *widget) {
 	tgui_stack_t *stack = TGUI_STACK_CAST(widget);
 	if (!stack->current) return;
@@ -37,20 +39,15 @@ static void tgui_stack_remove_child(tgui_widget_t *widget, tgui_widget_t *child)
 	free(page);
 }
 
-static tgui_widget_class_t stack_class = {
-	.size = sizeof(tgui_stack_t),
-	.name = "stack",
-	.calculate_sizes = tgui_stack_calculate_sizes,
-	.allocate_space  = tgui_stack_allocate_space,
-	.remove_child    = tgui_stack_remove_child,
-};
+static void tgui_stack_class_init(tgui_stack_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_stack_calculate_sizes;
+	widget_class->allocate_space  = tgui_stack_allocate_space;
+	widget_class->remove_child    = tgui_stack_remove_child;
+}
 
 tgui_stack_t *tgui_stack_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&stack_class);
-	if (!widget) return NULL;
-
-	tgui_stack_t *stack = TGUI_STACK_CAST(widget);
-	return stack;
+	return tobject_new(tgui_stack_get_type());
 }
 
 void tgui_stack_add_child(tgui_stack_t *stack, tgui_widget_t *child, const char *name) {

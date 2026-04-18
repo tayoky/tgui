@@ -3,23 +3,20 @@
 #include <button.h>
 #include <box.h>
 
-static tgui_widget_class_t stack_switcher_class = {
-	.size = sizeof(tgui_stack_switcher_t),
-	.name = "stack switcher",
+TOBJECT_DEFINE_CLASS(tgui_stack_switcher, TGUI_STACK_SWITCHER, tgui_box_get_type())
 
-	// mostly a box
-	.calculate_sizes = tgui_box_calculate_sizes,
-	.allocate_space  = tgui_box_allocate_space,
-};
+static void tgui_stack_switcher_class_init(tgui_stack_switcher_class_t *class) {
+	(void)class;
+}
 
 tgui_stack_switcher_t *tgui_stack_switcher_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&stack_switcher_class);
-	if (!widget) return NULL;
+	tgui_stack_switcher_t *stack_switcher = tobject_new(tgui_stack_switcher_get_type());
+	if (!stack_switcher) return NULL;
 
 	// use horizontal by default
-	tgui_widget_set_orientation(widget, TGUI_ORIENTATION_HORIZONTAL);
+	tgui_widget_set_orientation(TGUI_WIDGET_CAST(stack_switcher), TGUI_ORIENTATION_HORIZONTAL);
 
-	return TGUI_STACK_SWITCHER_CAST(widget);
+	return stack_switcher;
 }
 
 static int tgui_stack_switcher_button_click(tgui_event_t *event) {

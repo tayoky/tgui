@@ -20,6 +20,7 @@
 		return (class_name ## _class_t*)ptr;\
 	}\
 	static inline ttype_t *class_name ## _type_from_object(class_name ## _t *object) {\
+		if (!object) return NULL;\
 		return TOBJECT_CAST(object)->type;\
 	}\
 	ttype_t *class_name ## _get_type(void);\
@@ -61,7 +62,9 @@
 		if (!class_name ## _type.is_init) {\
 			class_name ## _type.parent_type = parent;\
 			class_name ## _type.class = TOBJECT_CLASS_CAST(&class_name ## _class);\
-			memcpy(&class_name ## _class, class_name ## _type.parent_type->class, class_name ## _type.parent_type->class_size);\
+			if (class_name ## _type.parent_type) {\
+				memcpy(&class_name ## _class, class_name ## _type.parent_type->class, class_name ## _type.parent_type->class_size);\
+			}\
 			class_name ## _class_init(&class_name ## _class);\
 			class_name ## _type.is_init = 1;\
 		}\

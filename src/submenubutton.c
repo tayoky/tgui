@@ -1,5 +1,7 @@
 #include <submenubutton.h>
 
+TOBJECT_DEFINE_CLASS(tgui_submenu_button, TGUI_SUBMENU_BUTTON, tgui_button_get_type())
+
 static int tgui_submenu_button_click(tgui_event_t *event) {
 	tgui_submenu_button_t *submenu_button = TGUI_SUBMENU_BUTTON_CAST(event->widget);
 	// TODO : use direction
@@ -11,20 +13,24 @@ static int tgui_submenu_button_click(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-static tgui_widget_class_t submenu_button_class = {
-	.size = sizeof(tgui_submenu_button_t),
-	.name = "submenu button",
-	.calculate_sizes = tgui_container_single_calculate_sizes,
-	.allocate_space  = tgui_container_single_allocate_space,
-};
+static int tgui_submenu_button_constructor(void *object) {
+	tgui_submenu_button_get_parent_class()->constructor(object);
+
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
+	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_submenu_button_click, NULL);
+	return 0;
+}
+
+static void tgui_submenu_button_class_init(tgui_submenu_button_class_t *class) {
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_submenu_button_constructor;
+}
 
 tgui_submenu_button_t *tgui_submenu_button_new(tgui_popover_t *popover, const char *name) {
-	tgui_widget_t *widget = tgui_widget_new(&submenu_button_class);
+	tgui_submenu_button_t *submenu_button = tobject_new(tgui_submenu_button_get_type());
+	if (!submenu_button) return NULL;
 
-	tgui_submenu_button_t *submenu_button = TGUI_SUBMENU_BUTTON_CAST(widget);
-	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_submenu_button_click, NULL);
 	submenu_button->popover = popover;
-
 	tgui_button_set_text(&submenu_button->button, name);
 	return submenu_button;
 }

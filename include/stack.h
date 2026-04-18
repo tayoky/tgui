@@ -11,13 +11,13 @@ typedef struct tgui_stack_page {
 
 #define TGUI_STACK_PAGE_CAST(n) TGUI_CONTAINER_OF(n, tgui_stack_page_t, node)
 
-typedef struct tgui_stack {
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_stack, TGUI_STACK, tgui_widget)
+
+struct tgui_stack {
 	tgui_widget_t widget;
 	tgui_list_t pages;
 	tgui_widget_t *current;
-} tgui_stack_t;
-
-#define TGUI_STACK_CAST(w) TGUI_CONTAINER_OF(w, tgui_stack_t, widget)
+};
 
 tgui_stack_t *tgui_stack_new(void);
 void tgui_stack_add_child(tgui_stack_t *stack, tgui_widget_t *child, const char *name);

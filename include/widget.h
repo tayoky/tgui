@@ -38,7 +38,6 @@ struct tgui_widget {
 	tgui_list_node_t node;
 	tgui_list_t children;
 	tgui_widget_t *parent;
-	tgui_widget_class_t *class;
 	char *id;
 	void *layout_data; // usef by parent
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
@@ -205,8 +204,9 @@ static inline char tgui_widget_get_state(tgui_widget_t *widget) {
 static inline void tgui_widget_set_orientation(tgui_widget_t *widget, char orientation) {
 	if (widget->orientation == orientation) return;
 	widget->orientation = orientation;
-	if (widget->class->set_orientation) {
-		widget->class->set_orientation(widget, orientation);
+	tgui_widget_class_t *class = tgui_widget_get_class(widget);
+	if (class->set_orientation) {
+		class->set_orientation(widget, orientation);
 	}
 	tgui_widget_mark_dirty_size(widget);
 }

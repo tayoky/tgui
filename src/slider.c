@@ -1,6 +1,8 @@
 #include <slider.h>
 #include <button.h>
 
+TOBJECT_DEFINE_CLASS(tgui_slider, TGUI_SLIDER, tgui_widget_get_type())
+
 static void tgui_slider_calculate_sizes(tgui_widget_t *widget) {
 	tgui_slider_t *slider = TGUI_SLIDER_CAST(widget);
 
@@ -110,19 +112,10 @@ static int tgui_slider_button_move(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-static tgui_widget_class_t slider_class = {
-	.size = sizeof(tgui_slider_t),
-	.name = "slider",
-	.calculate_sizes = tgui_slider_calculate_sizes,
-	.allocate_space  = tgui_slider_allocate_space
-};
+static int tgui_slider_constructor(void *object) {
+	tgui_slider_get_parent_class()->constructor(object);
 
-tgui_slider_t *tgui_slider_new(int orientation) {
-	tgui_widget_t *widget = tgui_widget_new(&slider_class);
-	if (!widget) return NULL;
-
-	tgui_slider_t *slider = TGUI_SLIDER_CAST(widget);
-	tgui_widget_set_orientation(widget, orientation);
+	tgui_slider_t *slider = TGUI_SLIDER_CAST(object);
 	slider->min  = 0;
 	slider->max  = 1;
 	slider->size = TGUI_SLIDER_SIZE_AUTO;
@@ -133,6 +126,22 @@ tgui_slider_t *tgui_slider_new(int orientation) {
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(slider->button), TGUI_EVENT_CLICK, tgui_slider_button_click, NULL);
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(slider->button), TGUI_EVENT_MOVE, tgui_slider_button_move, NULL);
 	tgui_slider_set_text(slider, "-");
+	return 0;
+}
+
+static void tgui_slider_class_init(tgui_slider_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_slider_calculate_sizes;
+	widget_class->allocate_space  = tgui_slider_allocate_space;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_slider_constructor;
+}
+
+tgui_slider_t *tgui_slider_new(int orientation) {
+	tgui_slider_t *slider = tobject_new(tgui_slider_get_type());
+	if (!slider) return NULL;
+	tgui_widget_set_orientation(TGUI_WIDGET_CAST(slider), orientation);
 	return slider;
 }
 

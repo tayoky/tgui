@@ -3,8 +3,9 @@
 
 TOBJECT_DEFINE_CLASS(tobject, TOBJECT, NULL)
 
-static void do_nothing(void *object) {
+static int do_nothing(void *object) {
 	(void)object;
+	return 0;
 }
 
 static void tobject_class_init(tobject_class_t *class) {

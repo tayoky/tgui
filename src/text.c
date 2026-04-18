@@ -5,11 +5,7 @@
 
 // handle text input
 
-static void tgui_text_free(tgui_widget_t *widget) {
-	tgui_text_t *text = TGUI_TEXT_CAST(widget);
-	free(text->placeholder);
-	free(text->text);
-}
+TOBJECT_DEFINE_CLASS(tgui_text, TGUI_TEXT, tgui_widget_get_type())
 
 static int tgui_text_key_press(tgui_event_t *event) {
 	tgui_text_t *text = TGUI_TEXT_CAST(event->widget);
@@ -24,23 +20,35 @@ static int tgui_text_key_press(tgui_event_t *event) {
 	return TGUI_EVENT_HANDLED;
 }
 
-static tgui_widget_class_t text_class = {
-	.size = sizeof(tgui_text_t),
-	.name = "text",
-	.free = tgui_text_free,
-	.calculate_sizes = tgui_container_single_calculate_sizes,
-	.allocate_space = tgui_container_single_allocate_space,
-};
+static int tgui_text_constructor(void *object) {
+	tgui_text_get_parent_class()->constructor(object);
 
-tgui_text_t *tgui_text_new(void) {
-	tgui_widget_t *widget = tgui_widget_new(&text_class);
-	if (!widget) return NULL;
-
-	tgui_text_t *text = TGUI_TEXT_CAST(widget);
+	tgui_text_t *text = TGUI_TEXT_CAST(object);
 	text->label = tgui_label_new("");
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(text->label), TGUI_WIDGET_CAST(text));
-	tgui_widget_set_callback(widget, TGUI_EVENT_PRESS, tgui_text_key_press, NULL);
-	return text;
+	tgui_widget_set_callback(TGUI_WIDGET_CAST(text), TGUI_EVENT_PRESS, tgui_text_key_press, NULL);
+	return 0;
+}
+
+static int tgui_text_destructor(void *object) {
+	tgui_text_t *text = TGUI_TEXT_CAST(object);
+	free(text->placeholder);
+	free(text->text);
+	return tgui_text_get_parent_class()->destructor(object);
+}
+
+static void tgui_text_class_init(tgui_text_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
+	widget_class->allocate_space = tgui_container_single_allocate_space;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_text_constructor;
+	tobject_class->destructor = tgui_text_destructor;
+}
+
+tgui_text_t *tgui_text_new(void) {
+	return tobject_new(tgui_text_get_type());
 }
 
 static void tgui_text_update_label(tgui_text_t *text) {
