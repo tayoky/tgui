@@ -13,8 +13,14 @@ struct tgui_submenu_button {
 	char direction;
 };
 
+#define TGUI_DIRECTION_LEFT    0
+#define TGUI_DIRECTION_RIGHT   1
+#define TGUI_DIRECTION_TOP     2
+#define TGUI_DIRECTION_BOTTOM  3
+
 tgui_submenu_button_t *tgui_submenu_button_new(tgui_popover_t *popover, const char *name);
 void tgui_submenu_button_set_popover(tgui_submenu_button_t *submenu_button, tgui_popover_t *popover);
 tgui_popover_t *tgui_submenu_button_get_popover(tgui_submenu_button_t *submenu_button);
+void tgui_submenu_button_set_direction(tgui_submenu_button_t *submenu_button, char direction);
 
 #endif

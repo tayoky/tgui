@@ -4,17 +4,36 @@ TOBJECT_DEFINE_CLASS(tgui_submenu_button, TGUI_SUBMENU_BUTTON, tgui_button_get_t
 
 static int tgui_submenu_button_click(tgui_event_t *event) {
 	tgui_submenu_button_t *submenu_button = TGUI_SUBMENU_BUTTON_CAST(event->widget);
-	// TODO : use direction
 	long x = tgui_widget_get_frame_x(TGUI_WIDGET_CAST(submenu_button));
 	long y = tgui_widget_get_frame_y(TGUI_WIDGET_CAST(submenu_button));
 	long height = tgui_widget_get_frame_height(TGUI_WIDGET_CAST(submenu_button));
-	tgui_popover_set_position(submenu_button->popover, x, y + height);
+	long width = tgui_widget_get_frame_height(TGUI_WIDGET_CAST(submenu_button));
+
+	switch (submenu_button->direction) {
+	case TGUI_DIRECTION_LEFT:
+		// TODO
+		break;
+	case TGUI_DIRECTION_RIGHT:
+		x += width;
+		break;
+	case TGUI_DIRECTION_TOP:
+		// TODO
+		break;
+	case TGUI_DIRECTION_BOTTOM:
+		y += height;
+		break;
+	}
+	
+	tgui_popover_set_position(submenu_button->popover, x, y);
 	tgui_popover_popup(submenu_button->popover);
 	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_submenu_button_constructor(void *object) {
 	tgui_submenu_button_get_parent_class()->constructor(object);
+
+	tgui_submenu_button_t *submenu_button = TGUI_SUBMENU_BUTTON_CAST(object);
+	submenu_button->direction = TGUI_DIRECTION_BOTTOM;
 
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
 	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_submenu_button_click, NULL);
@@ -41,4 +60,8 @@ void tgui_submenu_button_set_popover(tgui_submenu_button_t *submenu_button, tgui
 
 tgui_popover_t *tgui_submenu_button_get_popover(tgui_submenu_button_t *submenu_button) {
 	return submenu_button->popover;
+}
+
+void tgui_submenu_button_set_direction(tgui_submenu_button_t *submenu_button, char direction) {
+	submenu_button->direction = direction;
 }
