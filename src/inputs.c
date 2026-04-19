@@ -38,19 +38,36 @@ void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y) {
 	tgui_widget_send_event(tgui_surface_get_focus(surface), &event);
 }
 
+static void update_hover(tgui_surface_t *surface, tgui_widget_t *widget) {
+	tgui_widget_t *common_parent = NULL;
+	tgui_widget_t *current = widget;
+	while (current && tgui_widget_get_state(current) == TGUI_STATE_NORMAL) {
+		tgui_widget_set_state(widget, TGUI_STATE_HOVER);
+		current = current->parent;
+	}
+	
+	// the common parent is a parent in common between
+	// the old hover widget and the new one
+	if (current && tgui_widget_get_state(current) == TGUI_STATE_HOVER) {
+		// we have a common parent
+		common_parent = current;
+	}
+
+	current = surface->hover;
+	while (current && tgui_widget_get_state(current) == TGUI_STATE_HOVER && current != common_parent) {
+		tgui_widget_set_state(current, TGUI_STATE_NORMAL);
+		current = current->parent;
+	}
+	surface->hover = widget;
+}
+
 void tgui_input_move(tgui_surface_t *surface, long x, long y) {
 	if (!surface) return;
 	x /= surface->scaling;
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
 	if (widget != surface->hover) {
-		if (surface->hover && tgui_widget_get_state(surface->hover) == TGUI_STATE_HOVER) {
-			tgui_widget_set_state_parent(surface->hover, TGUI_STATE_NORMAL);
-		}
-		if (widget && tgui_widget_get_state(widget) == TGUI_STATE_NORMAL) {
-			tgui_widget_set_state_parent(widget, TGUI_STATE_HOVER);
-		}
-		surface->hover = widget;
+		update_hover(surface, widget);
 	}
 	tgui_event_t event = {
 		.type = TGUI_EVENT_MOVE,

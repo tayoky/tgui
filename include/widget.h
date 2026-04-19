@@ -70,6 +70,7 @@ struct tgui_widget {
 #define TGUI_WIDGET_DIRTY_STYLE 0x10
 #define TGUI_WIDGET_DIRTY_SPACE 0x20
 #define TGUI_WIDGET_HIDDEN      0x40
+#define TGUI_WIDGET_SELECTABLE  0x80
 
 #define TGUI_ALIGN_FILL    0x00
 #define TGUI_ALIGN_LEFT    0x01
@@ -149,17 +150,40 @@ static inline void tgui_widget_show(tgui_widget_t *widget) {
 	tgui_widget_mark_dirty_size(widget->parent);
 }
 
+/**
+ * @brief set the visibility of a widget
+ * @param widget the widget to set the visibility of
+ * @param visible is the widget visible
+ */
 static inline void tgui_widget_set_visible(tgui_widget_t *widget, int visible) {
 	if (!widget) return;
 	if (visible) {
 		tgui_widget_show(widget);
 	} else {
 		tgui_widget_hide(widget);
-		}
+	}
 }
 
 static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_HIDDEN;
+}
+
+static inline void tgui_widget_set_selectable(tgui_widget_t *widget, int selectable) {
+	if (!widget) return;
+	if (selectable) {
+		widget->flags |= TGUI_WIDGET_SELECTABLE;
+	} else {
+		widget->flags &= ~TGUI_WIDGET_SELECTABLE;
+	}
+}
+
+/**
+ * @brief check if a widget is selectable
+ * @param widget the widget to check
+ * @return 1 if selectable else 0
+ */
+static inline int tgui_widget_is_selectable(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_SELECTABLE;
 }
 
 static inline void tgui_widget_set_hexpand(tgui_widget_t *widget, int hexpand) {
@@ -180,6 +204,11 @@ static inline void tgui_widget_set_vexpand(tgui_widget_t *widget, int hexpand) {
 	tgui_widget_mark_dirty_size(widget->parent);
 }
 
+/**
+ * @brief set the state of a widget
+ * @param widget the widget to set the state of
+ * @param state the new state of the widget
+ */
 static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 	if (!widget) return;
 	if (widget->state == state) return;
@@ -190,6 +219,11 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state) {
 	widget->state = state;
 }
 
+/**
+ * @brief set the state of a widget and its parents
+ * @param widget the widget to set the state of
+ * @param state the new state of the widgets
+ */
 static inline void tgui_widget_set_state_parent(tgui_widget_t *widget, char state) {
 	while (widget) {
 		tgui_widget_set_state(widget, state);
@@ -197,8 +231,36 @@ static inline void tgui_widget_set_state_parent(tgui_widget_t *widget, char stat
 	}
 }
 
+/**
+ * @brief set the state of a widget and its parents but only until a specified widget
+ * @param widget the widget to set the state of
+ * @param stop the widget to stop at (the state of thiw widget and its parent will not be changed)
+ * @param state the new state of the widgets
+ * @return 1 if stoped because of stop else return 0
+ */
+static inline int tgui_widget_set_state_parent_stop(tgui_widget_t *widget, tgui_widget_t *stop, char state) {
+	while (widget && widget != stop) {
+		tgui_widget_set_state(widget, state);
+		widget = widget->parent;
+	}
+	return widget == stop;
+}
+
+/**
+ * @brief get the state of a widget
+ * @param widget the widget to get the state of
+ * @return the state of the specified widget
+ */
 static inline char tgui_widget_get_state(tgui_widget_t *widget) {
 	return widget->state;
+}
+
+static inline int tgui_widget_is_parent(tgui_widget_t *parent, tgui_widget_t *child) {
+	while (child) {
+		if (child == parent) return 1;
+		child = child->parent;
+	}
+	return 0;
 }
 
 static inline void tgui_widget_set_orientation(tgui_widget_t *widget, char orientation) {
