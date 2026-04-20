@@ -109,7 +109,7 @@ int main() {
 		return 1;
 	}
 
-	window = tgui_window_new("tgui input test", 640, 480);
+	window = tgui_window_new("tgui demo", 640, 480);
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(window), TGUI_EVENT_DESTROY, close_window, NULL);
 	
 	tgui_box_t *box = tgui_box_new();

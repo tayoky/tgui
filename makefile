@@ -22,25 +22,37 @@ ifeq ($(PLATFORM),twm)
 	LDFLAGS += -ltwm -lgfx
 endif
 
-CFLAGS += -Wall -Wextra -std=c99 -fpic
-CFLAGS += -Iinclude
+CFLAGS += -Wall -Wextra -std=c99
+CFLAGS += -Iinclude -Iinclude/tgui
+DYNFLAGS = -fpic
 
-all : $(BUILDDIR)/libtgui.so
+all : $(BUILDDIR)/libtgui.so $(BUILDDIR)/tgui-demo
 
 $(BUILDDIR)/libtgui.so : $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $@ $^
 
+$(BUILDDIR)/tgui-demo : $(BUILDDIR)/libtgui.so $(BUILDDIR)/test/demo.o
+	@mkdir -p $(shell dirname $@)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(BUILDDIR)/test/demo.o -L$(BUILDDIR) -ltgui
+
 $(BUILDDIR)/%.o : %.c
 	@mkdir -p $(shell dirname $@)
 	$(CC) $(CFLAGS) -o $@ -c $^
+
+$(BUILDDIR)/src/%.o : CFLAGS += $(DYNFLAGS)
+$(BUILDDIR)/platform/%.o : CFLAGS += $(DYNFLAGS)
 	
 install : all
 	@echo '[install headers]'
 	@mkdir -p $(PREFIX)/include/tgui
-	@cp include/*.h $(PREFIX)/include/tgui
+	@cp include/tgui/*.h $(PREFIX)/include/tgui
 	@echo '[install libtgui.so]'
 	@mkdir -p $(PREFIX)/lib
 	@cp $(BUILDDIR)/libtgui.so $(PREFIX)/lib
+	@echo '[install tgui-demo]'
+	@mkdir -p $(PREFIX)/bin
+	@cp $(BUILDDIR)/tgui-demo $(PREFIX)/bin
+
 uninstall :
 	rm -fr $(PREFIX)/include/tgui $(PREFIX)/lib/libtgui.so
 
