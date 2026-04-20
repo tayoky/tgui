@@ -195,7 +195,7 @@ void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y)
 
 void tgui_platform_grab_surface(tgui_surface_t *surface) {
 	x11_window_t *x11_window = surface->private;
-	XGrabPointer(display, x11_window->window, True, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+	XGrabPointer(display, x11_window->window, False, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
 	XGrabKeyboard(display, x11_window->window, True, GrabModeAsync, GrabModeAsync,  CurrentTime);
 }
 

@@ -76,8 +76,11 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 	tgui_surface_t *parent = tgui_widget_get_surface(TGUI_WIDGET_CAST(popover));
 	popover->popped = 1;
 	if (popover->surface) {
-		tgui_platform_grab_surface(popover->surface);
 		tgui_widget_show(TGUI_WIDGET_CAST(popover->surface));
+		// force a render
+		// because some platform need a render to grab input
+		tgui_surface_render(popover->surface);
+		tgui_platform_grab_surface(popover->surface);
 		return;
 	}
 
@@ -85,7 +88,7 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height, parent);
 	TGUI_WIDGET_CAST(popover->surface)->layout_data = popover;
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_CLICK, tgui_popover_click, NULL);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_UNFOCUS, tgui_popover_unfocus, NULL);
+	//tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_UNFOCUS, tgui_popover_unfocus, NULL);
 	tgui_surface_set_position(popover->surface, popover->x, popover->y);
 	tgui_surface_set_child(popover->surface, popover->child);
 	tgui_platform_grab_surface(popover->surface);
