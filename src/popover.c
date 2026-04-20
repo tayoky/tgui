@@ -1,5 +1,6 @@
 #include <popover.h>
 #include <surface.h>
+#include <platform.h>
 
 TOBJECT_DEFINE_CLASS(tgui_popover, TGUI_POPOVER, tgui_widget_get_type())
 
@@ -12,8 +13,8 @@ static void tgui_popover_remove_child(tgui_widget_t *widget, tgui_widget_t *chil
 }
 
 static int tgui_popover_unfocus(tgui_event_t *event) {
-	// hide the popup on unfocus
-	tgui_widget_hide(event->widget);
+	tgui_popover_t *popover = TGUI_POPOVER_CAST(event->widget->layout_data);
+	tgui_popover_popdown(popover);
 	return TGUI_EVENT_HANDLED;
 }
 
@@ -49,21 +50,26 @@ tgui_widget_t *tgui_popover_get_child(tgui_popover_t *popover) {
 }
 
 void tgui_popover_popdown(tgui_popover_t *popover) {
+	if (!popover->popped) return;
 	popover->popped = 0;
 	tgui_widget_hide(TGUI_WIDGET_CAST(popover->surface));
+	tgui_platform_ungrab_surface(popover->surface);
 }
 
 void tgui_popover_popup(tgui_popover_t *popover) {
 	tgui_surface_t *parent = tgui_widget_get_surface(TGUI_WIDGET_CAST(popover));
 	popover->popped = 1;
 	if (popover->surface) {
+		tgui_platform_grab_surface(popover->surface);
 		tgui_widget_show(TGUI_WIDGET_CAST(popover->surface));
 		return;
 	}
 
 	tgui_widget_calculate_sizes(popover->child);
 	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height, parent);
+	TGUI_WIDGET_CAST(popover->surface)->layout_data = popover;
 	tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_UNFOCUS, tgui_popover_unfocus, NULL);
 	tgui_surface_set_position(popover->surface, popover->x, popover->y);
 	tgui_surface_set_child(popover->surface, popover->child);
+	tgui_platform_grab_surface(popover->surface);
 }

@@ -193,6 +193,18 @@ void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y)
 	XMoveWindow(display, x11_window->window, x, y);
 }
 
+void tgui_platform_grab_surface(tgui_surface_t *surface) {
+	x11_window_t *x11_window = surface->private;
+	XGrabPointer(display, x11_window->window, True, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+	XGrabKeyboard(display, x11_window->window, True, GrabModeAsync, GrabModeAsync,  CurrentTime);
+}
+
+void tgui_platform_ungrab_surface(tgui_surface_t *surface) {
+	(void)surface;
+	XUngrabPointer(display, CurrentTime);
+	XUngrabKeyboard(display, CurrentTime);
+}
+
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	XRenderColor x11_color = {
 		.red    = r * 257,
