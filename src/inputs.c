@@ -8,6 +8,7 @@ void tgui_input_click(tgui_surface_t *surface, int button, long x, long y) {
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
 	tgui_surface_set_focus(surface, widget);
+	if (!widget) widget = TGUI_WIDGET_CAST(surface);
 	tgui_widget_set_state_parent(widget, TGUI_STATE_PRESSED);
 	tgui_event_t event = {
 		.type = TGUI_EVENT_CLICK,
