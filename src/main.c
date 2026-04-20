@@ -1,10 +1,15 @@
 #include <platform.h>
 #include <theme.h>
+#include <log.h>
 #include <tgui.h>
+#include <stdlib.h>
 
 static int quit;
 
 int tgui_init(void) {
+	if (getenv("TGUI_DEBUG")) {
+		tgui_log_set_active(TGUI_TRUE);
+	}
 	if (tgui_platform_init() < 0) {
 		return -1;
 	}

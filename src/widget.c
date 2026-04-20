@@ -3,7 +3,7 @@
 #include <surface.h>
 #include <widget.h>
 #include <render.h>
-#include <stdio.h>
+#include <log.h>
 
 typedef struct tgui_style_default {
 	tgui_list_node_t node;
@@ -110,12 +110,12 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 			break;
 		}
 	}
-	printf("got min size of %ldx%ld for %s\n", widget->min_width, widget->min_height, tgui_widget_type_from_object(widget)->name);
+	tgui_log("got min size of %ldx%ld for %s\n", widget->min_width, widget->min_height, tgui_widget_type_from_object(widget)->name);
 	tgui_widget_mark_dirty_space(widget);
 }
 
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height) {
-	printf("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, tgui_widget_type_from_object(widget)->name);
+	tgui_log("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, tgui_widget_type_from_object(widget)->name);
 
 	// we alaways need to recalulate the allocated size
 	// because even if we are not dirty the parent could give us a new space
