@@ -42,7 +42,7 @@ static void update_hover(tgui_surface_t *surface, tgui_widget_t *widget) {
 	tgui_widget_t *common_parent = NULL;
 	tgui_widget_t *current = widget;
 	while (current && tgui_widget_get_state(current) == TGUI_STATE_NORMAL) {
-		tgui_widget_set_state(widget, TGUI_STATE_HOVER);
+		tgui_widget_set_state(current, TGUI_STATE_HOVER);
 		current = current->parent;
 	}
 	
