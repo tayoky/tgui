@@ -1,9 +1,9 @@
 #include <popoverbutton.h>
 
-TOBJECT_DEFINE_CLASS(tgui_popover_button, TGUI_SUBMENU_BUTTON, tgui_button_get_type())
+TOBJECT_DEFINE_CLASS(tgui_popover_button, TGUI_POPOVER_BUTTON, tgui_button_get_type())
 
 static int tgui_popover_button_click(tgui_event_t *event) {
-	tgui_popover_button_t *popover_button = TGUI_SUBMENU_BUTTON_CAST(event->widget);
+	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(event->widget);
 	long x = tgui_widget_get_frame_x(TGUI_WIDGET_CAST(popover_button));
 	long y = tgui_widget_get_frame_y(TGUI_WIDGET_CAST(popover_button));
 	long height = tgui_widget_get_frame_height(TGUI_WIDGET_CAST(popover_button));
@@ -32,7 +32,7 @@ static int tgui_popover_button_click(tgui_event_t *event) {
 static int tgui_popover_button_constructor(void *object) {
 	tgui_popover_button_get_parent_class()->constructor(object);
 
-	tgui_popover_button_t *popover_button = TGUI_SUBMENU_BUTTON_CAST(object);
+	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(object);
 	popover_button->direction = TGUI_DIRECTION_BOTTOM;
 
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
@@ -50,7 +50,7 @@ tgui_popover_button_t *tgui_popover_button_new(tgui_popover_t *popover, const ch
 	if (!popover_button) return NULL;
 
 	popover_button->popover = popover;
-	tgui_button_set_text(&popover_button->button, name);
+	tgui_button_set_text(TGUI_BUTTON_CAST(popover_button), name);
 	return popover_button;
 }
 
