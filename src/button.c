@@ -5,10 +5,18 @@
 
 TOBJECT_DEFINE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget_get_type())
 
+static void tgui_button_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
+	tgui_button_t *button = TGUI_BUTTON_CAST(widget);
+	if (button->child == child) {
+		button->child = NULL;
+	}
+}
+
 static void tgui_button_class_init(tgui_button_class_t *class) {
 	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
 	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
 	widget_class->allocate_space = tgui_container_single_allocate_space;
+	widget_class->remove_child   = tgui_button_remove_child;
 }
 
 tgui_button_t *tgui_button_new(void) {
@@ -46,11 +54,16 @@ void tgui_button_set_icon(tgui_button_t *button, const char *icon_name) {
 }
 
 void tgui_button_set_child(tgui_button_t *button, tgui_widget_t *child) {
-	// destroy children if we already have one
-	if (button->widget.children.first) {
-		tgui_widget_destroy(TGUI_WIDGET_FROM_NODE(button->widget.children.first));
-	}
+	// destroy child if we already have one
+	tgui_widget_destroy(button->child);
+
 	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(button));
+	// make sure the new child is first
+	// this allow for some specials buttons such as popover buttons
+	// to have other "secrets" children
+	tgui_list_remove(&TGUI_WIDGET_CAST(button)->children, &child->node);
+	tgui_list_prepend(&TGUI_WIDGET_CAST(button)->children, &child->node);
+	button->child = child;
 }
 
 const char *tgui_button_get_text(tgui_button_t *button) {
@@ -69,9 +82,5 @@ const char *tgui_button_get_icon(tgui_button_t *button) {
 }
 
 tgui_widget_t *tgui_button_get_child(tgui_button_t *button) {
-	if (button->widget.children.first) {
-		return TGUI_WIDGET_FROM_NODE(button->widget.children.first);
-	} else {
-		return NULL;
-	}
+	return button->child;
 }

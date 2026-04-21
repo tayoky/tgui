@@ -11,6 +11,7 @@ TOBJECT_DECLARE_SIMPLE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget)
  */
 struct tgui_button {
 	tgui_widget_t widget;
+	tgui_widget_t *child;
 };
 
 #define TGUI_BUTTON_CAST(w) TGUI_CONTAINER_OF(w, tgui_button_t, widget)

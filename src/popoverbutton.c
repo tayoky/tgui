@@ -2,6 +2,15 @@
 
 TOBJECT_DEFINE_CLASS(tgui_popover_button, TGUI_POPOVER_BUTTON, tgui_button_get_type())
 
+static void tgui_popover_button_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
+	TGUI_WIDGET_CLASS_CAST(tgui_popover_button_get_parent_class())->remove_child(widget, child);
+
+	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(widget);
+	if (TGUI_WIDGET_CAST(popover_button->popover) == child) {
+		popover_button->popover = NULL;
+	}
+}
+
 static int tgui_popover_button_click(tgui_event_t *event) {
 	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(event->widget);
 	long x = tgui_widget_get_frame_x(TGUI_WIDGET_CAST(popover_button));
@@ -41,6 +50,9 @@ static int tgui_popover_button_constructor(void *object) {
 }
 
 static void tgui_popover_button_class_init(tgui_popover_button_class_t *class) {
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->remove_child = tgui_popover_button_remove_child;
+
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_popover_button_constructor;
 }

@@ -13,17 +13,9 @@ static int tgui_dropdown_constructor(void *object) {
 	return 0;
 }
 
-static int tgui_dropdown_destructor(void *object) {
-	tgui_dropdown_t *dropdown = TGUI_DROPDOWN_CAST(object);
-	tgui_widget_destroy(TGUI_WIDGET_CAST(dropdown->popover));
-
-	return tgui_dropdown_get_parent_class()->destructor(object);
-}
-
 static void tgui_dropdown_class_init(tgui_dropdown_class_t *class) {
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_dropdown_constructor;
-	tobject_class->destructor  = tgui_dropdown_destructor;
 }
 
 tgui_dropdown_t *tgui_dropdown_new(tgui_factory_t *factory, tgui_list_t *list) {
