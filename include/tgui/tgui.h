@@ -24,6 +24,7 @@
 #include "separator.h"
 #include "listview.h"
 #include "popover.h"
+#include "popoverbutton.h"
 #include "menuitem.h"
 #include "submenubutton.h"
 #include "font.h"
