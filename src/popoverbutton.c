@@ -49,12 +49,14 @@ tgui_popover_button_t *tgui_popover_button_new(tgui_popover_t *popover, const ch
 	tgui_popover_button_t *popover_button = tobject_new(tgui_popover_button_get_type());
 	if (!popover_button) return NULL;
 
-	popover_button->popover = popover;
+	tgui_popover_button_set_popover(popover_button, popover);
 	tgui_button_set_text(TGUI_BUTTON_CAST(popover_button), name);
 	return popover_button;
 }
 
 void tgui_popover_button_set_popover(tgui_popover_button_t *popover_button, tgui_popover_t *popover) {
+	tgui_widget_destroy(TGUI_WIDGET_CAST(popover_button->popover));
+	tgui_widget_set_parent(TGUI_WIDGET_CAST(popover), TGUI_WIDGET_CAST(popover_button));
 	popover_button->popover = popover;
 }
 

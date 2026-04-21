@@ -150,6 +150,7 @@ void tgui_surface_set_focus(tgui_surface_t *surface, tgui_widget_t *widget) {
 }
 
 tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface) {
+	if (!surface) return NULL;
 	return surface->focus;
 }
 
