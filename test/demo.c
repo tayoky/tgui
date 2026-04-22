@@ -46,6 +46,12 @@ tgui_widget_t *input_tab() {
 	tgui_scrollbar_set_total_size(scrollbar, 600);
 	tgui_scrollbar_set_view_size(scrollbar, 100);
 	add_element(box, TGUI_WIDGET_CAST(scrollbar));
+
+	tgui_expander_t *expander = tgui_expander_new();
+	tgui_expander_set_title_text(expander, "expander");
+	tgui_expander_set_child(expander, TGUI_WIDGET_CAST(tgui_label_new("some really long text...")));
+	add_element(box, TGUI_WIDGET_CAST(expander));
+
 	return TGUI_WIDGET_CAST(box);
 }
 
