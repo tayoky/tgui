@@ -289,8 +289,8 @@ void tgui_widget_set_default_state_style(tgui_style_t *style, const char *class,
 	add_default(&default_state_styles[(int)state], style, class);
 }
 
-void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
-	const char *name = tgui_widget_type_from_object(widget)->name;
+static void tgui_widget_apply_default_type_styles(tgui_widget_t *widget, ttype_t *type) {
+	const char *name = type->name;
 	TGUI_LIST_FOREACH(node, &default_styles) {
 		tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
 		if (!strcmp(style_default->class, name)) {
@@ -304,6 +304,14 @@ void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
 				tgui_widget_add_state_style(widget, i, style_default->style);
 			}
 		}
+	}
+}
+
+void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
+	ttype_t *type = tgui_widget_type_from_object(widget);
+	while (type && type != tgui_widget_get_type()) {
+		tgui_widget_apply_default_type_styles(widget, type);
+		type = ttype_get_parent(type);
 	}
 }
 
