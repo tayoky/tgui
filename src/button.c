@@ -12,11 +12,33 @@ static void tgui_button_remove_child(tgui_widget_t *widget, tgui_widget_t *child
 	}
 }
 
+static void tgui_button_click(tobject_t *tobject) {
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(tobject);
+	tgui_widget_set_state(widget, TGUI_STATE_PRESSED, TGUI_TRUE);
+}
+
+static void tgui_button_unclick(tobject_t *tobject) {
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(tobject);
+	tgui_widget_set_state(widget, TGUI_STATE_PRESSED, TGUI_FALSE);
+}
+
+static int tgui_button_constructor(void *object) {
+	tgui_button_get_parent_class()->constructor(object);
+
+	tgui_widget_connect_signal(object, "click", TCALLBACK_CAST(tgui_button_click), NULL);
+	tgui_widget_connect_signal(object, "unclick", TCALLBACK_CAST(tgui_button_unclick), NULL);
+
+	return 0;
+}
+
 static void tgui_button_class_init(tgui_button_class_t *class) {
 	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
 	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
 	widget_class->allocate_space = tgui_container_single_allocate_space;
 	widget_class->remove_child   = tgui_button_remove_child;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_button_constructor;
 }
 
 tgui_button_t *tgui_button_new(void) {

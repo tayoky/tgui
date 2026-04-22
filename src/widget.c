@@ -430,10 +430,13 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 		tgui_widget_apply_style(src_style, style);
 	}
 
-	// apply state styles
-	TGUI_LIST_FOREACH(node, tgui_widget_get_state_styles(widget, widget->state)) {
-		tgui_style_t *src_style = TGUI_STYLE_FROM_NODE(node);
-		tgui_widget_apply_style(src_style, style);
+	// apply states styles
+	for (int i=0; i<TGUI_STATE_COUNT; i++) {
+		if (!tgui_widget_get_state(widget, i)) continue;
+		TGUI_LIST_FOREACH(node, tgui_widget_get_state_styles(widget, i)) {
+			tgui_style_t *src_style = TGUI_STYLE_FROM_NODE(node);
+			tgui_widget_apply_style(src_style, style);
+		}
 	}
 	return style;
 }
