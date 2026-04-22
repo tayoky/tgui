@@ -54,6 +54,13 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 	tobject_free(TOBJECT_CAST(widget));
 }
 
+void tgui_widget_send_parent_signal(tgui_widget_t *widget, const char *signal, void *event) {
+	while (widget) {
+		tgui_widget_send_signal(widget, signal, event);
+		widget = widget->parent;
+	}
+}
+
 void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 	// do not recalculate if useless
 	if (!tgui_widget_is_dirty_size(widget)) {

@@ -15,7 +15,7 @@ void tgui_input_click(tgui_surface_t *surface, int button, long x, long y) {
 		.x = x,
 		.y = y,
 	};
-	tgui_widget_send_signal(widget, "click", &event);
+	tgui_widget_send_parent_signal(widget, "click", &event);
 }
 void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y) {
 	if (!surface) return;
@@ -30,7 +30,7 @@ void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y) {
 		.x = x,
 		.y = y,
 	};
-	tgui_widget_send_signal(tgui_surface_get_focus(surface), "unclick", &event);
+	tgui_widget_send_parent_signal(tgui_surface_get_focus(surface), "unclick", &event);
 }
 
 static void update_hover(tgui_surface_t *surface, tgui_widget_t *widget) {
@@ -69,7 +69,7 @@ void tgui_input_move(tgui_surface_t *surface, long x, long y) {
 		.abs_y = y,
 		.is_pressed = surface->mouse_pressed,
 	};
-	tgui_widget_send_signal(tgui_surface_get_focus(surface), "move", &event);
+	tgui_widget_send_parent_signal(tgui_surface_get_focus(surface), "move", &event);
 }
 
 void tgui_input_focus(tgui_surface_t *surface) {
@@ -92,7 +92,7 @@ void tgui_input_key_press(tgui_surface_t *surface, long scancode, long sym) {
 		.scancode = scancode,
 		.sym = sym,
 	};
-	tgui_widget_send_signal(tgui_surface_get_focus(surface), "press", &event);
+	tgui_widget_send_parent_signal(tgui_surface_get_focus(surface), "press", &event);
 }
 
 void tgui_input_key_release(tgui_surface_t *surface, long scancode, long sym) {
@@ -101,5 +101,5 @@ void tgui_input_key_release(tgui_surface_t *surface, long scancode, long sym) {
 		.scancode = scancode,
 		.sym = sym,
 	};
-	tgui_widget_send_signal(tgui_surface_get_focus(surface), "release", &event);
+	tgui_widget_send_parent_signal(tgui_surface_get_focus(surface), "release", &event);
 }

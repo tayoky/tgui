@@ -185,6 +185,14 @@ static inline int tgui_widget_is_selectable(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_SELECTABLE;
 }
 
+/**
+ * @brief send a signal to a widget and all of it's parent
+ * @param widget the widget to send the signal to
+ * @param signal the signal to send
+ * @param event event data for the signal (can be NULL)
+ */
+void tgui_widget_send_parent_signal(tgui_widget_t *widget, const char *signal, void *event);
+
 static inline void tgui_widget_set_hexpand(tgui_widget_t *widget, int hexpand) {
 	if (hexpand) {
 		widget->flags |= TGUI_WIDGET_HEXPAND;
