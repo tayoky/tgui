@@ -38,6 +38,10 @@ tgui_widget_t *input_tab() {
 	tgui_button_set_text(button, "button");
 	add_element(box, TGUI_WIDGET_CAST(button));
 
+	tgui_toggle_button_t *toggle_button = tgui_toggle_button_new();
+	tgui_button_set_text(TGUI_BUTTON_CAST(toggle_button), "toggle");
+	add_element(box, TGUI_WIDGET_CAST(toggle_button));
+
 	tgui_slider_t *slider = tgui_slider_new(TGUI_ORIENTATION_HORIZONTAL);
 	tgui_slider_set_value(slider, 0.3f);
 	add_element(box, TGUI_WIDGET_CAST(slider));

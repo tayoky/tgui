@@ -4,6 +4,7 @@
 #include "widget.h"
 #include "window.h"
 #include "button.h"
+#include "togglebutton.h"
 #include "label.h"
 #include "list.h"
 #include "stringlist.h"
