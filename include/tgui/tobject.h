@@ -75,9 +75,12 @@
 	}
 
 struct tobject_class;
+struct tobject;
 typedef struct ttype ttype_t;
 typedef struct tproperty tproperty_t;
-
+typedef struct thandler thandler_t;
+typedef struct thandler_group thandler_group_t;
+typedef void (*tcallback_t)(struct tobject *tobject, void *event, void *user_data);
 
 struct ttype {
 	int is_init;
@@ -97,9 +100,22 @@ struct tproperty {
 
 #define TPROPERTY(_name, _type) {.name = _name, .type = _type}
 
+struct thandler {
+	thandler_t *next;
+	tcallback_t callback;
+	void *user_data;
+	size_t id;
+};
+
+struct thandler_group {
+	thandler_group_t *next;
+	thandler_t *handlers;
+	char *signal;
+};
 
 struct tobject {
 	ttype_t *type;
+	thandler_group_t *handler_groups;
 };
 
 TOBJECT_DECLARE_CLASS(tobject, TOBJECT)
@@ -139,6 +155,9 @@ static inline ttype_t *ttype_get_parent(ttype_t *type) {
 
 void *tobject_new(ttype_t *type);
 void tobject_free(void *object);
+void tobject_send_signal(tobject_t *tobject, const char *signal, void *event);
+size_t tobject_connect_signal(tobject_t *tobject, const char *signal, tcallback_t callback, void *user_data);
+void tobject_disconnect_signal(tobject_t *tobject, size_t id);
 void tobject_set_property(tobject_t *tobject, const char *name, const void *value);
 void tobject_get_property(tobject_t *tobject, const char *name, void *value);
 
