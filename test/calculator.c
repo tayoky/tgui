@@ -71,14 +71,13 @@ long calculate1(const char **_ptr) {
 	return value;
 }
 
-int button_click(tgui_event_t *event) {
+void button_click(tobject_t *tobject) {
 	puts("click");
-	tgui_button_t *button = TGUI_BUTTON_CAST(event->widget);
+	tgui_button_t *button = TGUI_BUTTON_CAST(tobject);
 	tgui_text_insert(label, tgui_button_get_text(button));
-	return TGUI_EVENT_HANDLED;
 }
 
-int equal_click(tgui_event_t *event) {
+void equal_click(void) {
 	const char *str = tgui_text_get_content(label);
 	syntax_error = 0;
 	long value = calculate1(&str);
@@ -91,16 +90,16 @@ int equal_click(tgui_event_t *event) {
 		sprintf(text, "%ld", value);
 		tgui_text_set_placeholder(label, text);
 	}
-	return TGUI_EVENT_HANDLED;
 }
 	
-tgui_button_t *new_button(const char *text) {
+tgui_button_t *new_button(const char *text, void *callback) {
 	tgui_button_t *button = tgui_button_new();
 	tgui_widget_set_margin(TGUI_WIDGET_CAST(button), 1);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
 	tgui_button_set_text(button, text);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(button), TGUI_EVENT_CLICK, button_click, NULL);
+	if (!callback) callback = button_click;
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(button), "click", callback, NULL);
 	return button;
 }
 
@@ -128,17 +127,16 @@ int main() {
 
 		char text[10];
 		sprintf(text, "%d", i);
-		tgui_button_t *button = new_button(text);
+		tgui_button_t *button = new_button(text, NULL);
 		tgui_grid_set_at(grid, x, y, TGUI_WIDGET_CAST(button));
 	}
-	tgui_button_t *equal = new_button("=");
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(equal), TGUI_EVENT_CLICK, equal_click, NULL);
+	tgui_button_t *equal = new_button("=", equal_click);
 	tgui_grid_set_at(grid, 0, 3, TGUI_WIDGET_CAST(equal));
-	tgui_grid_set_at(grid, 1, 3, TGUI_WIDGET_CAST(new_button("0")));
-	tgui_grid_set_at(grid, 3, 0, TGUI_WIDGET_CAST(new_button("/")));
-	tgui_grid_set_at(grid, 3, 1, TGUI_WIDGET_CAST(new_button("*")));
-	tgui_grid_set_at(grid, 3, 2, TGUI_WIDGET_CAST(new_button("-")));
-	tgui_grid_set_at(grid, 3, 3, TGUI_WIDGET_CAST(new_button("+")));
+	tgui_grid_set_at(grid, 1, 3, TGUI_WIDGET_CAST(new_button("0", NULL)));
+	tgui_grid_set_at(grid, 3, 0, TGUI_WIDGET_CAST(new_button("/", NULL)));
+	tgui_grid_set_at(grid, 3, 1, TGUI_WIDGET_CAST(new_button("*", NULL)));
+	tgui_grid_set_at(grid, 3, 2, TGUI_WIDGET_CAST(new_button("-", NULL)));
+	tgui_grid_set_at(grid, 3, 3, TGUI_WIDGET_CAST(new_button("+", NULL)));
 
 	// put the label and the grid in a box
 	tgui_box_t *box = tgui_box_new();

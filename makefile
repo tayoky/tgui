@@ -33,7 +33,7 @@ $(BUILDDIR)/libtgui.so : $(OBJ)
 
 $(BUILDDIR)/tgui-demo : $(BUILDDIR)/libtgui.so $(BUILDDIR)/test/demo.o
 	@mkdir -p $(shell dirname $@)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(BUILDDIR)/test/demo.o -L$(BUILDDIR) -ltgui
+	$(CC) $(CFLAGS) -o $@ $(BUILDDIR)/test/demo.o -L$(BUILDDIR) -ltgui
 
 $(BUILDDIR)/%.o : %.c
 	@mkdir -p $(shell dirname $@)
