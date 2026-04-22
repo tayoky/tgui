@@ -3,6 +3,23 @@
 
 TOBJECT_DEFINE_CLASS(tobject, TOBJECT, NULL)
 
+// define a few std classes
+TOBJECT_DEFINE_CLASS(tobject_int, TOBJECT_INT, tobject_get_type())
+TOBJECT_DEFINE_CLASS(tobject_uint, TOBJECT_UINT, tobject_get_type())
+TOBJECT_DEFINE_CLASS(tobject_string, TOBJECT_STRING, tobject_get_type())
+
+static void tobject_int_class_init(tobject_int_class_t *class) {
+	(void)class;
+}
+
+static void tobject_uint_class_init(tobject_uint_class_t *class) {
+	(void)class;
+}
+
+static void tobject_string_class_init(tobject_string_class_t *class) {
+	(void)class;
+}
+
 static int do_nothing(void *object) {
 	(void)object;
 	return 0;
@@ -35,4 +52,36 @@ void tobject_free(void *object) {
 		type->class->destructor(object);
 	}
 	free(object);
+}
+
+void tobject_set_property(tobject_t *tobject, const char *name, const void *value) {
+	ttype_t *type = tobject_type_from_object(tobject);
+	for (;type; type = type->parent_type) {
+		if (!type->properties) {
+			continue;
+		}
+		for (tproperty_t *prop = type->properties; prop->name; prop++) {
+			if (strcmp(prop->name, name)) {
+				continue;
+			}
+			type->class->set_property(tobject, prop->id, value);
+			break;
+		}
+	}
+}
+
+void tobject_get_property(tobject_t *tobject, const char *name, void *value) {
+	ttype_t *type = tobject_type_from_object(tobject);
+	for (;type; type = type->parent_type) {
+		if (!type->properties) {
+			continue;
+		}
+		for (tproperty_t *prop = type->properties; prop->name; prop++) {
+			if (strcmp(prop->name, name)) {
+				continue;
+			}
+			type->class->get_property(tobject, prop->id, value);
+			break;
+		}
+	}
 }

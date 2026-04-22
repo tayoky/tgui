@@ -75,26 +75,59 @@
 	}
 
 struct tobject_class;
+typedef struct ttype ttype_t;
+typedef struct tproperty tproperty_t;
 
-typedef struct ttype {
+
+struct ttype {
 	int is_init;
 	size_t size;
 	size_t class_size;
 	const char *name;
-	struct ttype *parent_type;
+	ttype_t *parent_type;
 	struct tobject_class *class;
-} ttype_t;
+	tproperty_t *properties;
+};
+
+struct tproperty {
+	char *name;
+	ttype_t *type;
+	unsigned int id;
+};
+
+#define TPROPERTY(_name, _type) {.name = _name, .type = _type}
+
 
 struct tobject {
 	ttype_t *type;
 };
 
+TOBJECT_DECLARE_CLASS(tobject, TOBJECT)
+
 struct tobject_class {
 	int (*constructor)(void *object);
 	int (*destructor)(void *object);
+	void (*set_property)(tobject_t *tobject, unsigned int property_id, const void *value);
+	void (*get_property)(tobject_t *tobject, unsigned int property_id, void *value);
 };
 
-TOBJECT_DECLARE_CLASS(tobject, TOBJECT)
+
+// declare a few std classes
+TOBJECT_DECLARE_SIMPLE_CLASS(tobject_int, TOBJECT_INT, tobject)
+TOBJECT_DECLARE_SIMPLE_CLASS(tobject_uint, TOBJECT_UINT, tobject)
+TOBJECT_DECLARE_SIMPLE_CLASS(tobject_string, TOBJECT_STRING, tobject)
+
+struct tobject_int {
+	long integer;
+};
+
+struct tobject_uint {
+	unsigned long uinteger;
+};
+
+struct tobject_string {
+	char *str;
+};
 
 static inline tobject_class_t *ttype_get_class(ttype_t *type) {
 	return type->class;
@@ -106,5 +139,11 @@ static inline ttype_t *ttype_get_parent(ttype_t *type) {
 
 void *tobject_new(ttype_t *type);
 void tobject_free(void *object);
+void tobject_set_property(tobject_t *tobject, const char *name, const void *value);
+void tobject_get_property(tobject_t *tobject, const char *name, void *value);
+
+static inline void tobject_install_properties(ttype_t *type, tproperty_t *properties) {
+	type->properties = properties;
+}
 
 #endif
