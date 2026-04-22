@@ -17,16 +17,17 @@ static int tgui_popover_button_click(tgui_event_t *event) {
 	long y = tgui_widget_get_frame_y(TGUI_WIDGET_CAST(popover_button));
 	long height = tgui_widget_get_frame_height(TGUI_WIDGET_CAST(popover_button));
 	long width = tgui_widget_get_frame_height(TGUI_WIDGET_CAST(popover_button));
-
+	long popover_width = tgui_popover_get_width(popover_button->popover);
+	long popover_height = tgui_popover_get_width(popover_button->popover);
 	switch (popover_button->direction) {
 	case TGUI_DIRECTION_LEFT:
-		// TODO
+		x -= popover_width;
 		break;
 	case TGUI_DIRECTION_RIGHT:
 		x += width;
 		break;
 	case TGUI_DIRECTION_TOP:
-		// TODO
+		y -= popover_height;
 		break;
 	case TGUI_DIRECTION_BOTTOM:
 		y += height;

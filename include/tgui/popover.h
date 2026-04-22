@@ -21,5 +21,7 @@ void tgui_popover_set_position(tgui_popover_t *popover, long x, long y);
 tgui_widget_t *tgui_popover_get_child(tgui_popover_t *popover);
 void tgui_popover_popdown(tgui_popover_t *popover);
 void tgui_popover_popup(tgui_popover_t *popover);
+long tgui_popover_get_width(tgui_popover_t *popover);
+long tgui_popover_get_height(tgui_popover_t *popover);
 
 #endif

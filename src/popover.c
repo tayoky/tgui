@@ -93,3 +93,14 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 	tgui_surface_set_child(popover->surface, popover->child);
 	tgui_platform_grab_surface(popover->surface);
 }
+
+long tgui_popover_get_width(tgui_popover_t *popover) {
+	if (!popover->child) return 0;
+	tgui_widget_calculate_sizes(popover->child);
+	return popover->child->pref_width;
+}
+
+long tgui_popover_get_height(tgui_popover_t *popover) {
+	if (!popover->child) return 0;
+	return popover->child->pref_height;
+}
