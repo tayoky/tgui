@@ -143,26 +143,30 @@ tgui_slider_t *tgui_slider_new(int orientation) {
 	return slider;
 }
 
-static void tgui_slider_clamp_value(tgui_slider_t *slider) {
-	if (slider->value < slider->min) {
-		slider->value = slider->min;
-	} else if (slider->value > slider->max) {
-		slider->value = slider->max;
+static double tgui_slider_clamp_value(tgui_slider_t *slider, double value) {
+	if (value < slider->min) {
+		return slider->min;
+	} else if (value > slider->max) {
+		return slider->max;
+	} else {
+		return value;
 	}
 }
 
 void tgui_slider_set_range(tgui_slider_t *slider, double min, double max) {
 	slider->min = min;
 	slider->max = max;
-	tgui_slider_clamp_value(slider);
 	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(slider->button));
+	// reset the same value to clamp
+	tgui_slider_set_value(slider, slider->value);
 }
 
 void tgui_slider_set_value(tgui_slider_t *slider, double value) {
+	value = tgui_slider_clamp_value(slider, value);
 	if (slider->value == value) return;
 	slider->value = value;
-	tgui_slider_clamp_value(slider);
 	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(slider->button));
+	tgui_widget_send_signal(TGUI_WIDGET_CAST(slider), "changed", &value);
 }
 
 void tgui_slider_set_size(tgui_slider_t *slider, double size) {
