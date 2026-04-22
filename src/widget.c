@@ -39,12 +39,8 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 		tgui_surface_set_focus(surface, NULL);
 	}
 
-	// send event first
-	tgui_event_t event = {
-		.type = TGUI_EVENT_DESTROY,
-		.widget = widget,
-	};
-	tgui_widget_send_event(widget, &event);
+	// send signal first
+	tgui_widget_send_signal(widget, "destroy", NULL);
 
 	// destroy children
 	for (tgui_list_node_t *node=widget->children.first; node; ) {
@@ -55,7 +51,7 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 
 	tgui_widget_remove_parent(widget);
 	// TODO : free styles
-	tobject_free(widget);
+	tobject_free(TOBJECT_CAST(widget));
 }
 
 void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
@@ -178,10 +174,7 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 		widget->y = new_y;
 		widget->height = new_height;
 		tgui_widget_mark_dirty(widget);
-		tgui_event_t event = {
-			.type = TGUI_EVENT_RESIZE,
-		};
-		tgui_widget_send_event(widget, &event);
+		tgui_widget_send_signal(widget, "resize", NULL);
 	} else if (!tgui_widget_is_dirty_space(widget)) {
 		// do not recalculate child if useless
 		return;
@@ -253,19 +246,6 @@ void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent) {
 	tgui_list_append(&parent->children, &child->node);
 	tgui_widget_mark_dirty_size(parent);
 	tgui_widget_mark_dirty(child);
-}
-
-void tgui_widget_set_callback(tgui_widget_t *widget, int type, tgui_callback_t callback, void *data) {
-	tgui_event_set_callback(widget->callbacks, type, callback, data);
-}
-
-int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event) {
-	while (widget) {
-		event->widget = widget;
-		if (tgui_event_report(widget->callbacks, event)) return TGUI_EVENT_HANDLED;
-		widget = widget->parent;
-	}
-	return TGUI_EVENT_NOT_HANDLED;
 }
 
 tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {

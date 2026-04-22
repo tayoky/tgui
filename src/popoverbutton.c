@@ -11,8 +11,8 @@ static void tgui_popover_button_remove_child(tgui_widget_t *widget, tgui_widget_
 	}
 }
 
-static int tgui_popover_button_click(tgui_event_t *event) {
-	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(event->widget);
+static void tgui_popover_button_click(tobject_t *tobject) {
+	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(tobject);
 	long x = tgui_widget_get_frame_x(TGUI_WIDGET_CAST(popover_button));
 	long y = tgui_widget_get_frame_y(TGUI_WIDGET_CAST(popover_button));
 	long height = tgui_widget_get_frame_height(TGUI_WIDGET_CAST(popover_button));
@@ -36,7 +36,6 @@ static int tgui_popover_button_click(tgui_event_t *event) {
 	
 	tgui_popover_set_position(popover_button->popover, x, y);
 	tgui_popover_popup(popover_button->popover);
-	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_popover_button_constructor(void *object) {
@@ -46,7 +45,7 @@ static int tgui_popover_button_constructor(void *object) {
 	popover_button->direction = TGUI_DIRECTION_BOTTOM;
 
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
-	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_popover_button_click, NULL);
+	tgui_widget_connect_signal(widget, "click", TCALLBACK_CAST(tgui_popover_button_click), NULL);
 	return 0;
 }
 

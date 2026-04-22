@@ -19,15 +19,13 @@ tgui_stack_switcher_t *tgui_stack_switcher_new(void) {
 	return stack_switcher;
 }
 
-static int tgui_stack_switcher_button_click(tgui_event_t *event) {
-	tgui_button_t *button = TGUI_BUTTON_CAST(event->widget);
-	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(event->widget->parent);
+static void tgui_stack_switcher_button_click(tobject_t *tobject) {
+	tgui_button_t *button = TGUI_BUTTON_CAST(tobject);
+	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(TGUI_WIDGET_CAST(tobject)->parent);
 	tgui_stack_t *stack = tgui_stack_switcher_get_stack(stack_switcher);
-	if (!stack) return TGUI_EVENT_HANDLED;
+	if (!stack) return; 
 	tgui_stack_set_current(stack, tgui_button_get_text(button));
-	return TGUI_EVENT_HANDLED;
 }
-	
 
 void tgui_stack_switcher_update(tgui_stack_switcher_t *stack_switcher) {
 	// make sure to destroy any previous buttons
@@ -41,7 +39,7 @@ void tgui_stack_switcher_update(tgui_stack_switcher_t *stack_switcher) {
 		tgui_stack_page_t *page = TGUI_STACK_PAGE_CAST(node);
 		tgui_button_t *button = tgui_button_new();
 		tgui_button_set_text(button, page->name);
-		tgui_widget_set_callback(TGUI_WIDGET_CAST(button), TGUI_EVENT_CLICK, tgui_stack_switcher_button_click, NULL);
+		tgui_widget_connect_signal(TGUI_WIDGET_CAST(button), "click", TCALLBACK_CAST(tgui_stack_switcher_button_click), NULL);
 		tgui_widget_set_hexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
 		tgui_widget_set_vexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
 		tgui_box_append_widget(&stack_switcher->box, TGUI_WIDGET_CAST(button));

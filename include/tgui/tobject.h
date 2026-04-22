@@ -40,6 +40,15 @@
 	}\
 	static inline int class_name ## _is_final_type(class_name ## _t *object, ttype_t *type) {\
 		return class_name ## _type_from_object(object) == type;\
+	}\
+	static inline void class_name ## _send_signal(class_name ## _t *object, const char *signal, void *event) {\
+		__tobject_send_signal(TOBJECT_CAST(object), signal, event);\
+	}\
+	static inline void class_name ## _connect_signal(class_name ## _t *object, const char *signal, tcallback_t callback, void *user_data) {\
+		__tobject_connect_signal(TOBJECT_CAST(object), signal, callback, user_data);\
+	}\
+	static inline void class_name ## _disconnect_signal(class_name ## _t *object, const char *signal, size_t id) {\
+		__tobject_disconnect_signal(TOBJECT_CAST(object), signal, id);\
 	}
 
 #define TOBJECT_DECLARE_SIMPLE_CLASS(class, CLASS, parent) \
@@ -82,6 +91,8 @@ typedef struct thandler thandler_t;
 typedef struct thandler_group thandler_group_t;
 typedef void (*tcallback_t)(struct tobject *tobject, void *event, void *user_data);
 
+#define TCALLBACK_CAST(ptr) ((tcallback_t)(void*)ptr)
+
 struct ttype {
 	int is_init;
 	size_t size;
@@ -118,6 +129,9 @@ struct tobject {
 	thandler_group_t *handler_groups;
 };
 
+void __tobject_send_signal(struct tobject *tobject, const char *signal, void *event);
+size_t __tobject_connect_signal(struct tobject *tobject, const char *signal, tcallback_t callback, void *user_data);
+void __tobject_disconnect_signal(struct tobject *tobject, const char *signal, size_t id);
 TOBJECT_DECLARE_CLASS(tobject, TOBJECT)
 
 struct tobject_class {
@@ -154,10 +168,7 @@ static inline ttype_t *ttype_get_parent(ttype_t *type) {
 }
 
 void *tobject_new(ttype_t *type);
-void tobject_free(void *object);
-void tobject_send_signal(tobject_t *tobject, const char *signal, void *event);
-size_t tobject_connect_signal(tobject_t *tobject, const char *signal, tcallback_t callback, void *user_data);
-void tobject_disconnect_signal(tobject_t *tobject, size_t id);
+void tobject_free(tobject_t *tobject);
 void tobject_set_property(tobject_t *tobject, const char *name, const void *value);
 void tobject_get_property(tobject_t *tobject, const char *name, void *value);
 

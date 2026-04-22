@@ -18,16 +18,14 @@ static void tgui_scrollbar_set_orientation(tgui_widget_t *widget, int orientatio
 	tgui_scrollbar_update_expand(scrollbar, orientation);
 }
 
-static int tgui_scrollbar_top_click(tgui_event_t *event) {
-	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(event->widget->parent);
+static void tgui_scrollbar_top_click(tobject_t *tobject) {
+	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(TGUI_WIDGET_CAST(tobject)->parent);
 	tgui_scrollbar_add_value(scrollbar, -12);
-	return TGUI_EVENT_HANDLED;
 }
 
-static int tgui_scrollbar_bottom_click(tgui_event_t *event) {
-	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(event->widget->parent);
+static void tgui_scrollbar_bottom_click(tobject_t *tobject) {
+	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(TGUI_WIDGET_CAST(tobject)->parent);
 	tgui_scrollbar_add_value(scrollbar, 12);
-	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_scrollbar_constructor(void *object) {
@@ -38,8 +36,8 @@ static int tgui_scrollbar_constructor(void *object) {
 	scrollbar->top    = tgui_button_new();
 	scrollbar->bottom = tgui_button_new();
 	scrollbar->slider = tgui_slider_new(TGUI_ORIENTATION_VERTICAL);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(scrollbar->top), TGUI_EVENT_CLICK, tgui_scrollbar_top_click, NULL);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(scrollbar->bottom), TGUI_EVENT_CLICK, tgui_scrollbar_bottom_click, NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->top), "click", TCALLBACK_CAST(tgui_scrollbar_top_click), NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->bottom), "click", TCALLBACK_CAST(tgui_scrollbar_bottom_click), NULL);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(scrollbar->slider), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(scrollbar->slider), TGUI_TRUE);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(scrollbar->top));

@@ -44,14 +44,33 @@ void *tobject_new(ttype_t *type) {
 	return object;
 }
 
-void tobject_free(void *object) {
-	ttype_t *type = tobject_type_from_object(object);
+static void free_handler_group(thandler_group_t *group) {
+	thandler_t *handler = group->handlers;
+	while (handler) {
+		thandler_t *next = handler->next;
+		free(handler);
+		handler = next;
+	};
+	free(group->signal);
+	free(group);
+}
+
+void tobject_free(tobject_t *tobject) {
+	ttype_t *type = tobject_type_from_object(tobject);
 
 	// call destructor
 	if (type->class->destructor) {
-		type->class->destructor(object);
+		type->class->destructor(tobject);
 	}
-	free(object);
+
+	// free signal infrastructure
+	thandler_group_t *group = tobject->handler_groups;
+	while (group) {
+		thandler_group_t *next = group->next;
+		free_handler_group(group);
+		group = next;
+	}
+	free(tobject);
 }
 
 static thandler_group_t *get_handler_group(tobject_t *tobject, const char *signal) {
@@ -65,7 +84,8 @@ static thandler_group_t *get_handler_group(tobject_t *tobject, const char *signa
 	return NULL;
 }
 
-void tobject_send_signal(tobject_t *tobject, const char *signal, void *event) {
+void __tobject_send_signal(tobject_t *tobject, const char *signal, void *event) {
+	if (!tobject) return;
 	thandler_group_t *group = get_handler_group(tobject, signal);
 	if (!group) return;
 
@@ -75,11 +95,43 @@ void tobject_send_signal(tobject_t *tobject, const char *signal, void *event) {
 		handler = handler->next;
 	}
 }
-size_t tobject_connect_signal(tobject_t *tobject, const char *signal, tcallback_t callback, void *user_data) {
-	// TODO
+
+size_t __tobject_connect_signal(tobject_t *tobject, const char *signal, tcallback_t callback, void *user_data) {
+	thandler_group_t *group = get_handler_group(tobject, signal);
+	if (!group) {
+		group = malloc(sizeof(thandler_group_t));
+		memset(group, 0, sizeof(thandler_group_t));
+		group->next = tobject->handler_groups;
+		tobject->handler_groups = group;
+		group->signal = strdup(signal);
+	}
+
+	thandler_t *handler = malloc(sizeof(thandler_t));
+	static size_t handlers_id = 1;
+	handler->id = handlers_id++;
+	handler->callback = callback;
+	handler->user_data = user_data;
+	handler->next = group->handlers;
+	group->handlers = handler;
+	return handler->id;
 }
-void tobject_disconnect_signal(tobject_t *tobject, size_t id) {
-	// TODO
+
+void __tobject_disconnect_signal(tobject_t *tobject, const char *signal, size_t id) {
+	thandler_group_t *group = get_handler_group(tobject, signal);
+	thandler_t *handler = group->handlers;
+	thandler_t *prev = NULL;
+	while (handler) {
+		if (handler->id == id) {
+			if (prev) {
+				prev->next = handler->next;
+			} else {
+				group->handlers = handler->next;
+			}
+			free(handler);
+			break;
+		}
+		prev = handler;
+	}
 }
 
 void tobject_set_property(tobject_t *tobject, const char *name, const void *value) {

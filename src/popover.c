@@ -12,26 +12,24 @@ static void tgui_popover_remove_child(tgui_widget_t *widget, tgui_widget_t *chil
 	// TODO : find a way
 }
 
-static int tgui_popover_click(tgui_event_t *event) {
-	tgui_widget_t *surface = event->widget;
-	tgui_popover_t *popover = TGUI_POPOVER_CAST(event->widget->layout_data);
+static void tgui_popover_click(tobject_t *tobject, tgui_event_click_t *event) {
+	tgui_widget_t *surface = TGUI_WIDGET_CAST(tobject);
+	tgui_popover_t *popover = TGUI_POPOVER_CAST(TGUI_WIDGET_CAST(tobject)->layout_data);
 	
 	long width = tgui_widget_get_outer_width(surface);
 	long height = tgui_widget_get_outer_height(surface);
-	long x = event->click.x;
-	long y = event->click.y;
+	long x = event->x;
+	long y = event->y;
 
 	// a click outside the popover close it
 	if (x < 0 || y < 0 || x >= width || y>= height) {
 		tgui_popover_popdown(popover);
 	}
-	return TGUI_EVENT_HANDLED;
 }
 
-static int tgui_popover_unfocus(tgui_event_t *event) {
-	tgui_popover_t *popover = TGUI_POPOVER_CAST(event->widget->layout_data);
+static void tgui_popover_unfocus(tobject_t *tobject) {
+	tgui_popover_t *popover = TGUI_POPOVER_CAST(TGUI_WIDGET_CAST(tobject)->layout_data);
 	tgui_popover_popdown(popover);
-	return TGUI_EVENT_HANDLED;
 }
 
 static void tgui_popover_class_init(tgui_popover_class_t *class) {
@@ -87,8 +85,8 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 	tgui_widget_calculate_sizes(popover->child);
 	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height, parent);
 	TGUI_WIDGET_CAST(popover->surface)->layout_data = popover;
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_CLICK, tgui_popover_click, NULL);
-	//tgui_widget_set_callback(TGUI_WIDGET_CAST(popover->surface), TGUI_EVENT_UNFOCUS, tgui_popover_unfocus, NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(popover->surface), "click", TCALLBACK_CAST(tgui_popover_click), NULL);
+	//tgui_widget_connect_signal(TGUI_WIDGET_CAST(popover->surface), "unfocus", TCALLBACK_CAST(tgui_popover_unfocus), NULL);
 	tgui_surface_set_position(popover->surface, popover->x, popover->y);
 	tgui_surface_set_child(popover->surface, popover->child);
 	tgui_platform_grab_surface(popover->surface);

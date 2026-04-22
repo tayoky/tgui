@@ -2,17 +2,17 @@
 
 TOBJECT_DEFINE_CLASS(tgui_menu_item, TGUI_MENU_ITEM, tgui_widget_get_type())
 
-static int tgui_menu_item_click(tgui_event_t *event) {
-	tgui_menu_item_t *menu_item = TGUI_MENU_ITEM_CAST(event->widget);
-	tgui_surface_t *surface = tgui_widget_get_surface(event->widget);
-	tgui_action_trigger(menu_item->action, surface, event->widget, NULL);
-	return TGUI_EVENT_HANDLED;
+static void tgui_menu_item_click(tobject_t *tobject, tgui_event_click_t *event) {
+	(void)event;
+	tgui_menu_item_t *menu_item = TGUI_MENU_ITEM_CAST(tobject);
+	tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(menu_item));
+	tgui_action_trigger(menu_item->action, surface, TGUI_WIDGET_CAST(menu_item), NULL);
 }
 
 static int tgui_menu_item_constructor(void *object) {
 	tgui_menu_item_get_parent_class()->constructor(object);
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
-	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_menu_item_click, NULL);
+	tgui_widget_connect_signal(widget, "click", TCALLBACK_CAST(tgui_menu_item_click), NULL);
 	return 0;
 }
 

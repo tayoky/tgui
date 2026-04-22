@@ -52,25 +52,23 @@ static void tgui_paned_set_orientation(tgui_widget_t *widget, int orientation) {
 	}
 }
 
-static int tgui_paned_click(tgui_event_t *event) {
-	tgui_paned_t *paned = TGUI_PANED_CAST(event->widget->parent);
+static void tgui_paned_click(tobject_t *tobject, tgui_event_click_t *event) {
+	tgui_paned_t *paned = TGUI_PANED_CAST(TGUI_WIDGET_CAST(tobject)->parent);
 	if (paned->box.widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		paned->offset = paned->amount - event->move.abs_y;
+		paned->offset = paned->amount - event->y;
 	} else {
-		paned->offset = paned->amount - event->move.abs_x;
+		paned->offset = paned->amount - event->x;
 	}
-	return TGUI_EVENT_HANDLED;
 }
 
-static int tgui_paned_move(tgui_event_t *event) {
-	tgui_paned_t *paned = TGUI_PANED_CAST(event->widget->parent);
+static void tgui_paned_move(tobject_t *tobject, tgui_event_move_t *event) {
+	tgui_paned_t *paned = TGUI_PANED_CAST(TGUI_WIDGET_CAST(tobject)->parent);
 	if (paned->box.widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		paned->amount = event->move.abs_y + paned->offset;
+		paned->amount = event->abs_y + paned->offset;
 	} else {
-		paned->amount = event->move.abs_x + paned->offset;
+		paned->amount = event->abs_x + paned->offset;
 	}
 	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(paned));
-	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_paned_constructor(void *object) {
@@ -81,8 +79,8 @@ static int tgui_paned_constructor(void *object) {
 	tgui_box_append_widget(TGUI_BOX_CAST(object), TGUI_WIDGET_CAST(paned->handle));
 
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
-	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_paned_click, NULL);
-	tgui_widget_set_callback(widget, TGUI_EVENT_MOVE, tgui_paned_move, NULL);
+	tgui_widget_connect_signal(widget, "click", TCALLBACK_CAST(tgui_paned_click), NULL);
+	tgui_widget_connect_signal(widget, "move", TCALLBACK_CAST(tgui_paned_move), NULL);
 	return 0;
 }
 

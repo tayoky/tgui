@@ -43,7 +43,6 @@ struct tgui_widget {
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
 	tgui_list_t styles;
 	tgui_style_t cache_style;
-	tgui_callbacks_t callbacks;
 	long flags;
 	long left_margin;
 	long right_margin;
@@ -276,9 +275,6 @@ static inline void tgui_widget_set_orientation(tgui_widget_t *widget, char orien
 static inline char tgui_widget_get_orientation(tgui_widget_t *widget) {
 	return widget->orientation;
 }
-
-void tgui_widget_set_callback(tgui_widget_t *widget, int type, tgui_callback_t callback, void *data);
-int tgui_widget_send_event(tgui_widget_t *widget, tgui_event_t *event);
 
 tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y);
 

@@ -7,17 +7,16 @@
 
 TOBJECT_DEFINE_CLASS(tgui_text, TGUI_TEXT, tgui_widget_get_type())
 
-static int tgui_text_key_press(tgui_event_t *event) {
-	tgui_text_t *text = TGUI_TEXT_CAST(event->widget);
-	if (event->press.sym == '\177') {
+static void tgui_text_key_press(tobject_t *tobject, tgui_event_press_t *event) {
+	tgui_text_t *text = TGUI_TEXT_CAST(tobject);
+	if (event->sym == '\177') {
 		tgui_text_delete(text, 1);
-		return TGUI_EVENT_HANDLED;
+		return;
 	}
 	char buf[2];
-	buf[0] = event->press.sym;
+	buf[0] = event->sym;
 	buf[1] = '\0';
 	tgui_text_insert(text, buf);
-	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_text_constructor(void *object) {
@@ -26,7 +25,7 @@ static int tgui_text_constructor(void *object) {
 	tgui_text_t *text = TGUI_TEXT_CAST(object);
 	text->label = tgui_label_new("");
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(text->label), TGUI_WIDGET_CAST(text));
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(text), TGUI_EVENT_PRESS, tgui_text_key_press, NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(text), "press", TCALLBACK_CAST(tgui_text_key_press), NULL);
 	return 0;
 }
 

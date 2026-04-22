@@ -3,13 +3,8 @@
 
 tgui_window_t *window;
 
-int close_window(tgui_event_t *event) {
-	if (event->widget == TGUI_WIDGET_CAST(window)) {
-		tgui_quit();
-		return TGUI_EVENT_HANDLED;
-	} else {
-		return TGUI_EVENT_NOT_HANDLED;
-	}
+void close_window(void) {
+	tgui_quit();
 }
 
 void add_element(tgui_box_t *box, tgui_widget_t *widget) {
@@ -110,7 +105,7 @@ int main() {
 	}
 
 	window = tgui_window_new("tgui demo", 640, 480);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(window), TGUI_EVENT_DESTROY, close_window, NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(window), "destroy", TCALLBACK_CAST(close_window), NULL);
 	
 	tgui_box_t *box = tgui_box_new();
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);

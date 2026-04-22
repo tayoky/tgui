@@ -13,20 +13,19 @@ static void tgui_expander_remove_child(tgui_widget_t *parent, tgui_widget_t *chi
 	}
 }
 
-static int tgui_expander_click(tgui_event_t *event) {
-	tgui_expander_t *expander = TGUI_EXPANDER_CAST(event->widget);
+static void tgui_expander_click(tobject_t *tobject) {
+	tgui_expander_t *expander = TGUI_EXPANDER_CAST(tobject);
 	if (tgui_expander_is_expanded(expander)) {
 		tgui_expander_unexpand(expander);
 	} else {
 		tgui_expander_expand(expander);
 	}
-	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_expander_constructor(void *object) {
 	tgui_expander_get_parent_class()->constructor(object);
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(object);
-	tgui_widget_set_callback(widget, TGUI_EVENT_CLICK, tgui_expander_click, NULL);
+	tgui_widget_connect_signal(widget, "click", TCALLBACK_CAST(tgui_expander_click), NULL);
 	return 0;
 }
 

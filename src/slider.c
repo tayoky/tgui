@@ -81,35 +81,33 @@ static void tgui_slider_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
-static int tgui_slider_button_click(tgui_event_t *event) {
-	tgui_slider_t *slider = TGUI_SLIDER_CAST(event->widget->parent);
-	tgui_button_t *button = TGUI_BUTTON_CAST(event->widget);
+static void tgui_slider_button_click(tobject_t *tobject, tgui_event_click_t *event) {
+	tgui_slider_t *slider = TGUI_SLIDER_CAST(TGUI_WIDGET_CAST(tobject)->parent);
+	tgui_button_t *button = TGUI_BUTTON_CAST(tobject);
 	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		slider->offset = button->widget.y - event->click.y;
+		slider->offset = button->widget.y - event->y;
 	} else {
-		slider->offset = button->widget.x - event->click.x;
+		slider->offset = button->widget.x - event->x;
 	}
-	return TGUI_EVENT_HANDLED;
 }
 
-static int tgui_slider_button_move(tgui_event_t *event) {
-	tgui_slider_t *slider = TGUI_SLIDER_CAST(event->widget->parent);
-	tgui_button_t *button = TGUI_BUTTON_CAST(event->widget);
-	if (!event->move.is_pressed) return TGUI_EVENT_NOT_HANDLED;
+static void tgui_slider_button_move(tobject_t *tobject, tgui_event_move_t *event) {
+	tgui_slider_t *slider = TGUI_SLIDER_CAST(TGUI_WIDGET_CAST(tobject)->parent);
+	tgui_button_t *button = TGUI_BUTTON_CAST(tobject);
+	if (!event->is_pressed) return;
 
 	long offset;
 	long lenght;
 	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		offset = event->move.abs_y - slider->widget.y + slider->offset;
+		offset = event->abs_y - slider->widget.y + slider->offset;
 		lenght = slider->widget.height - button->widget.height;
 	} else {
-		offset = event->move.abs_x - slider->widget.x + slider->offset;
+		offset = event->abs_x - slider->widget.x + slider->offset;
 		lenght = slider->widget.width - button->widget.width;
 	}
 
 	double val = (double)offset/(double)lenght;
 	tgui_slider_set_value(slider, slider->min + val * (slider->max - slider->min));
-	return TGUI_EVENT_HANDLED;
 }
 
 static int tgui_slider_constructor(void *object) {
@@ -123,8 +121,8 @@ static int tgui_slider_constructor(void *object) {
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(slider->button), TGUI_WIDGET_CAST(slider));
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(slider->button), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(slider->button), TGUI_TRUE);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(slider->button), TGUI_EVENT_CLICK, tgui_slider_button_click, NULL);
-	tgui_widget_set_callback(TGUI_WIDGET_CAST(slider->button), TGUI_EVENT_MOVE, tgui_slider_button_move, NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(slider->button), "click", TCALLBACK_CAST(tgui_slider_button_click), NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(slider->button), "move", TCALLBACK_CAST(tgui_slider_button_move), NULL);
 	tgui_slider_set_text(slider, "-");
 	return 0;
 }
