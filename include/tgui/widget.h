@@ -17,6 +17,7 @@ struct tgui_widget_class {
 	void (*allocate_space)(tgui_widget_t *);
 	void (*remove_child)(tgui_widget_t *, tgui_widget_t *child);
 	void (*render)(tgui_widget_t *);
+	void (*after_render)(tgui_widget_t *);
 	void (*set_orientation)(tgui_widget_t *, int);
 };
 

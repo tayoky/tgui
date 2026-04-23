@@ -124,6 +124,7 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 }
 
 void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long width, long height) {
+	if (!widget) return;
 	tgui_log("allocate %ldx%ld at %ld %ld for %s\n", width, height, x, y, tgui_widget_type_from_object(widget)->name);
 
 	// we alaways need to recalulate the allocated size
@@ -234,6 +235,9 @@ void tgui_widget_render(tgui_widget_t *widget) {
 	TGUI_LIST_FOREACH(node, &widget->children) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
 		tgui_widget_render(child);
+	}
+	if (class->after_render) {
+		class->after_render(widget);
 	}
 }
 

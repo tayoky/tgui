@@ -56,6 +56,11 @@ tgui_widget_t *input_tab() {
 	tgui_expander_set_child(expander, TGUI_WIDGET_CAST(tgui_label_new("some really long text...")));
 	add_element(box, TGUI_WIDGET_CAST(expander));
 
+	tgui_viewport_t *viewport = tgui_viewport_new();
+	tgui_viewport_set_child(viewport, TGUI_WIDGET_CAST(tgui_label_new("some text")));
+	tgui_viewport_set_scroll_y(viewport, 10);
+	add_element(box, TGUI_WIDGET_CAST(viewport));
+
 	return TGUI_WIDGET_CAST(box);
 }
 

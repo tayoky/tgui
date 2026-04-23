@@ -17,6 +17,10 @@ struct tgui_surface {
 	long inval_start_y; 
 	long inval_end_x;
 	long inval_end_y;
+	long clip_x;
+	long clip_y; 
+	long clip_width;
+	long clip_height;
 	long width;
 	long height;
 	long old_flags;

@@ -1,22 +1,188 @@
 #include <viewport.h>
+#include <render.h>
 
 TOBJECT_DEFINE_CLASS(tgui_viewport, TGUI_VIEWPORT, tgui_widget_get_type())
 
+static void tgui_viewport_calculate_sizes(tgui_widget_t *widget) {
+	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
+
+	long min_width;
+	if (viewport->have_hscroll) {
+		min_width = 0;
+	} else {
+		min_width = tgui_viewport_get_content_min_width(viewport);
+	}
+
+	long min_height;
+	if (viewport->have_vscroll) {
+		min_height = 0;
+	} else {
+		min_height = tgui_viewport_get_content_min_height(viewport);
+	}
+
+	widget->min_width  = min_width;
+	widget->min_height = min_height;
+	widget->pref_width  = tgui_viewport_get_content_pref_width(viewport);
+	widget->pref_height = tgui_viewport_get_content_pref_height(viewport);
+}
+
+static void tgui_viewport_allocate_space(tgui_widget_t *widget) {
+	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
+
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	long width  = tgui_widget_get_inner_width(widget);
+	long height = tgui_widget_get_inner_height(widget);
+
+	tgui_widget_allocate_space(viewport->child, x - viewport->scroll_x, y - viewport->scroll_y, width, height);
+}
+
+static void tgui_viewport_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
+	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
+	if (viewport->child == child) {
+		viewport->child = NULL;
+	}
+}
+
+static void tgui_viewport_render(tgui_widget_t *widget) {
+	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
+	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+	tgui_render_get_clip(surface, &viewport->old_clip_x, &viewport->old_clip_y, &viewport->old_clip_width, &viewport->old_clip_height);
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	long width  = tgui_widget_get_inner_width(widget);
+	long height = tgui_widget_get_inner_height(widget);
+	long end_x = x + width;
+	long end_y = y + height;
+
+	long old_x = viewport->old_clip_x;
+	long old_y = viewport->old_clip_y;
+	long old_end_x = old_x + viewport->old_clip_width;
+	long old_end_y = old_y + viewport->old_clip_height;
+
+	if (x < old_x) x = old_x;
+	if (y < old_y) y = old_y;
+	if (end_x > old_end_x) end_x = old_end_x;
+	if (end_y > old_end_y) end_y = old_end_y;
+	if (x >= end_x || y >= end_y) return;
+	tgui_render_set_clip(surface, x, y, end_x - x, end_y - y);
+}
+
+static void tgui_viewport_after_render(tgui_widget_t *widget) {
+	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
+	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+
+	tgui_render_set_clip(surface, viewport->old_clip_x, viewport->old_clip_y, viewport->old_clip_width, viewport->old_clip_height);
+}
+
+static int tgui_viewport_constructor(void *object) {
+	tgui_viewport_get_parent_class()->constructor(object);
+
+	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(object);
+	viewport->have_hscroll = 1;
+	viewport->have_vscroll = 1;
+
+	return 0;
+}
+
 static void tgui_viewport_class_init(tgui_viewport_class_t *class) {
-	(void)class;
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->calculate_sizes = tgui_viewport_calculate_sizes;
+	widget_class->allocate_space  = tgui_viewport_allocate_space;
+	widget_class->remove_child = tgui_viewport_remove_child;
+	widget_class->render       = tgui_viewport_render;
+	widget_class->after_render = tgui_viewport_after_render;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_viewport_constructor;
 }
 
 tgui_viewport_t *tgui_viewport_new(void) {
 	return tobject_new(tgui_viewport_get_type());
 }
 
-void tgui_viewport_set_scroll_x(tgui_viewport_t *viewport, long scroll_x);
-void tgui_viewport_set_scroll_y(tgui_viewport_t *viewport, long scroll_y);
-void tgui_viewport_set_have_hscroll(tgui_viewport_t *viewport, char have_hscroll);
-void tgui_viewport_set_have_vscroll(tgui_viewport_t *viewport, char have_vscroll);
-long tgui_viewport_get_scroll_x(tgui_viewport_t *viewport);
-long tgui_viewport_get_scroll_y(tgui_viewport_t *viewport);
-char tgui_viewport_get_have_hscroll(tgui_viewport_t *viewport);
-char tgui_viewport_get_have_vscroll(tgui_viewport_t *viewport);
-long tgui_viewport_get_content_pref_width(tgui_viewport_t *viewport);
-long tgui_viewport_get_content_pref_height(tgui_viewport_t *viewport);
+void tgui_viewport_set_child(tgui_viewport_t *viewport, tgui_widget_t *child) {
+	tgui_widget_destroy(viewport->child);
+	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(viewport));
+	viewport->child = child;
+}
+
+void tgui_viewport_set_scroll_x(tgui_viewport_t *viewport, long scroll_x) {
+	viewport->scroll_x = scroll_x;
+	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(viewport));
+}
+
+void tgui_viewport_set_scroll_y(tgui_viewport_t *viewport, long scroll_y) {
+	viewport->scroll_y = scroll_y;
+	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(viewport));
+}
+
+void tgui_viewport_set_have_hscroll(tgui_viewport_t *viewport, char have_hscroll) {
+	viewport->have_hscroll = have_hscroll;
+	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(viewport));
+}
+
+void tgui_viewport_set_have_vscroll(tgui_viewport_t *viewport, char have_vscroll) {
+	viewport->have_vscroll = have_vscroll;
+	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(viewport));
+}
+
+tgui_widget_t *tgui_viewport_get_child(tgui_viewport_t *viewport) {
+	return viewport->child;
+}
+
+long tgui_viewport_get_scroll_x(tgui_viewport_t *viewport) {
+	return viewport->scroll_x;
+}
+
+long tgui_viewport_get_scroll_y(tgui_viewport_t *viewport) {
+	return viewport->scroll_y;
+}
+
+char tgui_viewport_get_have_hscroll(tgui_viewport_t *viewport) {
+	return viewport->have_hscroll;
+}
+
+char tgui_viewport_get_have_vscroll(tgui_viewport_t *viewport) {
+	return viewport->have_vscroll;
+}
+
+long tgui_viewport_get_content_min_width(tgui_viewport_t *viewport) {
+	if (viewport->child) {
+		tgui_widget_calculate_sizes(viewport->child);
+		return viewport->child->min_width;
+	} else {
+		// avoid the viewport collapsing
+		return 10;
+	}
+}
+
+long tgui_viewport_get_content_min_height(tgui_viewport_t *viewport) {
+	if (viewport->child) {
+		tgui_widget_calculate_sizes(viewport->child);
+		return viewport->child->min_height;
+	} else {
+		// avoid the viewport collapsing
+		return 10;
+	}
+}
+
+long tgui_viewport_get_content_pref_width(tgui_viewport_t *viewport) {
+	if (viewport->child) {
+		tgui_widget_calculate_sizes(viewport->child);
+		return viewport->child->pref_width;
+	} else {
+		// avoid the viewport collapsing
+		return 10;
+	}
+}
+
+long tgui_viewport_get_content_pref_height(tgui_viewport_t *viewport) {
+	if (viewport->child) {
+		tgui_widget_calculate_sizes(viewport->child);
+		return viewport->child->pref_height;
+	} else {
+		// avoid the viewport collapsing
+		return 10;
+	}
+}

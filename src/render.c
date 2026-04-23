@@ -26,6 +26,23 @@ void tgui_render_text(tgui_widget_t *widget, long x, long y, const char *text) {
 	tgui_platform_render_text(surface, widget, x * surface->scaling, y * surface->scaling, text);
 }
 
+void tgui_render_set_clip(tgui_surface_t *surface, long x, long y, long width, long height) {
+	if (!surface) return;
+	surface->clip_x = x;
+	surface->clip_y = y;
+	surface->clip_width = width;
+	surface->clip_height = height;
+	tgui_platform_set_clip(surface, x, y, width, height);
+}
+
+void tgui_render_get_clip(tgui_surface_t *surface, long *x, long *y, long *width, long *height) {
+	if (!surface) return;
+	if (x)      *x = surface->clip_x;
+	if (y)      *y = surface->clip_y;
+	if (width)  *width  = surface->clip_width;
+	if (height) *height = surface->clip_height;
+}
+
 void tgui_render_widget_base(tgui_widget_t *widget) {
 	tgui_style_t *style = tgui_widget_get_current_style(widget);
 	long frame_x = tgui_widget_get_frame_x(widget);

@@ -4,6 +4,7 @@
 #include <widget.h>
 #include <surface.h>
 #include <platform.h>
+#include <render.h>
 #include <log.h>
 
 static tgui_list_t surfaces;
@@ -118,7 +119,7 @@ void tgui_surface_render(tgui_surface_t *surface) {
 
 	if (tgui_surface_is_dirty(surface)) {
 		tgui_log("got dirty rect from %ld %ld to %ld %ld\n", surface->inval_start_x, surface->inval_start_y, surface->inval_end_x, surface->inval_end_y);
-		tgui_platform_set_clip(surface, surface->inval_start_x, surface->inval_start_y, 
+		tgui_render_set_clip(surface, surface->inval_start_x, surface->inval_start_y, 
 		(surface->inval_end_x - surface->inval_start_x) * surface->scaling, 
 		(surface->inval_end_y - surface->inval_start_y) * surface->scaling);
 		tgui_widget_render(TGUI_WIDGET_CAST(surface));
