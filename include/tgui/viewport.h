@@ -1,7 +1,7 @@
 #ifndef TGUI_VIEWPORT_H
 #define TGUI_VIEWPORT_H
 
-#include <widget.h>
+#include "widget.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_viewport, TGUI_VIEWPORT, tgui_widget)
 
