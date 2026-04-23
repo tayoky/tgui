@@ -3,14 +3,15 @@
 
 #include "widget.h"
 #include "scrollbar.h"
+#include "viewport.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_scrolled_window, TGUI_SCROLLED_WINDOW, tgui_widget)
 
 struct tgui_scrolled_window {
 	tgui_widget_t widget;
-	tgui_widget_t *child;
 	tgui_scrollbar_t *hbar;
 	tgui_scrollbar_t *vbar;
+	tgui_viewport_t *viewport;
 	int hpolicy;
 	int vpolicy;
 };
