@@ -45,11 +45,13 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 
 	// make sure to unfocus and unhover
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
-	if (tgui_surface_get_focus(surface) == widget) {
-		tgui_surface_set_focus(surface, NULL);
-	}
-	if (surface->hover == widget) {
-		surface->hover = widget->parent;
+	if (surface) {
+		if (tgui_surface_get_focus(surface) == widget) {
+			tgui_surface_set_focus(surface, NULL);
+		}
+		if (surface->hover == widget) {
+			surface->hover = widget->parent;
+		}
 	}
 
 	tgui_widget_remove_parent(widget);
@@ -101,7 +103,7 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 	widget->pref_height += vpadding;
 
 	// add border to sizes
-	for (int side=0; side<4; side++) {
+	for (int side=0; side < 4; side++) {
 		if (style->border_style[side] == TGUI_BORDER_NONE) {
 			continue;
 		}
@@ -307,7 +309,7 @@ static void tgui_widget_apply_default_type_styles(tgui_widget_t *widget, ttype_t
 			tgui_widget_add_style(widget, style_default->style);
 		}
 	}
-	for (int i=0; i<TGUI_STATE_COUNT; i++) {
+	for (int i=0; i < TGUI_STATE_COUNT; i++) {
 		TGUI_LIST_FOREACH(node, &default_state_styles[i]) {
 			tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
 			if (!strcmp(style_default->class, name)) {
@@ -394,7 +396,7 @@ static void tgui_widget_apply_style(tgui_style_t *style, tgui_style_t *dest_styl
 	if (style->flags & TGUI_STYLE_ROUNDED_CORNERS) {
 		dest_style->rounded_corners = style->rounded_corners;
 	}
-	for (int i=0; i<4; i++) {
+	for (int i=0; i < 4; i++) {
 		CHECK_PTR(border_color[i]);
 		if (style->border_style[i] != TGUI_BORDER_UNDEFINED) {
 			dest_style->border_style[i] = style->border_style[i];
@@ -402,7 +404,7 @@ static void tgui_widget_apply_style(tgui_style_t *style, tgui_style_t *dest_styl
 		if (style->border_width_flags & (1 << i)) {
 			dest_style->border_width[i] = style->border_width[i];
 		}
-		for (int i=0; i<4; i++) {
+		for (int i=0; i < 4; i++) {
 			if (style->padding_flags & (1 << i)) {
 				dest_style->padding[i] = style->padding[i];
 			}
@@ -421,7 +423,7 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 	style->rounded_size = 4;
 	style->font_size = 12;
 	style->font = tgui_font_get_default();
-	for (int i=0; i<4; i++) {
+	for (int i=0; i < 4; i++) {
 		style->border_style[i] = TGUI_BORDER_NONE;
 	}
 	static tgui_color_t *color = NULL;
@@ -433,7 +435,7 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 		tgui_style_t *parent_style = tgui_widget_get_current_style(widget->parent);
 		*style = *parent_style;
 	}
-	
+
 	// apply base styles
 	TGUI_LIST_FOREACH(node, tgui_widget_get_styles(widget)) {
 		tgui_style_t *src_style = TGUI_STYLE_FROM_NODE(node);
@@ -441,7 +443,7 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget) {
 	}
 
 	// apply states styles
-	for (int i=0; i<TGUI_STATE_COUNT; i++) {
+	for (int i=0; i < TGUI_STATE_COUNT; i++) {
 		if (!tgui_widget_get_state(widget, i)) continue;
 		TGUI_LIST_FOREACH(node, tgui_widget_get_state_styles(widget, i)) {
 			tgui_style_t *src_style = TGUI_STYLE_FROM_NODE(node);
@@ -481,7 +483,7 @@ unsigned int tgui_widget_get_font_size(tgui_widget_t *widget) {
 
 void tgui_container_single_calculate_sizes(tgui_widget_t *widget) {
 	if (!widget->children.first) {
-empty:
+	empty:
 		widget->min_width = 0;
 		widget->min_height = 0;
 		widget->pref_width = 0;
