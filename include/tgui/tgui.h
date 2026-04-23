@@ -16,6 +16,8 @@
 #include "paned.h"
 #include "slider.h"
 #include "scrollbar.h"
+#include "viewport.h"
+#include "scrolledwindow.h"
 #include "titlebar.h"
 #include "stack.h"
 #include "stackswitcher.h"
