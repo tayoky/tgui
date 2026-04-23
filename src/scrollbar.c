@@ -74,7 +74,7 @@ void tgui_scrollbar_set_view_size(tgui_scrollbar_t *scrollbar, long view_size) {
 }
 
 void tgui_scrollbar_set_value(tgui_scrollbar_t *scrollbar, long value) {
-	tgui_slider_set_value(scrollbar->slider, (double)value/(double)scrollbar->total_size);
+	tgui_slider_set_value(scrollbar->slider, value);
 }
 
 void tgui_scrollbar_add_value(tgui_scrollbar_t *scrollbar, long value) {
@@ -83,5 +83,5 @@ void tgui_scrollbar_add_value(tgui_scrollbar_t *scrollbar, long value) {
 }
 
 long tgui_scrollbar_get_value(tgui_scrollbar_t *scrollbar) {
-	return tgui_slider_get_value(scrollbar->slider) * (double)scrollbar->total_size;
+	return tgui_slider_get_value(scrollbar->slider);
 }
