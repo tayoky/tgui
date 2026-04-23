@@ -100,5 +100,6 @@ long tgui_popover_get_width(tgui_popover_t *popover) {
 
 long tgui_popover_get_height(tgui_popover_t *popover) {
 	if (!popover->child) return 0;
+	tgui_widget_calculate_sizes(popover->child);
 	return popover->child->pref_height;
 }

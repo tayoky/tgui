@@ -10,6 +10,7 @@ TOBJECT_DEFINE_CLASS(tgui_title, TGUI_TITLE, tgui_label_get_type())
 
 static void tgui_label_calculate_sizes(tgui_widget_t *widget) {
 	tgui_label_t *label = TGUI_LABEL_CAST(widget);
+	if (!label->text) return;
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
 	long scaling = tgui_surface_get_scaling(surface);
 	int real_width = tgui_platform_text_width(widget, label->text);
@@ -24,6 +25,7 @@ static void tgui_label_calculate_sizes(tgui_widget_t *widget) {
 
 static void tgui_label_render(tgui_widget_t *widget) {
 	tgui_label_t *label = TGUI_LABEL_CAST(widget);
+	if (!label->text) return;
 	tgui_render_text(widget, label->widget.x, label->widget.y, label->text);
 }
 
