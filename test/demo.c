@@ -136,7 +136,6 @@ int main() {
 	tgui_stack_add_child(stack, align_tab(), "aligns");
 	tgui_stack_add_child(stack, list_tab(), "lists");
 	tgui_stack_add_child(stack, menu_tab(), "menus");
-	tgui_stack_switcher_update(tabs);
 	tgui_main();
 	tgui_fini();
 	return 0;

@@ -33,20 +33,23 @@ static void tgui_widget_class_init(tgui_widget_class_t *class) {
 
 void tgui_widget_destroy(tgui_widget_t *widget) {
 	if (!widget) return;
-	// make sure to unfocus
-	tgui_surface_t *surface = tgui_widget_get_surface(widget);
-	if (tgui_surface_get_focus(surface) == widget) {
-		tgui_surface_set_focus(surface, NULL);
-	}
-
-	// send signal first
-	tgui_widget_send_signal(widget, "destroy", NULL);
-
 	// destroy children
 	for (tgui_list_node_t *node=widget->children.first; node; ) {
 		tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(node);
 		node = node->next;
 		tgui_widget_destroy(child);
+	}
+
+	// send signal first
+	tgui_widget_send_signal(widget, "destroy", NULL);
+
+	// make sure to unfocus and unhover
+	tgui_surface_t *surface = tgui_widget_get_surface(widget);
+	if (tgui_surface_get_focus(surface) == widget) {
+		tgui_surface_set_focus(surface, NULL);
+	}
+	if (surface->hover == widget) {
+		surface->hover = widget->parent;
 	}
 
 	tgui_widget_remove_parent(widget);

@@ -35,6 +35,7 @@ void *tobject_new(ttype_t *type) {
 	if (!object) return NULL;
 	memset(object, 0, type->size);
 	object->type = type;
+	object->ref_count = 1;
 
 	// call constructor
 	if (type->class->constructor) {
@@ -56,6 +57,10 @@ static void free_handler_group(thandler_group_t *group) {
 }
 
 void tobject_free(tobject_t *tobject) {
+	if (tobject->ref_count > 1) {
+		tobject->ref_count--;
+		return;
+	}
 	ttype_t *type = tobject_type_from_object(tobject);
 
 	// call destructor
@@ -89,11 +94,18 @@ void __tobject_send_signal(tobject_t *tobject, const char *signal, void *event) 
 	thandler_group_t *group = get_handler_group(tobject, signal);
 	if (!group) return;
 
+	tobject_ref(tobject);
 	thandler_t *handler = group->handlers;
 	while (handler) {
+		thandler_t *next = handler->next;
 		handler->callback(tobject, event, handler->user_data);
-		handler = handler->next;
+		if (tobject->ref_count == 1) {
+			// the object was destroyed during the callback
+			break;
+		}
+		handler = next;
 	}
+	tobject_free(tobject);
 }
 
 size_t __tobject_connect_signal(tobject_t *tobject, const char *signal, tcallback_t callback, void *user_data) {
@@ -131,6 +143,7 @@ void __tobject_disconnect_signal(tobject_t *tobject, const char *signal, size_t 
 			break;
 		}
 		prev = handler;
+		handler = handler->next;
 	}
 }
 

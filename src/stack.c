@@ -34,6 +34,7 @@ static void tgui_stack_remove_child(tgui_widget_t *widget, tgui_widget_t *child)
 	}
 
 	tgui_stack_page_t *page = child->layout_data;
+	tgui_widget_send_signal(TGUI_WIDGET_CAST(stack), "remove-page", page);
 	tgui_list_remove(&stack->pages, &page->node);
 	free(page->name);
 	free(page);
@@ -59,6 +60,7 @@ void tgui_stack_add_child(tgui_stack_t *stack, tgui_widget_t *child, const char 
 	tgui_widget_set_parent(child, TGUI_WIDGET_CAST(stack));
 	tgui_widget_hide(child);
 	child->layout_data = page;
+	tgui_widget_send_signal(TGUI_WIDGET_CAST(stack), "add-page", page);
 }
 
 void tgui_stack_set_current_page(tgui_stack_t *stack, tgui_stack_page_t *page) {

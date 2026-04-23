@@ -44,8 +44,8 @@
 	static inline void class_name ## _send_signal(class_name ## _t *object, const char *signal, void *event) {\
 		__tobject_send_signal(TOBJECT_CAST(object), signal, event);\
 	}\
-	static inline void class_name ## _connect_signal(class_name ## _t *object, const char *signal, tcallback_t callback, void *user_data) {\
-		__tobject_connect_signal(TOBJECT_CAST(object), signal, callback, user_data);\
+	static inline size_t class_name ## _connect_signal(class_name ## _t *object, const char *signal, tcallback_t callback, void *user_data) {\
+		return __tobject_connect_signal(TOBJECT_CAST(object), signal, callback, user_data);\
 	}\
 	static inline void class_name ## _disconnect_signal(class_name ## _t *object, const char *signal, size_t id) {\
 		__tobject_disconnect_signal(TOBJECT_CAST(object), signal, id);\
@@ -127,6 +127,7 @@ struct thandler_group {
 struct tobject {
 	ttype_t *type;
 	thandler_group_t *handler_groups;
+	size_t ref_count;
 };
 
 void __tobject_send_signal(struct tobject *tobject, const char *signal, void *event);
@@ -169,6 +170,10 @@ static inline ttype_t *ttype_get_parent(ttype_t *type) {
 
 void *tobject_new(ttype_t *type);
 void tobject_free(tobject_t *tobject);
+static inline tobject_t *tobject_ref(tobject_t *tobject) {
+	if (tobject) tobject->ref_count++;
+	return tobject;
+}
 void tobject_set_property(tobject_t *tobject, const char *name, const void *value);
 void tobject_get_property(tobject_t *tobject, const char *name, void *value);
 
