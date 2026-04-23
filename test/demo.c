@@ -56,10 +56,9 @@ tgui_widget_t *input_tab() {
 	tgui_expander_set_child(expander, TGUI_WIDGET_CAST(tgui_label_new("some really long text...")));
 	add_element(box, TGUI_WIDGET_CAST(expander));
 
-	tgui_viewport_t *viewport = tgui_viewport_new();
-	tgui_viewport_set_child(viewport, TGUI_WIDGET_CAST(tgui_label_new("some text")));
-	tgui_viewport_set_scroll_y(viewport, 10);
-	add_element(box, TGUI_WIDGET_CAST(viewport));
+	tgui_scrolled_window_t *scrolled_window = tgui_scrolled_window_new();
+	tgui_scrolled_window_set_child(scrolled_window, TGUI_WIDGET_CAST(tgui_label_new("some text that is very long and need a scrolled window in order to be read completly")));
+	add_element(box, TGUI_WIDGET_CAST(scrolled_window));
 
 	return TGUI_WIDGET_CAST(box);
 }

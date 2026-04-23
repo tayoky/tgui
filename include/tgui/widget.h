@@ -138,7 +138,6 @@ static inline void tgui_widget_hide(tgui_widget_t *widget) {
 	widget->flags |= TGUI_WIDGET_HIDDEN;
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_space(widget->parent);
-	tgui_widget_mark_dirty_size(widget->parent);
 }
 
 static inline void tgui_widget_show(tgui_widget_t *widget) {
@@ -147,7 +146,6 @@ static inline void tgui_widget_show(tgui_widget_t *widget) {
 	widget->width  = widget->x = 0;
 	widget->height = widget->y = 0;
 	tgui_widget_mark_dirty_space(widget);
-	tgui_widget_mark_dirty_size(widget->parent);
 }
 
 /**
@@ -161,6 +159,14 @@ static inline void tgui_widget_set_visible(tgui_widget_t *widget, int visible) {
 		tgui_widget_show(widget);
 	} else {
 		tgui_widget_hide(widget);
+	}
+}
+
+static inline void tgui_widget_set_visible_no_dirty(tgui_widget_t *widget, int visible) {
+	if (visible) {
+		widget->flags &= ~TGUI_WIDGET_HIDDEN;
+	} else {
+		widget->flags |= TGUI_WIDGET_HIDDEN;
 	}
 }
 
