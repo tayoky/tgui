@@ -195,12 +195,12 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 		// do not recalculate child if useless
 		return;
 	}
-	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 
 	tgui_widget_class_t *class = tgui_widget_get_class(widget);
 	if (class->allocate_space) {
 		class->allocate_space(widget);
 	}
+	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 }
 
 void tgui_widget_set_id(tgui_widget_t *widget, const char *id) {

@@ -154,6 +154,7 @@ static double tgui_slider_clamp_value(tgui_slider_t *slider, double value) {
 }
 
 void tgui_slider_set_range(tgui_slider_t *slider, double min, double max) {
+	if (slider->min == min && slider->max == max) return;
 	slider->min = min;
 	slider->max = max;
 	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(slider->button));

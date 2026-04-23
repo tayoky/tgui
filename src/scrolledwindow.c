@@ -9,6 +9,10 @@ static void tgui_scrolled_window_calculate_sizes(tgui_widget_t *widget) {
 	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(scrolled_window->vbar));
 	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(scrolled_window->viewport));
 
+	// set the scrollbar's ranges
+	tgui_scrollbar_set_total_size(scrolled_window->hbar, tgui_viewport_get_content_pref_width(scrolled_window->viewport));
+	tgui_scrollbar_set_total_size(scrolled_window->vbar, tgui_viewport_get_content_pref_height(scrolled_window->viewport));
+
 	widget->min_width  = TGUI_WIDGET_CAST(scrolled_window->viewport)->min_width;
 	widget->min_height = TGUI_WIDGET_CAST(scrolled_window->viewport)->min_height;
 	widget->pref_width  = TGUI_WIDGET_CAST(scrolled_window->viewport)->pref_width;
@@ -68,20 +72,45 @@ static void tgui_scrolled_window_allocate_space(tgui_widget_t *widget) {
 		have_vbar = height < TGUI_WIDGET_CAST(scrolled_window->viewport)->pref_height;
 		break;
 	}
+	
+	tgui_widget_set_visible(TGUI_WIDGET_CAST(scrolled_window->hbar), have_hbar);
+	tgui_widget_set_visible(TGUI_WIDGET_CAST(scrolled_window->vbar), have_vbar);
 
-	tgui_widget_set_visible_no_dirty(TGUI_WIDGET_CAST(scrolled_window->hbar), have_hbar);
-	tgui_widget_set_visible_no_dirty(TGUI_WIDGET_CAST(scrolled_window->vbar), have_vbar);
+	long view_width  = width;
+	long view_height = height;
 
 	if (have_hbar) {
-		height -= TGUI_WIDGET_CAST(scrolled_window->hbar)->min_height;
-		tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->hbar), x, y + height, width, TGUI_WIDGET_CAST(scrolled_window->hbar)->min_height);
+		view_height -= TGUI_WIDGET_CAST(scrolled_window->hbar)->min_height;
 	}
 	if (have_vbar) {
-		width -= TGUI_WIDGET_CAST(scrolled_window->vbar)->min_width;
-		tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->vbar), x + width, y, TGUI_WIDGET_CAST(scrolled_window->hbar)->min_width, height);
+		view_width -= TGUI_WIDGET_CAST(scrolled_window->vbar)->min_width;
 	}
 
-	tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->viewport), x, y, width, height);
+	if (have_hbar) {
+		tgui_scrollbar_set_view_size(scrolled_window->hbar, view_width);
+		tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->hbar), x, y + view_height, width, TGUI_WIDGET_CAST(scrolled_window->hbar)->min_height);
+	}
+
+	if (have_vbar) {
+		tgui_scrollbar_set_view_size(scrolled_window->vbar, view_height);
+		tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->vbar), x + view_width, y, TGUI_WIDGET_CAST(scrolled_window->hbar)->min_width, view_height);
+	}
+
+	tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->viewport), x, y, view_width, view_height);
+}
+
+static void tgui_scrolled_window_hbar_changed(tobject_t *tobject, long *value) {
+	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(tobject);
+	tgui_scrolled_window_t *scrolled_window = TGUI_SCROLLED_WINDOW_CAST(TGUI_WIDGET_CAST(scrollbar)->parent);
+	
+	tgui_viewport_set_scroll_x(scrolled_window->viewport, *value);
+}
+
+static void tgui_scrolled_window_vbar_changed(tobject_t *tobject, long *value) {
+	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(tobject);
+	tgui_scrolled_window_t *scrolled_window = TGUI_SCROLLED_WINDOW_CAST(TGUI_WIDGET_CAST(scrollbar)->parent);
+	
+	tgui_viewport_set_scroll_y(scrolled_window->viewport, *value);
 }
 
 static int tgui_scrolled_window_constructor(void *object) {
@@ -96,6 +125,8 @@ static int tgui_scrolled_window_constructor(void *object) {
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(scrolled_window->viewport), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(scrolled_window->viewport), TGUI_TRUE);
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(scrolled_window->hbar), TGUI_WIDGET_CAST(scrolled_window));
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrolled_window->hbar), "changed", TCALLBACK_CAST(tgui_scrolled_window_hbar_changed), NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrolled_window->vbar), "changed", TCALLBACK_CAST(tgui_scrolled_window_vbar_changed), NULL);
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(scrolled_window->vbar), TGUI_WIDGET_CAST(scrolled_window));
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(scrolled_window->viewport), TGUI_WIDGET_CAST(scrolled_window));
 

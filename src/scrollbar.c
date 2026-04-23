@@ -28,6 +28,14 @@ static void tgui_scrollbar_bottom_click(tobject_t *tobject) {
 	tgui_scrollbar_add_value(scrollbar, 12);
 }
 
+static void tgui_scrollbar_slider_changed(tobject_t *tobject, double *value) {
+	tgui_widget_t *widget = TGUI_WIDGET_CAST(tobject);
+	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(widget->parent);
+	
+	long l_value = *value;
+	tgui_widget_send_signal(TGUI_WIDGET_CAST(scrollbar), "changed", &l_value);
+}
+
 static int tgui_scrollbar_constructor(void *object) {
 	tgui_scrollbar_get_parent_class()->constructor(object);
 
@@ -38,6 +46,7 @@ static int tgui_scrollbar_constructor(void *object) {
 	scrollbar->slider = tgui_slider_new(TGUI_ORIENTATION_VERTICAL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->top), "click", TCALLBACK_CAST(tgui_scrollbar_top_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->bottom), "click", TCALLBACK_CAST(tgui_scrollbar_bottom_click), NULL);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->slider), "changed", TCALLBACK_CAST(tgui_scrollbar_slider_changed), NULL);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(scrollbar->slider), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(scrollbar->slider), TGUI_TRUE);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(scrollbar->top));
@@ -62,15 +71,22 @@ tgui_scrollbar_t *tgui_scrollbar_new(int orientation) {
 	return scrollbar;
 }
 
+static void tgui_scrollbar_update(tgui_scrollbar_t *scrollbar) {
+	tgui_slider_set_range(scrollbar->slider, 0, scrollbar->total_size - scrollbar->view_size);
+	tgui_slider_set_size(scrollbar->slider, (double)scrollbar->view_size / (double)scrollbar->total_size);
+}
+
 void tgui_scrollbar_set_total_size(tgui_scrollbar_t *scrollbar, long total_size) {
-	tgui_slider_set_range(scrollbar->slider, 0, total_size);
-	tgui_slider_set_size(scrollbar->slider, (double)scrollbar->view_size / (double)total_size);
 	scrollbar->total_size = total_size;
+	tgui_scrollbar_update(scrollbar);
 }
 
 void tgui_scrollbar_set_view_size(tgui_scrollbar_t *scrollbar, long view_size) {
-	tgui_slider_set_size(scrollbar->slider, (double)view_size / (double)scrollbar->total_size);
+	if (view_size > scrollbar->total_size) {
+		view_size = scrollbar->total_size;
+	}
 	scrollbar->view_size = view_size;
+	tgui_scrollbar_update(scrollbar);
 }
 
 void tgui_scrollbar_set_value(tgui_scrollbar_t *scrollbar, long value) {

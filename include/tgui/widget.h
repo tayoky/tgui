@@ -162,14 +162,6 @@ static inline void tgui_widget_set_visible(tgui_widget_t *widget, int visible) {
 	}
 }
 
-static inline void tgui_widget_set_visible_no_dirty(tgui_widget_t *widget, int visible) {
-	if (visible) {
-		widget->flags &= ~TGUI_WIDGET_HIDDEN;
-	} else {
-		widget->flags |= TGUI_WIDGET_HIDDEN;
-	}
-}
-
 static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_HIDDEN;
 }
