@@ -58,9 +58,12 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 }
 
 void tgui_widget_send_parent_signal(tgui_widget_t *widget, const char *signal, void *event) {
+	widget = tgui_widget_ref(widget);
 	while (widget) {
 		tgui_widget_send_signal(widget, signal, event);
-		widget = widget->parent;
+		tgui_widget_t *parent = tgui_widget_ref(widget->parent);
+		tobject_free(TOBJECT_CAST(widget));
+		widget = parent;
 	}
 }
 

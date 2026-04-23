@@ -99,10 +99,6 @@ void __tobject_send_signal(tobject_t *tobject, const char *signal, void *event) 
 	while (handler) {
 		thandler_t *next = handler->next;
 		handler->callback(tobject, event, handler->user_data);
-		if (tobject->ref_count == 1) {
-			// the object was destroyed during the callback
-			break;
-		}
 		handler = next;
 	}
 	tobject_free(tobject);

@@ -155,6 +155,7 @@ tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface) {
 }
 
 void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width, long height) {
+	if (!surface) return;
 	if (width == 0 || height == 0) return;
 	long end_x = x + width;
 	long end_y = y + height;

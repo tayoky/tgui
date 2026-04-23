@@ -49,6 +49,10 @@
 	}\
 	static inline void class_name ## _disconnect_signal(class_name ## _t *object, const char *signal, size_t id) {\
 		__tobject_disconnect_signal(TOBJECT_CAST(object), signal, id);\
+	}\
+	static inline class_name ## _t *class_name ## _ref(class_name ## _t *object) {\
+		if (object) TOBJECT_CAST(object)->ref_count++;\
+		return object;\
 	}
 
 #define TOBJECT_DECLARE_SIMPLE_CLASS(class, CLASS, parent) \
@@ -170,10 +174,6 @@ static inline ttype_t *ttype_get_parent(ttype_t *type) {
 
 void *tobject_new(ttype_t *type);
 void tobject_free(tobject_t *tobject);
-static inline tobject_t *tobject_ref(tobject_t *tobject) {
-	if (tobject) tobject->ref_count++;
-	return tobject;
-}
 void tobject_set_property(tobject_t *tobject, const char *name, const void *value);
 void tobject_get_property(tobject_t *tobject, const char *name, void *value);
 
