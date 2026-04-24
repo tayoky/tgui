@@ -4,6 +4,20 @@
 
 TOBJECT_DEFINE_CLASS(tgui_vector, TGUI_VECTOR, tgui_list_model_get_type())
 
+static size_t tgui_vector_get_count(tgui_list_model_t *list) {
+	tgui_vector_t *vector = TGUI_VECTOR_CAST(list);
+	return vector->count;
+}
+
+static void *tgui_vector_get_item(tgui_list_model_t *list, size_t index) {
+	tgui_vector_t *vector = TGUI_VECTOR_CAST(list);
+	if (index < vector->count) {
+		return vector->array[index];
+	} else {
+		return NULL;
+	}
+}
+
 static int tgui_vector_constructor(void *object) {
 	tgui_vector_get_parent_class()->constructor(object);
 
@@ -22,6 +36,10 @@ static int tgui_vector_destructor(void *object) {
 }
 
 static void tgui_vector_class_init(tgui_vector_class_t *class) {
+	tgui_list_model_class_t *list_model_class = TGUI_LIST_MODEL_CLASS_CAST(class);
+	list_model_class->get_count = tgui_vector_get_count;
+	list_model_class->get_item  = tgui_vector_get_item;
+
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_vector_constructor;
 	tobject_class->destructor  = tgui_vector_destructor;
