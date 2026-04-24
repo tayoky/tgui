@@ -1,7 +1,6 @@
 #include <render.h>
 #include <surface.h>
 #include <platform.h>
-#include <stdio.h>
 
 void tgui_render_rect(tgui_widget_t *widget, tgui_color_t *color, long x, long y, long width, long height) {
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
@@ -33,7 +32,6 @@ void tgui_render_set_clip(tgui_surface_t *surface, tgui_rect_t *rect) {
 	long y = rect->start_y * surface->scaling;
 	long width  = (rect->end_x - rect->start_x) * surface->scaling;
 	long height = (rect->end_y - rect->start_y) * surface->scaling;
-	printf("clip %ld %ld %ld %ld\n", x, y, width, height);
 	surface->clip = *rect;
 	tgui_platform_set_clip(surface, x, y, width, height);
 }

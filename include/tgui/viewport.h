@@ -13,7 +13,6 @@ struct tgui_viewport {
 	long scroll_y;
 	char have_hscroll;
 	char have_vscroll;
-	tgui_rect_t old_inval;
 	tgui_rect_t old_clip;
 };
 

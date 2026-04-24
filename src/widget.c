@@ -220,7 +220,7 @@ static int tgui_widget_is_dirty(tgui_widget_t *widget) {
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
 	tgui_rect_t bounds;
 	tgui_rect_init(&bounds, widget->x, widget->y, widget->width, widget->height);
-	return tgui_rect_collide(&bounds, &surface->inval);
+	return tgui_rect_collide(&bounds, &surface->clip);
 }
 
 void tgui_widget_render(tgui_widget_t *widget) {
