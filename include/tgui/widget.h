@@ -8,6 +8,7 @@
 #include "style.h"
 #include "events.h"
 #include "tobject.h"
+#include "rect.h"
 
 TOBJECT_DECLARE_CLASS(tgui_widget, TGUI_WIDGET)
 
@@ -379,6 +380,14 @@ static inline long tgui_widget_get_outer_height(tgui_widget_t *widget) {
 	return widget->height;
 }
 
+static inline void tgui_widget_get_outer_bounds(tgui_widget_t *widget, tgui_rect_t *rect) {
+	long x = tgui_widget_get_outer_x(widget);
+	long y = tgui_widget_get_outer_y(widget);
+	long width  = tgui_widget_get_outer_width(widget);
+	long height = tgui_widget_get_outer_height(widget);
+	tgui_rect_init(rect, x, y, width, height);
+}
+
 static inline long tgui_widget_get_border_x(tgui_widget_t *widget) {
 	return widget->x + widget->left_margin;
 }
@@ -393,6 +402,14 @@ static inline long tgui_widget_get_border_y(tgui_widget_t *widget) {
 
 static inline long tgui_widget_get_border_height(tgui_widget_t *widget) {
 	return widget->height - widget->top_margin - widget->bottom_margin;
+}
+
+static inline void tgui_widget_get_border_bounds(tgui_widget_t *widget, tgui_rect_t *rect) {
+	long x = tgui_widget_get_border_x(widget);
+	long y = tgui_widget_get_border_y(widget);
+	long width  = tgui_widget_get_border_width(widget);
+	long height = tgui_widget_get_border_height(widget);
+	tgui_rect_init(rect, x, y, width, height);
 }
 
 static inline long tgui_widget_get_frame_x(tgui_widget_t *widget) {
@@ -437,6 +454,14 @@ static inline long tgui_widget_get_frame_height(tgui_widget_t *widget) {
 	return height;
 }
 
+static inline void tgui_widget_get_frame_bounds(tgui_widget_t *widget, tgui_rect_t *rect) {
+	long x = tgui_widget_get_frame_x(widget);
+	long y = tgui_widget_get_frame_y(widget);
+	long width  = tgui_widget_get_frame_width(widget);
+	long height = tgui_widget_get_frame_height(widget);
+	tgui_rect_init(rect, x, y, width, height);
+}
+
 static inline long tgui_widget_get_inner_x(tgui_widget_t *widget) {
 	return tgui_widget_get_frame_x(widget) + tgui_widget_get_padding(widget, TGUI_SIDE_LEFT);
 }
@@ -451,6 +476,14 @@ static inline long tgui_widget_get_inner_y(tgui_widget_t *widget) {
 
 static inline long tgui_widget_get_inner_height(tgui_widget_t *widget) {
 	return tgui_widget_get_frame_height(widget) - tgui_widget_get_padding(widget, TGUI_SIDE_TOP) + tgui_widget_get_padding(widget, TGUI_SIDE_BOTTOM);
+}
+
+static inline void tgui_widget_get_inner_bounds(tgui_widget_t *widget, tgui_rect_t *rect) {
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	long width  = tgui_widget_get_inner_width(widget);
+	long height = tgui_widget_get_inner_height(widget);
+	tgui_rect_init(rect, x, y, width, height);
 }
 
 void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent);

@@ -67,7 +67,10 @@ tgui_surface_t *tgui_surface_new(long width, long height, tgui_surface_t *parent
 
 	tgui_platform_create_surface(surface, parent);
 	tgui_surface_register(surface);
-	tgui_surface_invalidate(surface, 0, 0, width, height);
+
+	tgui_rect_t rect;
+	tgui_rect_init(&rect, 0, 0, width, height);
+	tgui_surface_invalidate(surface, &rect);
 	return surface;
 }
 
@@ -158,22 +161,21 @@ tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface) {
 	return surface->focus;
 }
 
-void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width, long height) {
+void tgui_surface_invalidate(tgui_surface_t *surface, tgui_rect_t *rect) {
 	if (!surface) return;
-	if (width == 0 || height == 0) return;
-	long end_x = x + width;
-	long end_y = y + height;
-	if (x < surface->inval.start_x) {
-		surface->inval.start_x = x;
+	if (rect->start_x >= rect->end_x) return;
+	if (rect->start_y >= rect->end_y) return;
+	if (rect->start_x < surface->inval.start_x) {
+		surface->inval.start_x = rect->start_x;
 	}
-	if (y < surface->inval.start_y) {
-		surface->inval.start_y = y;
+	if (rect->start_y < surface->inval.start_y) {
+		surface->inval.start_y = rect->start_y;
 	}
-	if (end_x > surface->inval.end_x) {
-		surface->inval.end_x = end_x;
+	if (rect->end_x > surface->inval.end_x) {
+		surface->inval.end_x = rect->end_x;
 	}
-	if (end_y > surface->inval.end_y) {
-		surface->inval.end_y = end_y;
+	if (rect->end_y > surface->inval.end_y) {
+		surface->inval.end_y = rect->end_y;
 	}
 }
 

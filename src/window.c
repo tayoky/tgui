@@ -95,7 +95,10 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_platform_create_window(window);
 	tgui_list_append(&windows, &window->node);
 	tgui_surface_register(&window->surface);
-	tgui_surface_invalidate(&window->surface, 0, 0, width, height);
+
+	tgui_rect_t rect;
+	tgui_rect_init(&rect, 0, 0, width, height);
+	tgui_surface_invalidate(&window->surface, &rect);
 	return window;
 }
 

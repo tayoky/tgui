@@ -34,7 +34,7 @@ long tgui_surface_get_scaling(tgui_surface_t *surface);
 void tgui_surface_set_position(tgui_surface_t *surface, long x, long y);
 void tgui_surface_set_focus(tgui_surface_t *surface, tgui_widget_t *widget);
 tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface);
-void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width, long height);
+void tgui_surface_invalidate(tgui_surface_t *surface, tgui_rect_t *rect);
 void tgui_surface_register(tgui_surface_t *surface);
 void tgui_surface_unregister(tgui_surface_t *surface);
 

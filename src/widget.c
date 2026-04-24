@@ -213,13 +213,15 @@ void tgui_widget_set_id(tgui_widget_t *widget, const char *id) {
 }
 
 void tgui_widget_mark_dirty(tgui_widget_t *widget) {
-	tgui_surface_invalidate(tgui_widget_get_surface(widget), widget->x, widget->y, widget->width, widget->height);
+	tgui_rect_t bounds;
+	tgui_widget_get_border_bounds(widget, &bounds);
+	tgui_surface_invalidate(tgui_widget_get_surface(widget), &bounds);
 }
 
 static int tgui_widget_is_dirty(tgui_widget_t *widget) {
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
 	tgui_rect_t bounds;
-	tgui_rect_init(&bounds, widget->x, widget->y, widget->width, widget->height);
+	tgui_widget_get_border_bounds(widget, &bounds);
 	return tgui_rect_collide(&bounds, &surface->clip);
 }
 
