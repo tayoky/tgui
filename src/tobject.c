@@ -126,6 +126,7 @@ size_t __tobject_connect_signal(tobject_t *tobject, const char *signal, tcallbac
 
 void __tobject_disconnect_signal(tobject_t *tobject, const char *signal, size_t id) {
 	thandler_group_t *group = get_handler_group(tobject, signal);
+	if (!group) return;
 	thandler_t *handler = group->handlers;
 	thandler_t *prev = NULL;
 	while (handler) {

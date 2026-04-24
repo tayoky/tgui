@@ -17,6 +17,7 @@ static tgui_widget_t *tgui_list_view_bind(tgui_list_view_t *list_view, size_t in
 
 	tgui_factory_bind(list_view->factory, list_item, tgui_list_model_get_item(list_view->list, index));
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(list_item), TGUI_WIDGET_CAST(list_view));
+	// TODO : place at the right location
 	return TGUI_WIDGET_CAST(list_item);
 }
 
@@ -153,19 +154,37 @@ static void tgui_list_view_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
-static void tgui_list_view_update(tobject_t *tobject, tgui_list_model_update_t *update, tgui_list_view_t *list_view) {
-	// no need to generate if it's not on s screen
-	if (update->index >= list_view->first_index + tgui_list_view_get_children_count(list_view)) {
-		// it's below we don't care
-		return;
-	}
-	// TODO
+static int tgui_list_view_destructor(void *object) {
+	tgui_list_view_t *list_view = TGUI_LIST_VIEW_CAST(object);
+	tgui_list_view_set_list(list_view, NULL);
+
+	return tgui_list_view_get_parent_class()->destructor(object);
 }
 
 static void tgui_list_view_class_init(tgui_list_view_class_t *class) {
 	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
 	widget_class->calculate_sizes = tgui_list_view_calculate_sizes;
 	widget_class->allocate_space = tgui_list_view_allocate_space;
+
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->destructor = tgui_list_view_destructor;
+}
+
+static void tgui_list_view_list_changed(tobject_t *tobject, tgui_list_model_update_t *update, tgui_list_view_t *list_view) {
+	(void)tobject;
+
+	// no need to generate if it's not on s screen
+	if (update->index >= list_view->first_index + tgui_list_view_get_children_count(list_view)) {
+		// it's below we don't care
+		return;
+	}
+	// TODO : update the list
+}
+
+static void tgui_list_view_list_destroy(tobject_t *tobject, void *event, tgui_list_view_t *list_view) {
+	(void)tobject;
+	(void)event;
+	tgui_list_view_set_list(list_view, NULL);
 }
 
 tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_model_t *list) {
@@ -195,8 +214,16 @@ void tgui_list_view_set_factory(tgui_list_view_t *list_view, tgui_factory_t *fac
 }
 
 void tgui_list_view_set_list(tgui_list_view_t *list_view, tgui_list_model_t *list) {
+	if (list_view->list) {
+		tgui_list_model_disconnect_signal(list_view->list, "changed", list_view->changed_callback);
+		tgui_list_model_disconnect_signal(list_view->list, "destroy", list_view->destroy_callback);
+	}
 	tgui_list_view_unbind_all(list_view);
 	list_view->list = list;
+	if (list) {
+		list_view->changed_callback = tgui_list_model_connect_signal(list, "changed", TCALLBACK_CAST(tgui_list_view_list_changed), list_view);
+		list_view->destroy_callback = tgui_list_model_connect_signal(list, "destroy", TCALLBACK_CAST(tgui_list_view_list_destroy), list_view);
+	}
 }
 
 tgui_factory_t *tgui_list_view_get_factory(tgui_list_view_t *list_view) {

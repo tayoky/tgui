@@ -13,6 +13,8 @@ struct tgui_list_view {
 	tgui_list_model_t *list;
 	tgui_factory_t *factory;
 	size_t first_index;
+	size_t changed_callback;
+	size_t destroy_callback;
 };
 
 tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_model_t *list);
