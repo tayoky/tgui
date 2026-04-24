@@ -72,7 +72,8 @@ static void tgui_scrolled_window_allocate_space(tgui_widget_t *widget) {
 		have_vbar = height < TGUI_WIDGET_CAST(scrolled_window->viewport)->pref_height;
 		break;
 	}
-	
+
+	// FIXME : those functions can set dirty size
 	tgui_widget_set_visible(TGUI_WIDGET_CAST(scrolled_window->hbar), have_hbar);
 	tgui_widget_set_visible(TGUI_WIDGET_CAST(scrolled_window->vbar), have_vbar);
 

@@ -2,6 +2,7 @@
 #define TGUI_SURFACE_H
 
 #include "widget.h"
+#include "rect.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_surface, TGUI_SURFACE, tgui_widget)
 
@@ -13,14 +14,8 @@ struct tgui_surface {
 	tgui_widget_t *focus;
 	tgui_widget_t *child;
 	tgui_widget_t *hover;
-	long inval_start_x;
-	long inval_start_y; 
-	long inval_end_x;
-	long inval_end_y;
-	long clip_x;
-	long clip_y; 
-	long clip_width;
-	long clip_height;
+	tgui_rect_t inval;
+	tgui_rect_t clip;
 	long width;
 	long height;
 	long old_flags;

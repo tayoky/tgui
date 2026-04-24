@@ -2,6 +2,7 @@
 #define TGUI_VIEWPORT_H
 
 #include "widget.h"
+#include "rect.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_viewport, TGUI_VIEWPORT, tgui_widget)
 
@@ -12,10 +13,8 @@ struct tgui_viewport {
 	long scroll_y;
 	char have_hscroll;
 	char have_vscroll;
-	long old_clip_x;
-	long old_clip_y;
-	long old_clip_width;
-	long old_clip_height;
+	tgui_rect_t old_inval;
+	tgui_rect_t old_clip;
 };
 
 tgui_viewport_t *tgui_viewport_new(void);

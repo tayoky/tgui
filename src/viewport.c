@@ -47,32 +47,29 @@ static void tgui_viewport_remove_child(tgui_widget_t *widget, tgui_widget_t *chi
 static void tgui_viewport_render(tgui_widget_t *widget) {
 	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
-	tgui_render_get_clip(surface, &viewport->old_clip_x, &viewport->old_clip_y, &viewport->old_clip_width, &viewport->old_clip_height);
+	tgui_render_get_clip(surface, &viewport->old_clip);
 	long x = tgui_widget_get_inner_x(widget);
 	long y = tgui_widget_get_inner_y(widget);
 	long width  = tgui_widget_get_inner_width(widget);
 	long height = tgui_widget_get_inner_height(widget);
-	long end_x = x + width;
-	long end_y = y + height;
 
-	long old_x = viewport->old_clip_x;
-	long old_y = viewport->old_clip_y;
-	long old_end_x = old_x + viewport->old_clip_width;
-	long old_end_y = old_y + viewport->old_clip_height;
+	tgui_rect_t viewport_clip;
+	tgui_rect_init(&viewport_clip, x, y, width, height);
+	tgui_rect_intersect(&viewport_clip, &viewport_clip, &viewport->old_clip);
 
-	if (x < old_x) x = old_x;
-	if (y < old_y) y = old_y;
-	if (end_x > old_end_x) end_x = old_end_x;
-	if (end_y > old_end_y) end_y = old_end_y;
-	if (x >= end_x || y >= end_y) return;
-	tgui_render_set_clip(surface, x, y, end_x - x, end_y - y);
+	// if the viewport is totaly offscreen
+	// we can save time
+	if (viewport_clip.start_x >= viewport_clip.end_x) return;
+	if (viewport_clip.start_y >= viewport_clip.end_y) return;
+
+	tgui_render_set_clip(surface, &viewport_clip);
 }
 
 static void tgui_viewport_after_render(tgui_widget_t *widget) {
 	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
 
-	tgui_render_set_clip(surface, viewport->old_clip_x, viewport->old_clip_y, viewport->old_clip_width, viewport->old_clip_height);
+	tgui_render_set_clip(surface, &viewport->old_clip); 
 }
 
 static int tgui_viewport_constructor(void *object) {

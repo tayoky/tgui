@@ -51,10 +51,10 @@ static void tgui_surface_class_init(tgui_surface_class_t *class) {
 }
 
 static void tgui_surface_reset_dirty(tgui_surface_t *surface) {
-	surface->inval_start_x = LONG_MAX;
-	surface->inval_start_y = LONG_MAX;
-	surface->inval_end_x = 0;
-	surface->inval_end_y = 0;
+	surface->inval.start_x = LONG_MAX;
+	surface->inval.start_y = LONG_MAX;
+	surface->inval.end_x = 0;
+	surface->inval.end_y = 0;
 }
 
 tgui_surface_t *tgui_surface_new(long width, long height, tgui_surface_t *parent) {
@@ -100,7 +100,7 @@ int tgui_surface_resize(tgui_surface_t *surface, long width, long height) {
 }
 
 static int tgui_surface_is_dirty(tgui_surface_t *surface) {
-	return surface->inval_start_x != LONG_MAX;
+	return surface->inval.start_x != LONG_MAX;
 }
 
 void tgui_surface_render(tgui_surface_t *surface) {
@@ -118,10 +118,13 @@ void tgui_surface_render(tgui_surface_t *surface) {
 	tgui_widget_allocate_space(TGUI_WIDGET_CAST(surface), 0, 0, surface->width / surface->scaling, surface->height / surface->scaling);
 
 	if (tgui_surface_is_dirty(surface)) {
-		tgui_log("got dirty rect from %ld %ld to %ld %ld\n", surface->inval_start_x, surface->inval_start_y, surface->inval_end_x, surface->inval_end_y);
-		tgui_render_set_clip(surface, surface->inval_start_x, surface->inval_start_y, 
-		(surface->inval_end_x - surface->inval_start_x) * surface->scaling, 
-		(surface->inval_end_y - surface->inval_start_y) * surface->scaling);
+		tgui_log("got dirty rect from %ld %ld to %ld %ld\n", surface->inval.start_x, surface->inval.start_y, surface->inval.end_x, surface->inval.end_y);
+
+		// keep the dirty in bounds
+		tgui_rect_t bounds;
+		tgui_rect_init(&bounds, 0, 0, TGUI_WIDGET_CAST(surface)->width, TGUI_WIDGET_CAST(surface)->height);
+		tgui_rect_intersect(&surface->inval, &surface->inval, &bounds);
+		tgui_render_set_clip(surface, &surface->inval);
 		tgui_widget_render(TGUI_WIDGET_CAST(surface));
 		tgui_platform_push_surface(surface);
 	}
@@ -160,17 +163,17 @@ void tgui_surface_invalidate(tgui_surface_t *surface, long x, long y, long width
 	if (width == 0 || height == 0) return;
 	long end_x = x + width;
 	long end_y = y + height;
-	if (x < surface->inval_start_x) {
-		surface->inval_start_x = x;
+	if (x < surface->inval.start_x) {
+		surface->inval.start_x = x;
 	}
-	if (y < surface->inval_start_y) {
-		surface->inval_start_y = y;
+	if (y < surface->inval.start_y) {
+		surface->inval.start_y = y;
 	}
-	if (end_x > surface->inval_end_x) {
-		surface->inval_end_x = end_x;
+	if (end_x > surface->inval.end_x) {
+		surface->inval.end_x = end_x;
 	}
-	if (end_y > surface->inval_end_y) {
-		surface->inval_end_y = end_y;
+	if (end_y > surface->inval.end_y) {
+		surface->inval.end_y = end_y;
 	}
 }
 

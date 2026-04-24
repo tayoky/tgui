@@ -218,11 +218,9 @@ void tgui_widget_mark_dirty(tgui_widget_t *widget) {
 
 static int tgui_widget_is_dirty(tgui_widget_t *widget) {
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
-	if (widget->x >= surface->inval_end_x) return 0;
-	if (widget->y >= surface->inval_end_y) return 0;
-	if (widget->x + widget->width <= surface->inval_start_x) return 0;
-	if (widget->y + widget->height <= surface->inval_start_y) return 0;
-	return 1;
+	tgui_rect_t bounds;
+	tgui_rect_init(&bounds, widget->x, widget->y, widget->width, widget->height);
+	return tgui_rect_collide(&bounds, &surface->inval);
 }
 
 void tgui_widget_render(tgui_widget_t *widget) {

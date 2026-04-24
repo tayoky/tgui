@@ -1,6 +1,7 @@
 #include <render.h>
 #include <surface.h>
 #include <platform.h>
+#include <stdio.h>
 
 void tgui_render_rect(tgui_widget_t *widget, tgui_color_t *color, long x, long y, long width, long height) {
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
@@ -26,21 +27,20 @@ void tgui_render_text(tgui_widget_t *widget, long x, long y, const char *text) {
 	tgui_platform_render_text(surface, widget, x * surface->scaling, y * surface->scaling, text);
 }
 
-void tgui_render_set_clip(tgui_surface_t *surface, long x, long y, long width, long height) {
+void tgui_render_set_clip(tgui_surface_t *surface, tgui_rect_t *rect) {
 	if (!surface) return;
-	surface->clip_x = x;
-	surface->clip_y = y;
-	surface->clip_width = width;
-	surface->clip_height = height;
+	long x = rect->start_x * surface->scaling;
+	long y = rect->start_y * surface->scaling;
+	long width  = (rect->end_x - rect->start_x) * surface->scaling;
+	long height = (rect->end_y - rect->start_y) * surface->scaling;
+	printf("clip %ld %ld %ld %ld\n", x, y, width, height);
+	surface->clip = *rect;
 	tgui_platform_set_clip(surface, x, y, width, height);
 }
 
-void tgui_render_get_clip(tgui_surface_t *surface, long *x, long *y, long *width, long *height) {
+void tgui_render_get_clip(tgui_surface_t *surface, tgui_rect_t *rect) {
 	if (!surface) return;
-	if (x)      *x = surface->clip_x;
-	if (y)      *y = surface->clip_y;
-	if (width)  *width  = surface->clip_width;
-	if (height) *height = surface->clip_height;
+	*rect = surface->clip;
 }
 
 void tgui_render_widget_base(tgui_widget_t *widget) {

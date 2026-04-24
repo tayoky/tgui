@@ -135,6 +135,7 @@ static inline int tgui_widget_is_dirty_style(tgui_widget_t *widget) {
 
 static inline void tgui_widget_hide(tgui_widget_t *widget) {
 	if (!widget) return;
+	if (widget->flags & TGUI_WIDGET_HIDDEN) return;
 	widget->flags |= TGUI_WIDGET_HIDDEN;
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_space(widget->parent);
@@ -142,10 +143,12 @@ static inline void tgui_widget_hide(tgui_widget_t *widget) {
 
 static inline void tgui_widget_show(tgui_widget_t *widget) {
 	if (!widget) return;
+	if (!(widget->flags & TGUI_WIDGET_HIDDEN)) return;
 	widget->flags &= ~TGUI_WIDGET_HIDDEN;
 	widget->width  = widget->x = 0;
 	widget->height = widget->y = 0;
 	tgui_widget_mark_dirty_space(widget);
+	tgui_widget_mark_dirty_size(widget->parent);
 }
 
 /**
