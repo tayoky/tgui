@@ -2,6 +2,10 @@
 
 TOBJECT_DEFINE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_widget_get_type())
 
+static size_t tgui_list_view_get_children_count(tgui_list_view_t *list_view) {
+	return TGUI_WIDGET_CAST(list_view)->children.count;
+}
+
 static tgui_list_item_t *tgui_list_view_setup(tgui_list_view_t *list_view) {
 	if (list_view->recycle.first) {
 		// recycle an old list item
@@ -12,11 +16,26 @@ static tgui_list_item_t *tgui_list_view_setup(tgui_list_view_t *list_view) {
 	return tgui_factory_setup(list_view->factory);
 }
 
+static tgui_widget_t *tgui_list_view_get_widget(tgui_list_view_t *list_view, size_t index) {
+	if (index < list_view->first_index) return NULL;
+	index -= list_view->first_index;
+	if (index >= tgui_list_view_get_children_count(list_view)) return NULL;
+	TGUI_LIST_FOREACH(node, &TGUI_WIDGET_CAST(list_view)->children) {
+		if (index == 0) {
+			return TGUI_WIDGET_FROM_NODE(index);
+		}
+		index--;
+	}
+	return NULL;
+}
+
 static tgui_widget_t *tgui_list_view_bind(tgui_list_view_t *list_view, size_t index) {
+	if (index < list_view->first_index) return NULL;
 	tgui_list_item_t *list_item = tgui_list_view_setup(list_view);
 
 	tgui_factory_bind(list_view->factory, list_item, tgui_list_model_get_item(list_view->list, index));
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(list_item), TGUI_WIDGET_CAST(list_view));
+
 	// TODO : place at the right location
 	return TGUI_WIDGET_CAST(list_item);
 }
@@ -27,10 +46,6 @@ static void tgui_list_view_unbind(tgui_list_view_t *list_view, tgui_widget_t *wi
 
 	// now we can recycle it
 	tgui_list_append(&list_view->recycle, &widget->node);
-}
-
-static size_t tgui_list_view_get_children_count(tgui_list_view_t *list_view) {
-	return TGUI_WIDGET_CAST(list_view)->children.count;
 }
 
 static void tgui_list_view_generate(tgui_list_view_t *list_view, size_t count) {
@@ -47,6 +62,10 @@ static void tgui_list_view_generate(tgui_list_view_t *list_view, size_t count) {
 	for (size_t i=tgui_list_view_get_children_count(list_view); i<count; i++) {
 		tgui_list_view_bind(list_view, list_view->first_index + i);
 	}
+}
+
+static void tgui_list_view_set_first_index(tgui_list_view_t *list_view, size_t index) {
+	// TODO
 }
 
 static void tgui_list_view_calculate_sizes(tgui_widget_t *widget) {
@@ -179,6 +198,26 @@ static void tgui_list_view_list_changed(tobject_t *tobject, tgui_list_model_upda
 		return;
 	}
 	// TODO : update the list
+	
+	tgui_widget_t *widget = tgui_list_view_get_widget(list_view, update->index);
+	if (!widget) {
+		// if offscreen we remove the top elements
+		widget = TGUI_WIDGET_FROM_NODE(TGUI_WIDGET_CAST(list_view)->children.first);
+	}
+	for (size_t i=0; i<update->removed&&widget; i++) {
+		tgui_widget_t *next = NULL;
+		if (widget->node.next) {
+			next = TGUI_WIDGET_FROM_NODE(widget->node.next);
+		}
+
+		tgui_list_view_unbind(list_view, widget);
+
+		widget = next;
+	}
+
+	for (size_t i=0; i<update->added; i++) {
+		tgui_list_view_bind(list_view, update->index + i);
+	}
 }
 
 static void tgui_list_view_list_destroy(tobject_t *tobject, void *event, tgui_list_view_t *list_view) {
@@ -191,7 +230,7 @@ tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_model_t 
 	tgui_list_view_t *list_view = tobject_new(tgui_list_view_get_type());
 	if (!list_view) return NULL;
 	list_view->factory = factory;
-	list_view->list    = list;
+	tgui_list_view_set_list(list_view, list);
 	return list_view;
 }
 
