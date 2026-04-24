@@ -1,7 +1,5 @@
 #include <rect.h>
-
-#define min(a, b) (a < b) ? a : b
-#define max(a, b) (a > b) ? a : b
+#include <common.h>
 
 void tgui_rect_init(tgui_rect_t *rect, long x, long y, long width, long height) {
 	rect->start_x = x;

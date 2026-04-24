@@ -1,5 +1,6 @@
 #include <viewport.h>
 #include <render.h>
+#include <common.h>
 
 TOBJECT_DEFINE_CLASS(tgui_viewport, TGUI_VIEWPORT, tgui_widget_get_type())
 
@@ -33,6 +34,15 @@ static void tgui_viewport_allocate_space(tgui_widget_t *widget) {
 	long y = tgui_widget_get_inner_y(widget);
 	long width  = tgui_widget_get_inner_width(widget);
 	long height = tgui_widget_get_inner_height(widget);
+	long content_width  = tgui_viewport_get_content_pref_width(viewport);
+	long content_height = tgui_viewport_get_content_pref_height(viewport);
+
+	if (viewport->have_hscroll) {
+		width = max(width, content_width);
+	}
+	if (viewport->have_vscroll) {
+		height = max(height, content_height);
+	}
 
 	tgui_widget_allocate_space(viewport->child, x - viewport->scroll_x, y - viewport->scroll_y, width, height);
 }

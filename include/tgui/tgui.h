@@ -1,6 +1,7 @@
 #ifndef TGUI_H
 #define TGUI_H
 
+#include "common.h"
 #include "widget.h"
 #include "window.h"
 #include "button.h"
