@@ -8,6 +8,7 @@
 #include "togglebutton.h"
 #include "label.h"
 #include "list.h"
+#include "listmodel.h"
 #include "stringlist.h"
 #include "factory.h"
 #include "stringfactory.h"
