@@ -9,12 +9,13 @@ TOBJECT_DECLARE_SIMPLE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_widget)
 
 struct tgui_list_view {
 	tgui_widget_t widget;
+	tgui_list_t recycle;
 	tgui_list_model_t *list;
 	tgui_factory_t *factory;
+	size_t first_index;
 };
 
 tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_model_t *list);
-void tgui_list_view_update(tgui_list_view_t *list_view);
 void tgui_list_view_set_factory(tgui_list_view_t *list_view, tgui_factory_t *factory);
 void tgui_list_view_set_list(tgui_list_view_t *list_view, tgui_list_model_t *list);
 tgui_factory_t *tgui_list_view_get_factory(tgui_list_view_t *list_view);

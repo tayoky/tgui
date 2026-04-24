@@ -2,17 +2,66 @@
 
 TOBJECT_DEFINE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_widget_get_type())
 
+static tgui_list_item_t *tgui_list_view_setup(tgui_list_view_t *list_view) {
+	if (list_view->recycle.first) {
+		// recycle an old list item
+		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(list_view->recycle.first);
+		tgui_list_remove(&list_view->recycle, &widget->node);
+		return TGUI_LIST_ITEM_CAST(widget);
+	}
+	return tgui_factory_setup(list_view->factory);
+}
+
+static tgui_widget_t *tgui_list_view_bind(tgui_list_view_t *list_view, size_t index) {
+	tgui_list_item_t *list_item = tgui_list_view_setup(list_view);
+
+	tgui_factory_bind(list_view->factory, list_item, tgui_list_model_get_item(list_view->list, index));
+	tgui_widget_set_parent(TGUI_WIDGET_CAST(list_item), TGUI_WIDGET_CAST(list_view));
+	return TGUI_WIDGET_CAST(list_item);
+}
+
+static void tgui_list_view_unbind(tgui_list_view_t *list_view, tgui_widget_t *widget) {
+	tgui_factory_unbind(list_view->factory, TGUI_LIST_ITEM_CAST(widget));
+	tgui_widget_remove_parent(widget);
+
+	// now we can recycle it
+	tgui_list_append(&list_view->recycle, &widget->node);
+}
+
+static size_t tgui_list_view_get_children_count(tgui_list_view_t *list_view) {
+	return TGUI_WIDGET_CAST(list_view)->children.count;
+}
+
+static void tgui_list_view_generate(tgui_list_view_t *list_view, size_t count) {
+	if (!list_view->list || !list_view->factory) {
+		return;
+	}
+	size_t items_count = tgui_list_model_get_count(list_view->list);
+	if (list_view->first_index >= items_count) return;
+	if (list_view->first_index + count > items_count) {
+		count = items_count - list_view->first_index;
+	}
+
+	// generate only after what is aready generated
+	for (size_t i=tgui_list_view_get_children_count(list_view); i<count; i++) {
+		tgui_list_view_bind(list_view, list_view->first_index + i);
+	}
+}
+
 static void tgui_list_view_calculate_sizes(tgui_widget_t *widget) {
 	// the idea is pretty simple
 	// take the average size of visible widgets
 	// and multiply by the number of elements
 	tgui_list_view_t *list_view = TGUI_LIST_VIEW_CAST(widget);
-	tgui_list_view_update(list_view);
 
 	long min_width  = 0;
 	long min_height = 0;
 	long pref_width  = 0;
 	long pref_height = 0;
+
+	// make sure we have at least one children
+	tgui_list_view_generate(list_view, 1);
+	if (widget->children.count == 0) return;
 
 	if (widget->orientation == TGUI_ORIENTATION_VERTICAL) {
 		long min_visible  = 0;
@@ -59,6 +108,8 @@ static void tgui_list_view_calculate_sizes(tgui_widget_t *widget) {
 static void tgui_list_view_allocate_space(tgui_widget_t *widget) {
 	tgui_list_view_t *list_view = TGUI_LIST_VIEW_CAST(widget);
 
+	tgui_list_view_generate(list_view, 10000);
+
 	// TODO : have an offset
 	long x = tgui_widget_get_inner_x(widget);
 	long y = tgui_widget_get_inner_y(widget);
@@ -102,6 +153,15 @@ static void tgui_list_view_allocate_space(tgui_widget_t *widget) {
 	}
 }
 
+static void tgui_list_view_update(tobject_t *tobject, tgui_list_model_update_t *update, tgui_list_view_t *list_view) {
+	// no need to generate if it's not on s screen
+	if (update->index >= list_view->first_index + tgui_list_view_get_children_count(list_view)) {
+		// it's below we don't care
+		return;
+	}
+	// TODO
+}
+
 static void tgui_list_view_class_init(tgui_list_view_class_t *class) {
 	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
 	widget_class->calculate_sizes = tgui_list_view_calculate_sizes;
@@ -116,30 +176,26 @@ tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_model_t 
 	return list_view;
 }
 
-void tgui_list_view_update(tgui_list_view_t *list_view) {
-	if (!list_view->list) {
-		return;
+static void tgui_list_view_unbind_all(tgui_list_view_t *list_view) {
+	while (TGUI_WIDGET_CAST(list_view)->children.first) {
+		tgui_list_view_unbind(list_view, TGUI_WIDGET_FROM_NODE(TGUI_WIDGET_CAST(list_view)->children.first));
 	}
-	// TODO : actual logic
-	if (list_view->widget.children.first) {
-		return;
-	}
-	size_t i=0;
-	void *item;
-	while ((item = tgui_list_model_get_item(list_view->list, i++))) {
-		tgui_list_item_t *list_item = tgui_factory_setup(list_view->factory);
-		tgui_factory_bind(list_view->factory, list_item, item);
-		tgui_widget_set_parent(TGUI_WIDGET_CAST(list_item), TGUI_WIDGET_CAST(list_view));
+}
+
+static void tgui_list_view_destroy_all(tgui_list_view_t *list_view) {
+	tgui_list_view_unbind_all(list_view);
+	while (list_view->recycle.first) {
+		tgui_widget_destroy(TGUI_WIDGET_FROM_NODE(list_view->recycle.first));
 	}
 }
 
 void tgui_list_view_set_factory(tgui_list_view_t *list_view, tgui_factory_t *factory) {
-	// TODO : destroy all widgets
+	tgui_list_view_destroy_all(list_view);
 	list_view->factory = factory;
 }
 
 void tgui_list_view_set_list(tgui_list_view_t *list_view, tgui_list_model_t *list) {
-	// TODO : unbind all
+	tgui_list_view_unbind_all(list_view);
 	list_view->list = list;
 }
 

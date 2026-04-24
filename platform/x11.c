@@ -261,6 +261,9 @@ int tgui_platform_text_height(tgui_widget_t *widget, const char *text) {
 }
 
 int tgui_platform_load_image(tgui_image_t *image) {
+	image->width = 16;
+	image->height = 16;
+	return 0;
 	int width;
 	int height;
 	int n;
