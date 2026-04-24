@@ -12,9 +12,9 @@ static int tgui_string_factory_setup(tgui_factory_t *factory, tgui_list_item_t *
 
 static int tgui_string_factory_bind(tgui_factory_t *factory, tgui_list_item_t *item) {
 	(void)factory;
-	tgui_string_item_t *string_item = TGUI_STRING_ITEM_CAST(item->item);
+	char *string = (char*)item->item;
 	tgui_label_t *label = TGUI_LABEL_CAST(tgui_list_item_get_child(item));
-	tgui_label_set_text(label, string_item->str);
+	tgui_label_set_text(label, string);
 	return 0;
 }
 
