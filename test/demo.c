@@ -84,12 +84,15 @@ tgui_widget_t *list_tab() {
 	tgui_box_t *box = tgui_box_new();
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
-	static tgui_list_t list;
-	tgui_list_append(&list, &tgui_string_item_new("item1")->node);
-	tgui_list_append(&list, &tgui_string_item_new("item2")->node);
-	tgui_list_append(&list, &tgui_string_item_new("item3")->node);
+	const char *strings[] = {
+		"item1",
+		"item2",
+		"item3",
+		NULL,
+	};
+	tgui_string_list_t *list = tgui_string_list_new(strings);
 
-	tgui_list_view_t *list_view = tgui_list_view_new(tgui_string_factory(), &list);
+	tgui_list_view_t *list_view = tgui_list_view_new(tgui_string_factory(), TGUI_LIST_MODEL_CAST(list));
 	add_element(box, TGUI_WIDGET_CAST(list_view));
 
 	return TGUI_WIDGET_CAST(box);
