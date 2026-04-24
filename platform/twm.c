@@ -10,10 +10,9 @@ static gfx_t gfx;
 typedef struct stanix_window {
 	twm_window_t window;
 	gfx_t *gfx;
+	gfx_t *clip;
 	long cursor_x;
 	long cursor_y;
-	long clip_x;
-	long clip_y;
 } stanix_window_t;
 
 static tgui_surface_t *get_surface(twm_window_t window_id) {
@@ -268,16 +267,17 @@ int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent
 void tgui_platform_close_surface(tgui_surface_t *surface) {
 	stanix_window_t *stanix_window = surface->private;
 	gfx_free(stanix_window->gfx);
+	gfx_free(stanix_window->clip);
 	twm_destroy_window(stanix_window->window);
 	free(stanix_window);
 }
 
 void tgui_platform_push_surface(tgui_surface_t *surface) {
 	stanix_window_t *stanix_window = surface->private;
-	long width  = surface->inval_end_x - surface->inval_start_x;
-	long height = surface->inval_end_y - surface->inval_start_y;
-	gfx_push_rect(stanix_window->gfx, surface->inval_start_x, surface->inval_start_y, width, height);
-	twm_redraw_window(stanix_window->window, surface->inval_start_x, surface->inval_start_y, width, height);
+	long width  = surface->inval.end_x - surface->inval.start_x;
+	long height = surface->inval.end_y - surface->inval.start_y;
+	gfx_push_rect(stanix_window->gfx, surface->inval.start_x, surface->inval.start_y, width, height);
+	twm_redraw_window(stanix_window->window, surface->inval.start_x, surface->inval.start_y, width, height);
 }
 
 void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible) {
@@ -347,13 +347,13 @@ void tgui_platform_free_image(tgui_image_t *image) {
 void tgui_platform_render_rect(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height) {
 	stanix_window_t *stanix_window = surface->private;
 	color_t stanix_color = (color_t)(uintptr_t)color->private;
-	gfx_draw_rect(stanix_window->gfx, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height);
+	gfx_draw_rect(stanix_window->clip, stanix_color, x - surface->clip.start_x, y - surface->clip.start_y, width, height);
 }
 
 void tgui_platform_render_rounded_rect(tgui_surface_t *surface, tgui_color_t *color, long x, long y, long width, long height, char corners, unsigned int rounded_size) {
 	stanix_window_t *stanix_window = surface->private;
 	color_t stanix_color = (color_t)(uintptr_t)color->private;
-	gfx_draw_rounded_rect(stanix_window->gfx, stanix_color, x - stanix_window->clip_x, y - stanix_window->clip_y, width, height, corners, rounded_size);
+	gfx_draw_rounded_rect(stanix_window->clip, stanix_color, x - surface->clip.start_x, y - surface->clip.start_y, width, height, corners, rounded_size);
 
 }
 
@@ -363,22 +363,20 @@ void tgui_platform_render_rounded_rect_outline(tgui_surface_t *surface, tgui_col
 void tgui_platform_render_text(tgui_surface_t *surface, tgui_widget_t *widget, long x, long y, const char *text) {
 	stanix_window_t *stanix_window = surface->private;
 	color_t color = (color_t)(uintptr_t)tgui_widget_get_color(widget)->private;
-	gfx_draw_string(stanix_window->gfx, tgui_widget_get_font(widget)->private, color, x - stanix_window->clip_x, y - stanix_window->clip_y, text);
+	gfx_draw_string(stanix_window->clip, tgui_widget_get_font(widget)->private, color, x - surface->clip.start_x, y - surface->clip.start_y, text);
 }
 
 
 void tgui_platform_render_image(tgui_surface_t *surface, long x, long y, tgui_image_t *image) {
 	stanix_window_t *stanix_window = surface->private;
-	gfx_draw_texture_alpha(stanix_window->gfx, image->private, x - stanix_window->clip_x, y - stanix_window->clip_y);
+	gfx_draw_texture_alpha(stanix_window->clip, image->private, x - surface->clip.start_x, y - surface->clip.start_y);
 }
 
 void tgui_platform_set_clip(tgui_surface_t *surface, long x, long y, long width, long height) {
-	(void)surface;
-	(void)x;
-	(void)y;
-	(void)width;
-	(void)height;
-	// no need for cliping since we only push the specified region
+	stanix_window_t *stanix_window = surface->private;
+	gfx_free(stanix_window->clip);
+
+	stanix_window->clip = gfx_create_clip(stanix_window->gfx, x, y, width, height);
 	return;
 }
 
@@ -401,7 +399,7 @@ void tgui_platform_canva_destroy(tgui_canva_t *canva) {
 void tgui_platform_push_canva(tgui_canva_t *canva) {
 	tgui_surface_t *surface = tgui_widget_get_surface(TGUI_WIDGET_CAST(canva));
 	stanix_window_t *stanix_window = surface->private;
-	gfx_draw_buffer(stanix_window->gfx, canva->widget.x - stanix_window->clip_x, canva->widget.y - stanix_window->clip_y, canva->private);
+	gfx_draw_buffer(stanix_window->clip, canva->widget.x - surface->clip.start_x, canva->widget.y - surface->clip.start_y, canva->private);
 }
 
 int tgui_platform_get_fd(void) {
