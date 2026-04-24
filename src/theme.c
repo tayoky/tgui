@@ -90,8 +90,15 @@ int tgui_theme_load(void) {
 
 	// slider
 	tgui_style_t *slider_style = tgui_style_new();
+	tgui_style_set_rounded_corners(slider_style, TGUI_CORNER_ALL);
 	tgui_style_set_background_color(slider_style, border_color);
 	tgui_widget_set_default_style(slider_style, "tgui_slider");
+
+	// scrollbar
+	tgui_style_t *scrollbar_style = tgui_style_new();
+	tgui_style_set_rounded_corners(scrollbar_style, TGUI_CORNER_ALL);
+	tgui_style_set_background_color(scrollbar_style, border_color);
+	tgui_widget_set_default_style(scrollbar_style, "tgui_scrollbar");
 
 	// title bar
 	tgui_style_t *title_bar_style = tgui_style_new();

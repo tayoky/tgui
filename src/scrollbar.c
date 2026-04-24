@@ -2,20 +2,27 @@
 
 TOBJECT_DEFINE_CLASS(tgui_scrollbar, TGUI_SCROLLBAR, tgui_box_get_type())
 
-static void tgui_scrollbar_update_expand(tgui_scrollbar_t *scrollbar, int orientation) {
+static void tgui_scrollbar_set_orientation(tgui_widget_t *widget, int orientation) {
+	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(widget);
+	if (!scrollbar->slider) return;
+	tgui_widget_set_orientation(TGUI_WIDGET_CAST(scrollbar->slider), orientation);
 	int vexpand = (orientation == TGUI_ORIENTATION_HORIZONTAL);
 	int hexpand = (orientation == TGUI_ORIENTATION_VERTICAL);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(scrollbar->top), hexpand);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(scrollbar->top), vexpand);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(scrollbar->bottom), hexpand);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(scrollbar->bottom), vexpand);
-}
 
-static void tgui_scrollbar_set_orientation(tgui_widget_t *widget, int orientation) {
-	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(widget);
-	if (!scrollbar->slider) return;
-	tgui_widget_set_orientation(TGUI_WIDGET_CAST(scrollbar->slider), orientation);
-	tgui_scrollbar_update_expand(scrollbar, orientation);
+	switch (orientation) {
+	case TGUI_ORIENTATION_VERTICAL:
+		tgui_button_set_icon(scrollbar->top, "arrow-up");
+		tgui_button_set_icon(scrollbar->bottom, "arrow-down");
+		break;
+	case TGUI_ORIENTATION_HORIZONTAL:
+		tgui_button_set_icon(scrollbar->top, "arrow-left");
+		tgui_button_set_icon(scrollbar->bottom, "arrow-right");
+		break;
+	}
 }
 
 static void tgui_scrollbar_top_click(tobject_t *tobject) {
