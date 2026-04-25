@@ -54,6 +54,10 @@ static int tgui_scrollbar_constructor(void *object) {
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->top), "click", TCALLBACK_CAST(tgui_scrollbar_top_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->bottom), "click", TCALLBACK_CAST(tgui_scrollbar_bottom_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->slider), "changed", TCALLBACK_CAST(tgui_scrollbar_slider_changed), NULL);
+	tgui_widget_set_halign(TGUI_WIDGET_CAST(scrollbar->top), TGUI_ALIGN_FILL);
+	tgui_widget_set_valign(TGUI_WIDGET_CAST(scrollbar->top), TGUI_ALIGN_FILL);
+	tgui_widget_set_halign(TGUI_WIDGET_CAST(scrollbar->bottom), TGUI_ALIGN_FILL);
+	tgui_widget_set_valign(TGUI_WIDGET_CAST(scrollbar->bottom), TGUI_ALIGN_FILL);
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(scrollbar->slider), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(scrollbar->slider), TGUI_TRUE);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(scrollbar->top));
@@ -79,8 +83,12 @@ tgui_scrollbar_t *tgui_scrollbar_new(int orientation) {
 }
 
 static void tgui_scrollbar_update(tgui_scrollbar_t *scrollbar) {
-	tgui_slider_set_range(scrollbar->slider, 0, scrollbar->total_size - scrollbar->view_size);
-	tgui_slider_set_size(scrollbar->slider, (double)scrollbar->view_size / (double)scrollbar->total_size);
+	long total_size = scrollbar->total_size;
+	if (total_size < scrollbar->view_size) {
+		total_size = scrollbar->view_size;
+	}
+	tgui_slider_set_range(scrollbar->slider, 0, total_size - scrollbar->view_size);
+	tgui_slider_set_size(scrollbar->slider, (double)scrollbar->view_size / (double)total_size);
 }
 
 void tgui_scrollbar_set_total_size(tgui_scrollbar_t *scrollbar, long total_size) {

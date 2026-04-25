@@ -119,8 +119,13 @@ tgui_widget_t *list_tab() {
 	};
 	list = tgui_string_list_new(strings);
 
+	tgui_scrolled_window_t *scrolled_window = tgui_scrolled_window_new();
+
 	tgui_list_view_t *list_view = tgui_list_view_new(tgui_string_factory(), TGUI_LIST_MODEL_CAST(list));
 	add_element(box, TGUI_WIDGET_CAST(list_view));
+	tgui_scrolled_window_set_child(scrolled_window, TGUI_WIDGET_CAST(list_view));
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(scrolled_window));
+
 
 	return TGUI_WIDGET_CAST(box);
 }
