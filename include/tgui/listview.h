@@ -3,18 +3,12 @@
 
 #include "factory.h"
 #include "listmodel.h"
-#include "widget.h"
+#include "listbase.h"
 
-TOBJECT_DECLARE_SIMPLE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_widget)
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_list_view, TGUI_LIST_VIEW, tgui_list_base)
 
 struct tgui_list_view {
-	tgui_widget_t widget;
-	tgui_list_t recycle;
-	tgui_list_model_t *list;
-	tgui_factory_t *factory;
-	size_t first_index;
-	size_t changed_callback;
-	size_t destroy_callback;
+	tgui_list_base_t list_base;
 };
 
 tgui_list_view_t *tgui_list_view_new(tgui_factory_t *factory, tgui_list_model_t *list);
