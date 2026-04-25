@@ -22,7 +22,7 @@ static tgui_widget_t *tgui_list_view_get_widget(tgui_list_view_t *list_view, siz
 	if (index >= tgui_list_view_get_children_count(list_view)) return NULL;
 	TGUI_LIST_FOREACH(node, &TGUI_WIDGET_CAST(list_view)->children) {
 		if (index == 0) {
-			return TGUI_WIDGET_FROM_NODE(index);
+			return TGUI_WIDGET_FROM_NODE(node);
 		}
 		index--;
 	}
@@ -36,7 +36,11 @@ static tgui_widget_t *tgui_list_view_bind(tgui_list_view_t *list_view, size_t in
 	tgui_factory_bind(list_view->factory, list_item, tgui_list_model_get_item(list_view->list, index));
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(list_item), TGUI_WIDGET_CAST(list_view));
 
-	// TODO : place at the right location
+	if (index != list_view->first_index + tgui_list_view_get_children_count(list_view) - 1) {
+		tgui_list_remove(&TGUI_WIDGET_CAST(list_view)->children, &TGUI_WIDGET_CAST(list_item)->node);
+		tgui_widget_t *after = tgui_list_view_get_widget(list_view, index);
+		tgui_list_add_before(&TGUI_WIDGET_CAST(list_view)->children, &after->node, &TGUI_WIDGET_CAST(list_item)->node);
+	}
 	return TGUI_WIDGET_CAST(list_item);
 }
 

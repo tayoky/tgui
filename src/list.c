@@ -25,6 +25,22 @@ void tgui_list_append(tgui_list_t *list, tgui_list_node_t *node) {
 	list->count++;
 }
 
+void tgui_list_add_before(tgui_list_t *list, tgui_list_node_t *before, tgui_list_node_t *node) {
+	if (!before) {
+		tgui_list_append(list, node);
+		return;
+	}
+	node->prev = before->prev;
+	if (before->prev) {
+		before->prev->next = node;
+	} else {
+		list->first = node;
+	}
+	before->prev = node;
+	node->next = before;
+	list->count++;
+}
+
 void tgui_list_remove(tgui_list_t *list, tgui_list_node_t *node) {
 	if (node->prev) {
 		node->prev->next = node->next;

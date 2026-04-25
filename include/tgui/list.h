@@ -18,6 +18,7 @@ typedef struct tgui_list {
 
 void tgui_list_prepend(tgui_list_t *list, tgui_list_node_t *node);
 void tgui_list_append(tgui_list_t *list, tgui_list_node_t *node);
+void tgui_list_add_before(tgui_list_t *list, tgui_list_node_t *before, tgui_list_node_t *node);
 void tgui_list_remove(tgui_list_t *list, tgui_list_node_t *node);
 
 #endif
