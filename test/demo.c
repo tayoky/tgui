@@ -89,6 +89,11 @@ void insert_element(void) {
 	tgui_string_list_insert(list, i, "inserted item");
 }
 
+void remove_element(void) {
+	size_t i = strtol(tgui_text_get_content(index), NULL, 0);
+	tgui_string_list_remove(list, i);
+}
+
 tgui_widget_t *list_tab() {
 	tgui_box_t *box = tgui_box_new();
 
@@ -99,6 +104,10 @@ tgui_widget_t *list_tab() {
 	tgui_button_set_text(insert, "insert element");
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(insert), "click", TCALLBACK_CAST(insert_element), NULL);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(insert));
+	tgui_button_t *remove = tgui_button_new();
+	tgui_button_set_text(remove, "remove element");
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(remove), "click", TCALLBACK_CAST(remove_element), NULL);
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(remove));
 
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);

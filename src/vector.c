@@ -77,6 +77,10 @@ void tgui_vector_insert_mul(tgui_vector_t *vector, size_t index, void **item, si
 }
 
 void tgui_vector_remove_mul(tgui_vector_t *vector, size_t index, size_t count) {
+	if (index >= vector->count) return;
+	if (index + count > vector->count) {
+		count = index - vector->count;
+	}
 	memmove(&vector->array[index], &vector->array[index + count], (vector->count - index - count) * sizeof(void*));
 	vector->count -= count;
 	tgui_list_model_update(TGUI_LIST_MODEL_CAST(vector), index, 0, count);
