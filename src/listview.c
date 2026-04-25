@@ -14,7 +14,9 @@ static void tgui_list_view_calculate_sizes(tgui_widget_t *widget) {
 	long pref_height = 0;
 
 	// make sure we have at least one children
-	tgui_list_base_generate(TGUI_LIST_BASE_CAST(list_view), 1);
+	if (TGUI_LIST_BASE_CAST(list_view)->view_count == 0) {
+		tgui_list_base_set_view_count(TGUI_LIST_BASE_CAST(list_view), 1);
+	}
 	if (widget->children.count == 0) return;
 
 	if (widget->orientation == TGUI_ORIENTATION_VERTICAL) {
@@ -62,7 +64,7 @@ static void tgui_list_view_calculate_sizes(tgui_widget_t *widget) {
 static void tgui_list_view_allocate_space(tgui_widget_t *widget) {
 	tgui_list_view_t *list_view = TGUI_LIST_VIEW_CAST(widget);
 
-	tgui_list_base_generate(TGUI_LIST_BASE_CAST(list_view), 10000);
+	tgui_list_base_set_view_count(TGUI_LIST_BASE_CAST(list_view), 10000);
 
 	// TODO : have an offset
 	long x = tgui_widget_get_inner_x(widget);
