@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <tgui/tgui.h>
 
 tgui_window_t *window;
@@ -81,13 +82,24 @@ tgui_widget_t *align_tab() {
 }
 
 static tgui_string_list_t *list;
+static tgui_text_t *index;
 
 void insert_element(void) {
-	tgui_string_list_insert(list, 1, "inserted item");
+	size_t i = strtol(tgui_text_get_content(index), NULL, 0);
+	tgui_string_list_insert(list, i, "inserted item");
 }
 
 tgui_widget_t *list_tab() {
 	tgui_box_t *box = tgui_box_new();
+
+	index = tgui_text_new();
+	tgui_text_set_placeholder(index, "index");
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(index));
+	tgui_button_t *insert = tgui_button_new();
+	tgui_button_set_text(insert, "insert element");
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(insert), "click", TCALLBACK_CAST(insert_element), NULL);
+	tgui_box_append_widget(box, TGUI_WIDGET_CAST(insert));
+
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	const char *strings[] = {
@@ -100,11 +112,6 @@ tgui_widget_t *list_tab() {
 
 	tgui_list_view_t *list_view = tgui_list_view_new(tgui_string_factory(), TGUI_LIST_MODEL_CAST(list));
 	add_element(box, TGUI_WIDGET_CAST(list_view));
-
-	tgui_button_t *insert = tgui_button_new();
-	tgui_button_set_text(insert, "insert element");
-	tgui_widget_connect_signal(TGUI_WIDGET_CAST(insert), "click", TCALLBACK_CAST(insert_element), NULL);
-	tgui_box_append_widget(box, TGUI_WIDGET_CAST(insert));
 
 	return TGUI_WIDGET_CAST(box);
 }

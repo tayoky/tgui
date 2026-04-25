@@ -68,6 +68,7 @@ void tgui_vector_append_mul(tgui_vector_t *vector, void **item, size_t count) {
 }
 
 void tgui_vector_insert_mul(tgui_vector_t *vector, size_t index, void **item, size_t count) {
+	if (index > vector->count) return;
 	tgui_vector_grow(vector, vector->count + count);
 	memmove(&vector->array[index + count], &vector->array[index], (vector->count - index) * sizeof(void*));
 	memcpy(&vector->array[index], item, count * sizeof(void*));
