@@ -475,7 +475,7 @@ static inline long tgui_widget_get_inner_y(tgui_widget_t *widget) {
 }
 
 static inline long tgui_widget_get_inner_height(tgui_widget_t *widget) {
-	return tgui_widget_get_frame_height(widget) - tgui_widget_get_padding(widget, TGUI_SIDE_TOP) + tgui_widget_get_padding(widget, TGUI_SIDE_BOTTOM);
+	return tgui_widget_get_frame_height(widget) - tgui_widget_get_padding(widget, TGUI_SIDE_TOP) - tgui_widget_get_padding(widget, TGUI_SIDE_BOTTOM);
 }
 
 static inline void tgui_widget_get_inner_bounds(tgui_widget_t *widget, tgui_rect_t *rect) {

@@ -138,7 +138,7 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 
 		// how much excess do we have ?
 		long excess = width - widget->pref_width;
-		// what do we do with this exxess ?
+		// what do we do with this excess ?
 		switch (widget->halign) {
 		case TGUI_ALIGN_FILL:
 			new_width += excess;
@@ -163,7 +163,7 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 
 		// how much excess do we have ?
 		long excess = height - widget->pref_height;
-		// what do we do with this exxess ?
+		// what do we do with this excess ?
 		switch (widget->valign) {
 		case TGUI_ALIGN_FILL:
 			new_height += excess;
