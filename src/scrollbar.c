@@ -64,6 +64,7 @@ static int tgui_scrollbar_constructor(void *object) {
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(scrollbar->slider));
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(scrollbar->bottom));
 	scrollbar->view_size = 0;
+	tgui_scrollbar_set_orientation(object, TGUI_ORIENTATION_VERTICAL);
 	return 0;
 }
 

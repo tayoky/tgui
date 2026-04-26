@@ -124,6 +124,9 @@ static int tgui_slider_constructor(void *object) {
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(slider->button), "click", TCALLBACK_CAST(tgui_slider_button_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(slider->button), "move", TCALLBACK_CAST(tgui_slider_button_move), NULL);
 	tgui_slider_set_text(slider, "-");
+	// we want the "-" in the middle
+	tgui_widget_set_halign(tgui_button_get_child(slider->button), TGUI_ALIGN_CENTER);
+	tgui_widget_set_valign(tgui_button_get_child(slider->button), TGUI_ALIGN_CENTER);
 	return 0;
 }
 
