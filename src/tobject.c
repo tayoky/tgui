@@ -35,7 +35,7 @@ void *tobject_new(ttype_t *type) {
 	if (!object) return NULL;
 	memset(object, 0, type->size);
 	object->type = type;
-	object->ref_count = 1;
+	object->ref_count = 0;
 
 	// call constructor
 	if (type->class->constructor) {
@@ -57,6 +57,7 @@ static void free_handler_group(thandler_group_t *group) {
 }
 
 void tobject_free(tobject_t *tobject) {
+	if (!tobject) return;
 	if (tobject->ref_count > 1) {
 		tobject->ref_count--;
 		return;
