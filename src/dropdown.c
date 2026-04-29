@@ -1,4 +1,6 @@
 #include <dropdown.h>
+#include <stringlist.h>
+#include <stringfactory.h>
 
 TOBJECT_DEFINE_CLASS(tgui_dropdown, TGUI_DROPDOWN, tgui_popover_button_get_type())
 
@@ -18,7 +20,7 @@ static void tgui_dropdown_class_init(tgui_dropdown_class_t *class) {
 	tobject_class->constructor = tgui_dropdown_constructor;
 }
 
-tgui_dropdown_t *tgui_dropdown_new(tgui_factory_t *factory, tgui_list_t *list) {
+tgui_dropdown_t *tgui_dropdown_new(tgui_factory_t *factory, tgui_list_model_t *list) {
 	tgui_dropdown_t *dropdown = tobject_new(tgui_dropdown_get_type());
 	if (!dropdown) return NULL;
 
@@ -27,11 +29,22 @@ tgui_dropdown_t *tgui_dropdown_new(tgui_factory_t *factory, tgui_list_t *list) {
 	return dropdown;
 }
 
+tgui_dropdown_t *tgui_dropdown_from_strings(const char * const *strings) {
+	tgui_dropdown_t *dropdown = tobject_new(tgui_dropdown_get_type());
+	if (!dropdown) return NULL;
+
+	tgui_string_list_t *list = tgui_string_list_new(strings);
+	tgui_dropdown_set_factory(dropdown, tgui_string_factory());
+	tgui_dropdown_set_list(dropdown, TGUI_LIST_MODEL_CAST(list));
+	return dropdown;
+}
+
 void tgui_dropdown_set_factory(tgui_dropdown_t *dropdown, tgui_factory_t *factory) {
 	tgui_list_view_set_factory(dropdown->list_view, factory);
 }
 
-void tgui_dropdown_set_list(tgui_dropdown_t *dropdown, tgui_list_t *list) {
+void tgui_dropdown_set_list(tgui_dropdown_t *dropdown, tgui_list_model_t *list) {
+	dropdown->selected = NULL;
 	tgui_list_view_set_list(dropdown->list_view, list);
 }
 

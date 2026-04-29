@@ -24,6 +24,8 @@ static int tgui_widget_constructor(void *ptr) {
 	tgui_widget_mark_dirty_size(widget);
 	tgui_widget_mark_dirty_style(widget);
 	tgui_widget_apply_default_styles(widget);
+	// we want widgets to have a ref by default
+	tgui_widget_ref(widget);
 	return 0;
 }
 
