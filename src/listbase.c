@@ -156,10 +156,11 @@ void tgui_list_base_set_list(tgui_list_base_t *list_base, tgui_list_model_t *lis
 	if (list_base->list) {
 		tgui_list_model_disconnect_signal(list_base->list, "changed", list_base->changed_callback);
 		tgui_list_model_disconnect_signal(list_base->list, "destroy", list_base->destroy_callback);
+		tobject_free(TOBJECT_CAST(list_base->list));
 	}
 	tgui_list_base_set_view_count(list_base, 0);
 	tgui_list_base_unbind_all(list_base);
-	list_base->list = list;
+	list_base->list = tgui_list_model_ref(list);
 	if (list) {
 		list_base->changed_callback = tgui_list_model_connect_signal(list, "changed", TCALLBACK_CAST(tgui_list_base_list_changed), list_base);
 		list_base->destroy_callback = tgui_list_model_connect_signal(list, "destroy", TCALLBACK_CAST(tgui_list_base_list_destroy), list_base);
