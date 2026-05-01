@@ -1,2 +1,2 @@
 # tgui
-TGUI aim to be a portable GUI lib.
+TGUI is a portable GTK clone GUI library.
