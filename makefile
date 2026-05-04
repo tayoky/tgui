@@ -44,17 +44,17 @@ $(BUILDDIR)/platform/%.o : CFLAGS += $(DYNFLAGS)
 	
 install : all
 	@echo '[install headers]'
-	@mkdir -p $(PREFIX)/include/tgui
-	@cp include/tgui/*.h $(PREFIX)/include/tgui
+	@mkdir -p "$(DESTDIR)$(PREFIX)/include/tgui"
+	@cp include/tgui/*.h "$(DESTDIR)$(PREFIX)/include/tgui"
 	@echo '[install libtgui.so]'
-	@mkdir -p $(PREFIX)/lib
-	@cp $(BUILDDIR)/libtgui.so $(PREFIX)/lib
+	@mkdir -p "$(DESTDIR)$(PREFIX)/lib"
+	@cp $(BUILDDIR)/libtgui.so "$(DESTDIR)$(PREFIX)/lib"
 	@echo '[install tgui-demo]'
-	@mkdir -p $(PREFIX)/bin
-	@cp $(BUILDDIR)/tgui-demo $(PREFIX)/bin
+	@mkdir -p "$(DESTDIR)$(PREFIX)/bin"
+	@cp $(BUILDDIR)/tgui-demo "$(DESTDIR)$(PREFIX)/bin"
 
 uninstall :
-	rm -fr $(PREFIX)/include/tgui $(PREFIX)/lib/libtgui.so
+	rm -fr "$(DESTDIR)$(PREFIX)/include/tgui" "$(DESTDIR)$(PREFIX)/lib/libtgui.so"
 
 clean : 
 	rm -rf $(BUILDDIR)
