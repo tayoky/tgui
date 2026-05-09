@@ -3,7 +3,7 @@ MAKEFLAGS += --no-builtin-rules
 include config.mk
 
 OS = $(word 2, $(subst -, ,$(HOST)))
-BUILDDIR = build
+BUILDDIR ?= build
 SRC = $(wildcard src/*.c) platform/$(PLATFORM).c
 OBJ = $(SRC:%.c=$(BUILDDIR)/%.o)
 
