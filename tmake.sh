@@ -219,7 +219,8 @@ all-$TARG : \$(ALL_$TARG)
 install : install-$TARG
 install-$TARG : all-$TARG$(tmake_add_prefix "install-" $TARGET_DEPENDENCIES)
 	@mkdir -p \"\$(DESTDIR)\$(PREFIX)/$PREF\"
-	cp \$(ALL_$TARG) \"\$(DESTDIR)\$(PREFIX)/$PREF\"
+	@echo \"INSTALL \$(ALL_$TARG)\"
+	\$(Q)cp \$(ALL_$TARG) \"\$(DESTDIR)\$(PREFIX)/$PREF\"
 
 .PHONY : uninstall-$TARG
 uninstall : uninstall-$TARG
@@ -325,29 +326,29 @@ endif"
 } >> "$MAKEFILE"
 
 # replace this with add_data
-tmake_add_headers () {
+tmake_add_data () {
 	TARG="$1"
 	DEST="$2"
 	shift 2
 	echo "
 # ==== $TARG target ====
 SRC_$TARG = $@
+FILES_$TARG =$(F=""
+	for I in "$@" ; do
+		F="$F $(basename "$I")"
+	done
+	echo "$F")
+DEST_$TARG = \$(FILES_$TARG:%=\$(DESTDIR)\$(PREFIX)/$DEST/%)
 
 .PHONY : install-$TARG
 install : install-$TARG
 install-$TARG :
-	@mkdir -p \"\$(DESTDIR)\$(PREFIX)/include/$DEST\"
-	@echo \"INSTALL $TARG\"
-	\$(Q)cp \$(SRC_$TARG) \"\$(DESTDIR)\$(PREFIX)/include/$DEST\"
+	@mkdir -p \"\$(DESTDIR)\$(PREFIX)/$DEST\"
+	@echo \"INSTALL_DATA \$(SRC_$TARG)\"
+	\$(Q)cp -r \$(SRC_$TARG) \"\$(DESTDIR)\$(PREFIX)/$DEST\"
 .PHONY : uninstall-$TARG
 uninstall : uninstall-$TARG
-uninstall-$TARG :"
-		
-	if test -n "$DEST" ; then
-		echo "	@echo \"UNINSTALL \$(DESTDIR)\$(PREFIX)/include/$DEST\"
-	\$(Q)rm -fr \"\$(DESTDIR)\$(PREFIX)/include/$DEST\""
-	else
-		echo "	@echo \"UNINSTALL $TARG\"
-	\$(Q)rm -f \$(SRC_$TARG) \"\$(DESTDIR)\$(PREFIX)/include/$DEST\""
-	fi
+uninstall-$TARG :
+	@echo \"UNINSTALL \$(DEST_$TARG)\"
+	\$(Q)rm -fr \$(DEST_$TARG)"
 } >> "$MAKEFILE"

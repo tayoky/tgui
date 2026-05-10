@@ -51,7 +51,8 @@ all-libtgui : $(ALL_libtgui)
 install : install-libtgui
 install-libtgui : all-libtgui
 	@mkdir -p "$(DESTDIR)$(PREFIX)/lib"
-	cp $(ALL_libtgui) "$(DESTDIR)$(PREFIX)/lib"
+	@echo "INSTALL $(ALL_libtgui)"
+	$(Q)cp $(ALL_libtgui) "$(DESTDIR)$(PREFIX)/lib"
 
 .PHONY : uninstall-libtgui
 uninstall : uninstall-libtgui
@@ -75,19 +76,21 @@ $(BUILDDIR)/libtgui/libtgui.so : $(OBJ_libtgui)
 	$(Q)$(CC) -shared $(CFLAGS) -fPIC -Iinclude -Iinclude/tgui $(LDFLAGS) -o $@ $^
 
 # ==== headers target ====
-SRC_headers = include/tgui/action.h include/tgui/box.h include/tgui/button.h include/tgui/canva.h include/tgui/color.h include/tgui/common.h include/tgui/dropdown.h include/tgui/events.h include/tgui/expander.h include/tgui/factory.h include/tgui/font.h include/tgui/grid.h include/tgui/icon.h include/tgui/image.h include/tgui/inputs.h include/tgui/label.h include/tgui/list.h include/tgui/listbase.h include/tgui/listmodel.h include/tgui/listview.h include/tgui/log.h include/tgui/menuitem.h include/tgui/paned.h include/tgui/platform.h include/tgui/popover.h include/tgui/popoverbutton.h include/tgui/popovermenu.h include/tgui/rect.h include/tgui/render.h include/tgui/scrollbar.h include/tgui/scrolledwindow.h include/tgui/separator.h include/tgui/slider.h include/tgui/srollbar.h include/tgui/stack.h include/tgui/stackswitcher.h include/tgui/stringfactory.h include/tgui/stringlist.h include/tgui/style.h include/tgui/submenubutton.h include/tgui/surface.h include/tgui/text.h include/tgui/textbuffer.h include/tgui/textview.h include/tgui/tgui.h include/tgui/theme.h include/tgui/titlebar.h include/tgui/tobject.h include/tgui/togglebutton.h include/tgui/vector.h include/tgui/viewport.h include/tgui/widget.h include/tgui/window.h
+SRC_headers = include/tgui
+FILES_headers = tgui
+DEST_headers = $(FILES_headers:%=$(DESTDIR)$(PREFIX)/include/%)
 
 .PHONY : install-headers
 install : install-headers
 install-headers :
-	@mkdir -p "$(DESTDIR)$(PREFIX)/include/tgui"
-	@echo "INSTALL headers"
-	$(Q)cp $(SRC_headers) "$(DESTDIR)$(PREFIX)/include/tgui"
+	@mkdir -p "$(DESTDIR)$(PREFIX)/include"
+	@echo "INSTALL_DATA $(SRC_headers)"
+	$(Q)cp -r $(SRC_headers) "$(DESTDIR)$(PREFIX)/include"
 .PHONY : uninstall-headers
 uninstall : uninstall-headers
 uninstall-headers :
-	@echo "UNINSTALL $(DESTDIR)$(PREFIX)/include/tgui"
-	$(Q)rm -fr "$(DESTDIR)$(PREFIX)/include/tgui"
+	@echo "UNINSTALL $(DEST_headers)"
+	$(Q)rm -fr $(DEST_headers)
 
 # ==== tgui-demo target ====
 
@@ -107,7 +110,8 @@ all-tgui-demo : $(ALL_tgui-demo)
 install : install-tgui-demo
 install-tgui-demo : all-tgui-demo install-libtgui
 	@mkdir -p "$(DESTDIR)$(PREFIX)/bin"
-	cp $(ALL_tgui-demo) "$(DESTDIR)$(PREFIX)/bin"
+	@echo "INSTALL $(ALL_tgui-demo)"
+	$(Q)cp $(ALL_tgui-demo) "$(DESTDIR)$(PREFIX)/bin"
 
 .PHONY : uninstall-tgui-demo
 uninstall : uninstall-tgui-demo

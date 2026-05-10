@@ -8,7 +8,7 @@ tmake_init "$@"
 
 tmake_add_shared_library "libtgui" src/*.c "platform/\$(PLATFORM).c" CFLAGS="-Iinclude -Iinclude/tgui"
 
-tmake_add_headers "headers" "tgui" include/tgui/*.h
+tmake_add_data "headers" "include" include/tgui
 
 tmake_add_executable "tgui-demo" "test/demo.c" CFLAGS="-Iinclude" DEPENDENCIES="libtgui"
 
