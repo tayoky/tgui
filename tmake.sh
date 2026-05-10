@@ -224,7 +224,12 @@ install-$TARG : all-$TARG$(tmake_add_prefix "install-" $TARGET_DEPENDENCIES)
 .PHONY : uninstall-$TARG
 uninstall : uninstall-$TARG
 uninstall-$TARG :
-	rm -f$(TO_REMOVE=""
+	@echo \"UNINSTALL$(TO_REMOVE=""
+	for FILE in $FILES ; do
+		TO_REMOVE="$TO_REMOVE \$(DESTDIR)\$(PREFIX)/$PREF/${FILE#"\$(BUILDDIR)/$TARG/"}"
+	done
+	echo "$TO_REMOVE")\"
+	\$(Q)rm -f$(TO_REMOVE=""
 	for FILE in $FILES ; do
 		TO_REMOVE="$TO_REMOVE \"\$(DESTDIR)\$(PREFIX)/$PREF/${FILE#"\$(BUILDDIR)/$TARG/"}\""
 	done
@@ -317,4 +322,32 @@ $LIBSO : $ALL_DEPENDENCIES
 	@echo \"CCLD $TARG.so\"
 	\$(Q)\$(CC) -shared $TARGET_CRFLAGS $TARGET_LDFLAGS -o \$@ \$^
 endif"
+} >> "$MAKEFILE"
+
+# replace this with add_data
+tmake_add_headers () {
+	TARG="$1"
+	DEST="$2"
+	shift 2
+	echo "
+# ==== $TARG target ====
+SRC_$TARG = $@
+
+.PHONY : install-$TARG
+install : install-$TARG
+install-$TARG :
+	@mkdir -p \"\$(DESTDIR)\$(PREFIX)/include/$DEST\"
+	@echo \"INSTALL $TARG\"
+	\$(Q)cp \$(SRC_$TARG) \"\$(DESTDIR)\$(PREFIX)/include/$DEST\"
+.PHONY : uninstall-$TARG
+uninstall : uninstall-$TARG
+uninstall-$TARG :"
+		
+	if test -n "$DEST" ; then
+		echo "	@echo \"UNINSTALL \$(DESTDIR)\$(PREFIX)/include/$DEST\"
+	\$(Q)rm -fr \"\$(DESTDIR)\$(PREFIX)/include/$DEST\""
+	else
+		echo "	@echo \"UNINSTALL $TARG\"
+	\$(Q)rm -f \$(SRC_$TARG) \"\$(DESTDIR)\$(PREFIX)/include/$DEST\""
+	fi
 } >> "$MAKEFILE"
