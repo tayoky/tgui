@@ -2,9 +2,37 @@
 
 . ./tconf.sh
 
+: ${STATIC:="yes"}
+: ${SHARED:="yes"}
+
 tconf_init "$@"
 
 tconf_search_cc "$HOST"
 tconf_find_os
 
+OS="${HOST#*-}"
+
+if test "$OS" = "stanix" ; then
+	PLATFORM="twm"
+else
+	PLATFORM="x11"
+fi
+
+case $PLATFORM in
+	twm)
+		LDFLAGS="$LDFLAGS -ltwm -lgfx"
+		;;
+	x11)
+		LDFLAGS="$LDFLAGS -lX11 -lXft"
+		CFLAGS="$CFLAGS -I\$(PREFIX)/include/freetype2"
+		;;
+	*)
+		echo "unknown platform '$PLATFORM'"
+		exit 1
+		;;
+esac
+
 tconf_fini
+tconf_echo_conf "STATIC" "$STATIC" >> config.mk
+tconf_echo_conf "SHARED" "$SHARED" >> config.mk
+tconf_echo_conf "PLATFORM" "$PLATFORM" >> config.mk
