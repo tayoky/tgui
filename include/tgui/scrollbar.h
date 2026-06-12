@@ -30,16 +30,16 @@ tgui_scrollbar_t *tgui_scrollbar_new(int orientation);
 
 /**
  * @relates tgui_scrollbar
- * @brief set the total lenght of the content of a scrollbar
- * @param scrollbar the scrollbar to set the content lenght of
+ * @brief set the total length of the content of a scrollbar
+ * @param scrollbar the scrollbar to set the content length of
  * @param total_size the total size
  */
 void tgui_scrollbar_set_total_size(tgui_scrollbar_t *scrollbar, long total_size);
 
 /**
  * @relates tgui_scrollbar
- * @brief set the lenght of the view of a scrollbar
- * @param scrollbar the scrollbar to set the lenght of
+ * @brief set the length of the view of a scrollbar
+ * @param scrollbar the scrollbar to set the length of
  * @param view_size the size of the view
  */
 void tgui_scrollbar_set_view_size(tgui_scrollbar_t *scrollbar, long view_size);
