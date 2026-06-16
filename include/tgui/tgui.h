@@ -6,6 +6,7 @@
 #include "window.h"
 #include "button.h"
 #include "togglebutton.h"
+#include "checkbox.h"
 #include "label.h"
 #include "list.h"
 #include "listmodel.h"
