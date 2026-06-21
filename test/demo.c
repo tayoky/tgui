@@ -43,6 +43,10 @@ tgui_widget_t *input_tab() {
 	tgui_button_set_text(TGUI_BUTTON_CAST(toggle_button), "toggle");
 	add_element(box, TGUI_WIDGET_CAST(toggle_button));
 
+	tgui_checkbox_t *checkbox = tgui_checkbox_new();
+	add_element(box, TGUI_WIDGET_CAST(checkbox));
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(checkbox), TGUI_FALSE);
+
 	tgui_slider_t *slider = tgui_slider_new(TGUI_ORIENTATION_HORIZONTAL);
 	tgui_slider_set_value(slider, 0.3f);
 	add_element(box, TGUI_WIDGET_CAST(slider));

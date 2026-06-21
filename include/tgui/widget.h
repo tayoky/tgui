@@ -140,6 +140,7 @@ static inline void tgui_widget_hide(tgui_widget_t *widget) {
 	widget->flags |= TGUI_WIDGET_HIDDEN;
 	tgui_widget_mark_dirty(widget);
 	tgui_widget_mark_dirty_space(widget->parent);
+	tgui_widget_mark_dirty_size(widget->parent);
 }
 
 static inline void tgui_widget_show(tgui_widget_t *widget) {
