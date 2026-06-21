@@ -23,7 +23,7 @@ case $PLATFORM in
 		LDFLAGS="$LDFLAGS -ltwm -lgfx"
 		;;
 	x11)
-		LDFLAGS="$LDFLAGS -lX11 -lXft"
+		LDFLAGS="$LDFLAGS -lX11 -lXft -lXrender"
 		CFLAGS="$CFLAGS -I\$(PREFIX)/include/freetype2"
 		;;
 	*)

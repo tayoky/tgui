@@ -43,7 +43,7 @@ ALL_shared-libtgui += $(BUILDDIR)/shared-libtgui/libtgui.so
 LINK_shared-libtgui = $(BUILDDIR)/shared-libtgui/libtgui.so
 ALL_libtgui += $(BUILDDIR)/shared-libtgui/libtgui.so
 LINK_libtgui = $(BUILDDIR)/shared-libtgui/libtgui.so
-SRC_shared-libtgui = src/action.c src/box.c src/button.c src/canva.c src/color.c src/dropdown.c src/expander.c src/factory.c src/font.c src/grid.c src/icon.c src/image.c src/inputs.c src/label.c src/list.c src/listbase.c src/listmodel.c src/listview.c src/log.c src/main.c src/menuitem.c src/paned.c src/popover.c src/popoverbutton.c src/popovermenu.c src/rect.c src/render.c src/scrollbar.c src/scrolledwindow.c src/separator.c src/slider.c src/stack.c src/stackswitcher.c src/stringfactory.c src/stringlist.c src/style.c src/submenubutton.c src/surface.c src/text.c src/textbuffer.c src/textview.c src/theme.c src/titlebar.c src/tobject.c src/togglebutton.c src/vector.c src/viewport.c src/widget.c src/window.c platform/$(PLATFORM).c
+SRC_shared-libtgui = src/action.c src/box.c src/button.c src/canva.c src/checkbox.c src/color.c src/dropdown.c src/expander.c src/factory.c src/font.c src/grid.c src/icon.c src/image.c src/inputs.c src/label.c src/list.c src/listbase.c src/listmodel.c src/listview.c src/log.c src/main.c src/menuitem.c src/paned.c src/popover.c src/popoverbutton.c src/popovermenu.c src/rect.c src/render.c src/scrollbar.c src/scrolledwindow.c src/separator.c src/slider.c src/stack.c src/stackswitcher.c src/stringfactory.c src/stringlist.c src/style.c src/submenubutton.c src/surface.c src/text.c src/textbuffer.c src/textview.c src/theme.c src/titlebar.c src/tobject.c src/togglebutton.c src/vector.c src/viewport.c src/widget.c src/window.c platform/$(PLATFORM).c
 OBJ_shared-libtgui = $(SRC_shared-libtgui:%=$(BUILDDIR)/shared-libtgui/%.o)
 DEPS_shared-libtgui = $(SRC_shared-libtgui:%=$(BUILDDIR)/shared-libtgui/%.d)
 
@@ -80,7 +80,7 @@ $(BUILDDIR)/shared-libtgui/%.c.o : %.c
 $(BUILDDIR)/shared-libtgui/libtgui.so : $(OBJ_shared-libtgui)
 	@mkdir -p "$(@D)"
 	@echo "CCLD libtgui.so"
-	$(Q)$(CC) -shared $(CFLAGS) -fPIC -Iinclude -Iinclude/tgui $(LDFLAGS) -o $@ $^
+	$(Q)$(CC) -shared $(CFLAGS) -fPIC -Iinclude -Iinclude/tgui $(LDFLAGS) -lm -o $@ $^
 
 .PHONY : all-libtgui
 all-libtgui : all-shared-libtgui
