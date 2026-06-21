@@ -14,6 +14,7 @@ struct tgui_surface {
 	tgui_widget_t *focus;
 	tgui_widget_t *child;
 	tgui_widget_t *hover;
+	tgui_widget_t *clicked;
 	tgui_rect_t inval;
 	tgui_rect_t clip;
 	long width;

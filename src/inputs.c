@@ -8,6 +8,7 @@ void tgui_input_click(tgui_surface_t *surface, int button, long x, long y) {
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
 	tgui_surface_set_focus(surface, widget);
+	surface->clicked = widget;
 	if (!widget) widget = TGUI_WIDGET_CAST(surface);
 	tgui_event_click_t event = {
 		.button = button,
@@ -22,13 +23,13 @@ void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y) {
 	surface->mouse_pressed = 0;
 	x /= surface->scaling;
 	y /= surface->scaling;
-	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
 	tgui_event_unclick_t event = {
 		.button = button,
 		.x = x,
 		.y = y,
 	};
-	tgui_widget_send_parent_signal(tgui_surface_get_focus(surface), "unclick", &event);
+	tgui_widget_send_parent_signal(surface->clicked, "unclick", &event);
+	surface->clicked = NULL;
 }
 
 static void update_hover(tgui_surface_t *surface, tgui_widget_t *widget) {

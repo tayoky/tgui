@@ -45,7 +45,7 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 	// send signal first
 	tgui_widget_send_signal(widget, "destroy", NULL);
 
-	// make sure to unfocus and unhover
+	// make sure to unfocus unhover and unclick
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
 	if (surface) {
 		if (tgui_surface_get_focus(surface) == widget) {
@@ -53,6 +53,9 @@ void tgui_widget_destroy(tgui_widget_t *widget) {
 		}
 		if (surface->hover == widget) {
 			surface->hover = widget->parent;
+		}
+		if (surface->clicked == widget) {
+			surface->clicked = widget->parent;
 		}
 	}
 
