@@ -1,4 +1,5 @@
 config.mk
+Makefile
 build
 docs
 *.out

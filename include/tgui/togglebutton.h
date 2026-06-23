@@ -2,6 +2,7 @@
 #define TGUI_TOGGLE_BUTTON_H
 
 #include "button.h"
+#include "list.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_toggle_button, TGUI_TOGGLE_BUTTON, tgui_button)
 

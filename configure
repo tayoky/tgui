@@ -36,3 +36,5 @@ tconf_fini
 tconf_echo_conf "STATIC" "$STATIC" >> config.mk
 tconf_echo_conf "SHARED" "$SHARED" >> config.mk
 tconf_echo_conf "PLATFORM" "$PLATFORM" >> config.mk
+
+./tmakegen
