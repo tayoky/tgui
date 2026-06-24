@@ -64,6 +64,7 @@ void tgui_stack_add_child(tgui_stack_t *stack, tgui_widget_t *child, const char 
 }
 
 void tgui_stack_set_current_page(tgui_stack_t *stack, tgui_stack_page_t *page) {
+	tgui_widget_send_signal(TGUI_WIDGET_CAST(stack), "switch-page", page);
 	tgui_widget_hide(stack->current);
 	if (page) {
 		stack->current = page->widget;
@@ -82,6 +83,7 @@ void tgui_stack_set_current(tgui_stack_t *stack, const char *name) {
 tgui_list_t *tgui_stack_get_pages(tgui_stack_t *stack) {
 	return &stack->pages;
 }
+
 tgui_stack_page_t *tgui_stack_get_page(tgui_stack_t *stack, const char *name) {
 	TGUI_LIST_FOREACH(node, &stack->pages) {
 		tgui_stack_page_t *page = TGUI_STACK_PAGE_CAST(node);

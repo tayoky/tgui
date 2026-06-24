@@ -14,14 +14,12 @@ static void tgui_toggle_group_toggled(tgui_toggle_button_t *toggled_button, int 
 		return;
 	}
 
+	tgui_toggle_group_element_t *prev = group->current;
 	group->current = toggled_element;
 
-	// we need to set every single other button as inactivated
-	TGUI_LIST_FOREACH(node, &group->elements) {
-		tgui_toggle_group_element_t *element = TGUI_CONTAINER_OF(node, tgui_toggle_group_element_t, node);
-		if (element->button != toggled_button) {
-			tgui_toggle_button_set_active(element->button, 0);
-		}
+	// we need to set the previously toggled button as inactive
+	if (prev && prev != toggled_element) {
+		tgui_toggle_button_set_active(prev->button, TGUI_FALSE);
 	}
 }
 
