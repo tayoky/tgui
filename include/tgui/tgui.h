@@ -16,6 +16,7 @@
 #include "box.h"
 #include "grid.h"
 #include "text.h"
+#include "counter.h"
 #include "paned.h"
 #include "slider.h"
 #include "scrollbar.h"

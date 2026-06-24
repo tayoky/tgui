@@ -88,6 +88,14 @@ int tgui_theme_load(void) {
 	tgui_style_set_padding(text_style, TGUI_SIDE_ALL, padding);
 	tgui_widget_set_class_style(text_style, "tgui_text");
 
+	// integer input
+	tgui_style_t *counter_style = tgui_style_new();
+	tgui_style_set_rounded_corners(counter_style, TGUI_CORNER_ALL);
+	tgui_style_set_border_style(counter_style, TGUI_SIDE_ALL, TGUI_BORDER_SOLID);
+	tgui_style_set_border_width(counter_style, TGUI_SIDE_ALL, border_width);
+	tgui_style_set_border_color(counter_style, TGUI_SIDE_ALL, border_color);
+	tgui_widget_set_class_style(counter_style, "tgui_counter");
+
 	// slider
 	tgui_style_t *slider_style = tgui_style_new();
 	tgui_style_set_rounded_corners(slider_style, TGUI_CORNER_ALL);

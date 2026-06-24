@@ -47,6 +47,9 @@ tgui_widget_t *input_tab() {
 	add_element(box, TGUI_WIDGET_CAST(checkbox));
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(checkbox), TGUI_FALSE);
 
+	tgui_counter_t *counter = tgui_counter_new();
+	add_element(box, TGUI_WIDGET_CAST(counter));
+
 	tgui_slider_t *slider = tgui_slider_new(TGUI_ORIENTATION_HORIZONTAL);
 	tgui_slider_set_value(slider, 0.3f);
 	add_element(box, TGUI_WIDGET_CAST(slider));
