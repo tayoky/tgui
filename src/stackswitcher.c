@@ -11,6 +11,11 @@ static int tgui_stack_switcher_constructor(void *object) {
 	tgui_stack_switcher_get_parent_class()->constructor(object);
 
 	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(object);
+	stack_switcher->placeholder = tgui_box_new();
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(stack_switcher->placeholder), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(stack_switcher->placeholder), TGUI_TRUE);
+	tgui_widget_apply_class_styles(TGUI_WIDGET_CAST(stack_switcher->placeholder), "tgui_stack_switcher_placeholder");
+	tgui_box_append_widget(TGUI_BOX_CAST(stack_switcher), TGUI_WIDGET_CAST(stack_switcher->placeholder));
 	stack_switcher->toggle_group = tgui_toggle_group_new();
 	tgui_toggle_group_set_always(stack_switcher->toggle_group, TGUI_TRUE);
 	return 0;
@@ -54,11 +59,12 @@ static void tgui_stack_switcher_add_page_button(tgui_stack_switcher_t *stack_swi
 	tgui_toggle_button_t *button = tgui_toggle_button_new();
 	tgui_button_set_text(TGUI_BUTTON_CAST(button), page->name);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(button), "toggled", TCALLBACK_CAST(tgui_stack_switcher_button_toggled), NULL);
-	tgui_widget_apply_class_styles(TGUI_WIDGET_CAST(button), "stackswitcher-button");
-	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
-	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
+	tgui_widget_apply_class_styles(TGUI_WIDGET_CAST(button), "tgui_stack_switcher_button");
 	tgui_toggle_group_add(stack_switcher->toggle_group, button);
 	tgui_box_append_widget(TGUI_BOX_CAST(stack_switcher), TGUI_WIDGET_CAST(button));
+	// make sure to place the placeholder after it
+	tgui_widget_remove_parent(TGUI_WIDGET_CAST(stack_switcher->placeholder));
+	tgui_box_append_widget(TGUI_BOX_CAST(stack_switcher), TGUI_WIDGET_CAST(stack_switcher->placeholder));
 }
 
 static void tgui_stack_switcher_add_page(tobject_t *tobject, tgui_stack_page_t *page, tgui_stack_switcher_t *stack_switcher) {
@@ -69,6 +75,7 @@ static void tgui_stack_switcher_add_page(tobject_t *tobject, tgui_stack_page_t *
 static tgui_toggle_button_t *tgui_stack_switcher_get_button(tgui_stack_switcher_t *stack_switcher, tgui_stack_page_t *page) {
 	TGUI_LIST_FOREACH(node, &TGUI_WIDGET_CAST(stack_switcher)->children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
+		if (!tgui_widget_is_type(widget, tgui_button_get_type())) continue;
 		tgui_toggle_button_t *button = TGUI_TOGGLE_BUTTON_CAST(widget);
 		if (!strcmp(tgui_button_get_text(TGUI_BUTTON_CAST(button)), page->name)) {
 			return button;
@@ -112,7 +119,7 @@ void tgui_stack_switcher_set_stack(tgui_stack_switcher_t *stack_switcher, tgui_s
 		tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(stack_switcher->stack), "destroy", stack_switcher->destroy_callback);
 
 		// make sure to destroy any previous buttons
-		while (TGUI_WIDGET_CAST(stack_switcher)->children.first) {
+		while (TGUI_WIDGET_CAST(stack_switcher)->children.first != TGUI_WIDGET_CAST(stack_switcher)->children.last) {
 			tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(TGUI_WIDGET_CAST(stack_switcher)->children.first);
 			tgui_widget_destroy(child);
 		}

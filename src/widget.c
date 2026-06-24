@@ -323,18 +323,23 @@ void tgui_widget_apply_class_styles(tgui_widget_t *widget, const char *name) {
 	}
 }
 
+static void tgui_widget_apply_type_styles(tgui_widget_t *widget, ttype_t *type) {
+	if (type == tgui_widget_get_type()) return;
+	
+	// apply parent type style first
+	tgui_widget_apply_type_styles(widget, ttype_get_parent(type));
+	tgui_widget_apply_class_styles(widget, type->name);
+}
+
 void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
 	ttype_t *type = tgui_widget_type_from_object(widget);
-	while (type && type != tgui_widget_get_type()) {
-		tgui_widget_apply_class_styles(widget, type->name);
-		type = ttype_get_parent(type);
-	}
+	tgui_widget_apply_type_styles(widget, type);
 }
 
 static void add_style(tgui_list_t *list, tgui_style_t *style) {
 	tgui_style_node_t *node = malloc(sizeof(tgui_style_node_t));
 	node->style = tgui_style_ref(style);
-	tgui_list_prepend(list, &node->node);
+	tgui_list_append(list, &node->node);
 }
 
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style) {

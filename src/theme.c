@@ -108,6 +108,26 @@ int tgui_theme_load(void) {
 	tgui_style_set_background_color(scrollbar_style, border_color);
 	tgui_widget_set_class_style(scrollbar_style, "tgui_scrollbar");
 
+	// tabs button
+	tgui_style_t *stackswitcher_button_style = tgui_style_new();
+	tgui_style_set_rounded_corners(stackswitcher_button_style, 0);
+	tgui_style_set_padding(stackswitcher_button_style, TGUI_SIDE_ALL, 1);
+	tgui_style_set_padding(stackswitcher_button_style, TGUI_SIDE_LEFT, padding);
+	tgui_style_set_padding(stackswitcher_button_style, TGUI_SIDE_RIGHT, padding);
+	tgui_widget_set_class_style(stackswitcher_button_style, "tgui_stack_switcher_button");
+
+	tgui_style_t *stackswitcher_button_selected_style = tgui_style_new();
+	tgui_style_set_background_color(stackswitcher_button_selected_style, bg);
+	tgui_style_set_border_style(stackswitcher_button_selected_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_NONE);
+	tgui_widget_set_class_state_style(stackswitcher_button_selected_style, "tgui_stack_switcher_button", TGUI_STATE_PRESSED);
+
+	tgui_style_t *stackswitcher_placeholder_style = tgui_style_new();
+	tgui_style_set_border_style(stackswitcher_placeholder_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_SOLID);
+	tgui_style_set_border_width(stackswitcher_placeholder_style, TGUI_SIDE_ALL, border_width);
+	tgui_style_set_border_color(stackswitcher_placeholder_style, TGUI_SIDE_ALL, border_color);
+	tgui_widget_set_class_style(stackswitcher_placeholder_style, "tgui_stack_switcher_placeholder");
+
+
 	// title bar
 	tgui_style_t *title_bar_style = tgui_style_new();
 	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
