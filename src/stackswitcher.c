@@ -12,6 +12,7 @@ static int tgui_stack_switcher_constructor(void *object) {
 
 	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(object);
 	stack_switcher->toggle_group = tgui_toggle_group_new();
+	tgui_toggle_group_set_always(stack_switcher->toggle_group, TGUI_TRUE);
 	return 0;
 }
 

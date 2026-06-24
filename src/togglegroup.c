@@ -6,9 +6,15 @@ TOBJECT_DEFINE_CLASS(tgui_toggle_group, TGUI_TOGGLE_GROUP, tobject_get_type())
 static void tgui_toggle_group_toggled(tgui_toggle_button_t *toggled_button, int *active, tgui_toggle_group_element_t *toggled_element) {
 	tgui_toggle_group_t *group = toggled_element->group;
 	if (*active == 0) {
-		// we desactivated a button, we don't care
+		// we desactivated a button, in always mode we want to prevent the current
+		// toggled button from being desactivated
+		if (group->always && group->current == toggled_element) {
+			tgui_toggle_button_set_active(toggled_button, 1);
+		}
 		return;
 	}
+
+	group->current = toggled_element;
 
 	// we need to set every single other button as inactivated
 	TGUI_LIST_FOREACH(node, &group->elements) {
@@ -59,8 +65,23 @@ tgui_toggle_group_element_t *tgui_toggle_group_add(tgui_toggle_group_t *group, t
 void tgui_toggle_group_remove(tgui_toggle_group_t *group, tgui_toggle_group_element_t *element) {
 	tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(element->button), "toggled", element->toggled);
 	tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(element->button), "destroy", element->destroy);
+	// in always mode we might want to toggle another button
+	if (group->always && group->current == element) {
+		if (element->node.prev) {
+			group->current = TGUI_CONTAINER_OF(element->node.prev, tgui_toggle_group_element_t, node);
+		} else if (element->node.next) {
+			group->current = TGUI_CONTAINER_OF(element->node.next, tgui_toggle_group_element_t, node);
+		}
+	}
+	if (group->current == element) {
+		group->current = NULL;
+	}
 	tgui_list_remove(&group->elements, &element->node);
 	free(element);
+}
+
+void tgui_toggle_group_set_always(tgui_toggle_group_t *group, int always) {
+	group->always = always;
 }
 
 void tgui_toggle_group_reset(tgui_toggle_group_t *group) {
