@@ -66,15 +66,32 @@ static void tgui_stack_switcher_add_page(tobject_t *tobject, tgui_stack_page_t *
 	tgui_stack_switcher_add_page_button(stack_switcher, page);
 }
 
-static void tgui_stack_switcher_remove_page(tobject_t *tobject, tgui_stack_page_t *page, tgui_stack_switcher_t *stack_switcher) {
-	(void)tobject;
+static tgui_toggle_button_t *tgui_stack_switcher_get_button(tgui_stack_switcher_t *stack_switcher, tgui_stack_page_t *page) {
 	TGUI_LIST_FOREACH(node, &TGUI_WIDGET_CAST(stack_switcher)->children) {
 		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
-		tgui_button_t *button = TGUI_BUTTON_CAST(widget);
-		if (!strcmp(tgui_button_get_text(button), page->name)) {
-			tgui_widget_destroy(widget);
+		tgui_toggle_button_t *button = TGUI_TOGGLE_BUTTON_CAST(widget);
+		if (!strcmp(tgui_button_get_text(TGUI_BUTTON_CAST(button)), page->name)) {
+			return button;
 		}
-	}	
+	}
+	return NULL;
+}
+
+static void tgui_stack_switcher_remove_page(tobject_t *tobject, tgui_stack_page_t *page, tgui_stack_switcher_t *stack_switcher) {
+	(void)tobject;
+	tgui_toggle_button_t *button = tgui_stack_switcher_get_button(stack_switcher, page);
+	if (!button) return;
+	tgui_widget_destroy(TGUI_WIDGET_CAST(button));
+}
+
+static void tgui_stack_switcher_switch_page(tobject_t *tobject, tgui_stack_page_t *page, tgui_stack_switcher_t *stack_switcher) {
+	(void)tobject;
+	if (!page) {
+		// TODO : toggle off ??
+	}
+	tgui_toggle_button_t *button = tgui_stack_switcher_get_button(stack_switcher, page);
+	if (!button) return;
+	tgui_toggle_button_set_active(button, TGUI_TRUE);
 }
 
 static void tgui_stack_switcher_destroy_stack(tobject_t *tobject, void *event, tgui_stack_switcher_t *stack_switcher) {
@@ -91,6 +108,7 @@ void tgui_stack_switcher_set_stack(tgui_stack_switcher_t *stack_switcher, tgui_s
 	if (stack_switcher->stack) {
 		tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(stack_switcher->stack), "add-page", stack_switcher->add_page_callback);
 		tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(stack_switcher->stack), "remove-page", stack_switcher->remove_page_callback);
+		tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(stack_switcher->stack), "switch-page", stack_switcher->switch_page_callback);
 		tgui_widget_disconnect_signal(TGUI_WIDGET_CAST(stack_switcher->stack), "destroy", stack_switcher->destroy_callback);
 
 		// make sure to destroy any previous buttons
@@ -109,9 +127,10 @@ void tgui_stack_switcher_set_stack(tgui_stack_switcher_t *stack_switcher, tgui_s
 	}
 
 	// register so we can add buttons for future pages
-	stack_switcher->add_page_callback = tgui_widget_connect_signal(TGUI_WIDGET_CAST(stack), "add-page", TCALLBACK_CAST(tgui_stack_switcher_add_page), stack_switcher);
+	stack_switcher->add_page_callback    = tgui_widget_connect_signal(TGUI_WIDGET_CAST(stack), "add-page", TCALLBACK_CAST(tgui_stack_switcher_add_page), stack_switcher);
 	stack_switcher->remove_page_callback = tgui_widget_connect_signal(TGUI_WIDGET_CAST(stack), "remove-page", TCALLBACK_CAST(tgui_stack_switcher_remove_page), stack_switcher);
-	stack_switcher->destroy_callback = tgui_widget_connect_signal(TGUI_WIDGET_CAST(stack), "destroy", TCALLBACK_CAST(tgui_stack_switcher_destroy_stack), stack_switcher);
+	stack_switcher->switch_page_callback = tgui_widget_connect_signal(TGUI_WIDGET_CAST(stack), "switch-page", TCALLBACK_CAST(tgui_stack_switcher_switch_page), stack_switcher);
+	stack_switcher->destroy_callback     = tgui_widget_connect_signal(TGUI_WIDGET_CAST(stack), "destroy", TCALLBACK_CAST(tgui_stack_switcher_destroy_stack), stack_switcher);
 }
 
 tgui_stack_t *tgui_stack_switcher_get_stack(tgui_stack_switcher_t *stack_switcher) {

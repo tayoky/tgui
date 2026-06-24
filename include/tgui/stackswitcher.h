@@ -13,6 +13,7 @@ struct tgui_stack_switcher {
 	tgui_toggle_group_t *toggle_group;
 	size_t add_page_callback;
 	size_t remove_page_callback;
+	size_t switch_page_callback;
 	size_t destroy_callback;
 };
 
