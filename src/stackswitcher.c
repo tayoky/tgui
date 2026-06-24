@@ -30,10 +30,33 @@ static int tgui_stack_switcher_destructor(void *object) {
 	return tgui_stack_switcher_get_parent_class()->destructor(object);
 }
 
+static void tgui_stack_switcher_set_orientation(tgui_widget_t *widget, int orientation) {
+	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(widget);
+
+	// change hexpand and vexpand on each button
+	int hexpand, vexpand;
+	if (orientation == TGUI_ORIENTATION_VERTICAL) {
+		hexpand = TGUI_TRUE;
+		vexpand = TGUI_FALSE;
+	} else {
+		hexpand = TGUI_FALSE;
+		vexpand = TGUI_TRUE;
+	}
+	TGUI_LIST_FOREACH(node, &TGUI_WIDGET_CAST(stack_switcher)->children) {
+		tgui_widget_t *widget = TGUI_WIDGET_FROM_NODE(node);
+		if (!tgui_widget_is_type(widget, tgui_button_get_type())) continue;
+		tgui_widget_set_hexpand(widget, hexpand);
+		tgui_widget_set_vexpand(widget, vexpand);
+	}
+}
+
 static void tgui_stack_switcher_class_init(tgui_stack_switcher_class_t *class) {
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_stack_switcher_constructor;
 	tobject_class->destructor  = tgui_stack_switcher_destructor;
+
+	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
+	widget_class->set_orientation = tgui_stack_switcher_set_orientation;
 }
 
 tgui_stack_switcher_t *tgui_stack_switcher_new(void) {
@@ -61,6 +84,11 @@ static void tgui_stack_switcher_add_page_button(tgui_stack_switcher_t *stack_swi
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(button), "toggled", TCALLBACK_CAST(tgui_stack_switcher_button_toggled), NULL);
 	tgui_widget_apply_class_styles(TGUI_WIDGET_CAST(button), "tgui_stack_switcher_button");
 	tgui_toggle_group_add(stack_switcher->toggle_group, button);
+	if (tgui_widget_get_orientation(TGUI_WIDGET_CAST(stack_switcher)) == TGUI_ORIENTATION_VERTICAL) {
+		tgui_widget_set_hexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
+	} else {
+		tgui_widget_set_vexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
+	}
 	tgui_box_append_widget(TGUI_BOX_CAST(stack_switcher), TGUI_WIDGET_CAST(button));
 	// make sure to place the placeholder after it
 	tgui_widget_remove_parent(TGUI_WIDGET_CAST(stack_switcher->placeholder));
