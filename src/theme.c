@@ -21,13 +21,13 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_width(window_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(window_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_color(window_style, color);
-	tgui_widget_set_default_style(window_style, "tgui_window");
-	tgui_widget_set_default_style(window_style, "tgui_surface");
+	tgui_widget_set_class_style(window_style, "tgui_window");
+	tgui_widget_set_class_style(window_style, "tgui_surface");
 
 	// box
 	tgui_style_t *box_style = tgui_style_new();
 	tgui_style_set_border_style(box_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
-	tgui_widget_set_default_style(box_style, "tgui_box");
+	tgui_widget_set_class_style(box_style, "tgui_box");
 
 	// buttons
 	tgui_style_t *button_style = tgui_style_new();
@@ -37,15 +37,15 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_width(button_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(button_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_padding(button_style, TGUI_SIDE_ALL, padding);
-	tgui_widget_set_default_style(button_style, "tgui_button");
+	tgui_widget_set_class_style(button_style, "tgui_button");
 
 	tgui_style_t *button_clicked_style = tgui_style_new();
 	tgui_style_set_background_color(button_clicked_style, button_clicked_color);
-	tgui_widget_set_default_state_style(button_clicked_style, "tgui_button", TGUI_STATE_PRESSED);
+	tgui_widget_set_class_state_style(button_clicked_style, "tgui_button", TGUI_STATE_PRESSED);
 
 	tgui_style_t *button_hover_style = tgui_style_new();
 	tgui_style_set_background_color(button_hover_style, button_hover_color);
-	tgui_widget_set_default_state_style(button_hover_style, "tgui_button", TGUI_STATE_HOVER);
+	tgui_widget_set_class_state_style(button_hover_style, "tgui_button", TGUI_STATE_HOVER);
 
 	// submenu buttons
 	tgui_style_t *submenu_button_style = tgui_style_new();
@@ -53,14 +53,14 @@ int tgui_theme_load(void) {
 	tgui_style_set_padding(submenu_button_style, TGUI_SIDE_ALL, 1);
 	tgui_style_set_rounded_corners(submenu_button_style, 0);
 	tgui_style_set_border_style(submenu_button_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
-	tgui_widget_set_default_style(submenu_button_style, "tgui_submenu_button");
+	tgui_widget_set_class_style(submenu_button_style, "tgui_submenu_button");
 
 	// labels
 	tgui_style_t *label_style = tgui_style_new();
 	tgui_style_set_rounded_corners(label_style, 0);
 	tgui_style_set_border_style(label_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
 	tgui_style_set_padding(label_style, TGUI_SIDE_ALL, 0);
-	tgui_widget_set_default_style(label_style, "tgui_label");
+	tgui_widget_set_class_style(label_style, "tgui_label");
 
 	// labels title
 	tgui_style_t *title_style = tgui_style_new();
@@ -68,7 +68,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_rounded_corners(title_style, 0);
 	tgui_style_set_border_style(title_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
 	tgui_style_set_padding(title_style, TGUI_SIDE_ALL, 0);
-	tgui_widget_set_default_style(title_style, "tgui_title");
+	tgui_widget_set_class_style(title_style, "tgui_title");
 
 	// separators
 	tgui_style_t *separator_style = tgui_style_new();
@@ -76,7 +76,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(separator_style, TGUI_SIDE_TOP, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(separator_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(separator_style, TGUI_SIDE_ALL, border_color);
-	tgui_widget_set_default_style(separator_style, "tgui_separator");
+	tgui_widget_set_class_style(separator_style, "tgui_separator");
 
 	// text input
 	tgui_style_t *text_style = tgui_style_new();
@@ -86,19 +86,19 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_width(text_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(text_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_padding(text_style, TGUI_SIDE_ALL, padding);
-	tgui_widget_set_default_style(text_style, "tgui_text");
+	tgui_widget_set_class_style(text_style, "tgui_text");
 
 	// slider
 	tgui_style_t *slider_style = tgui_style_new();
 	tgui_style_set_rounded_corners(slider_style, TGUI_CORNER_ALL);
 	tgui_style_set_background_color(slider_style, border_color);
-	tgui_widget_set_default_style(slider_style, "tgui_slider");
+	tgui_widget_set_class_style(slider_style, "tgui_slider");
 
 	// scrollbar
 	tgui_style_t *scrollbar_style = tgui_style_new();
 	tgui_style_set_rounded_corners(scrollbar_style, TGUI_CORNER_ALL);
 	tgui_style_set_background_color(scrollbar_style, border_color);
-	tgui_widget_set_default_style(scrollbar_style, "tgui_scrollbar");
+	tgui_widget_set_class_style(scrollbar_style, "tgui_scrollbar");
 
 	// title bar
 	tgui_style_t *title_bar_style = tgui_style_new();
@@ -106,14 +106,14 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(title_bar_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(title_bar_style, TGUI_SIDE_ALL, border_color);
-	tgui_widget_set_default_style(title_bar_style, "tgui_title_bar");
+	tgui_widget_set_class_style(title_bar_style, "tgui_title_bar");
 
 
 	// icons
 	tgui_style_t *icon_style = tgui_style_new();
 	tgui_style_set_border_style(icon_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
 	tgui_style_set_padding(icon_style, TGUI_SIDE_ALL, 0);
-	tgui_widget_set_default_style(icon_style, "tgui_icon");
+	tgui_widget_set_class_style(icon_style, "tgui_icon");
 
 	return 0;
 }

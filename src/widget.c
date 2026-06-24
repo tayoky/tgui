@@ -291,23 +291,22 @@ tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {
 	return NULL;
 }
 
-static void add_default(tgui_list_t *list, tgui_style_t *style, const char *class) {
+static void add_class(tgui_list_t *list, tgui_style_t *style, const char *class) {
 	tgui_style_default_t *style_default = malloc(sizeof(tgui_style_default_t));
 	style_default->style = tgui_style_ref(style);
 	style_default->class = strdup(class);
 	tgui_list_append(list, &style_default->node);
 }
 
-void tgui_widget_set_default_style(tgui_style_t *style, const char *class) {
-	add_default(&default_styles, style, class);
+void tgui_widget_set_class_style(tgui_style_t *style, const char *class) {
+	add_class(&default_styles, style, class);
 }
 
-void tgui_widget_set_default_state_style(tgui_style_t *style, const char *class, char state) {
-	add_default(&default_state_styles[(int)state], style, class);
+void tgui_widget_set_class_state_style(tgui_style_t *style, const char *class, char state) {
+	add_class(&default_state_styles[(int)state], style, class);
 }
 
-static void tgui_widget_apply_default_type_styles(tgui_widget_t *widget, ttype_t *type) {
-	const char *name = type->name;
+void tgui_widget_apply_class_styles(tgui_widget_t *widget, const char *name) {
 	TGUI_LIST_FOREACH(node, &default_styles) {
 		tgui_style_default_t *style_default = TGUI_STYLE_DEFAULT_CAST(node);
 		if (!strcmp(style_default->class, name)) {
@@ -327,7 +326,7 @@ static void tgui_widget_apply_default_type_styles(tgui_widget_t *widget, ttype_t
 void tgui_widget_apply_default_styles(tgui_widget_t *widget) {
 	ttype_t *type = tgui_widget_type_from_object(widget);
 	while (type && type != tgui_widget_get_type()) {
-		tgui_widget_apply_default_type_styles(widget, type);
+		tgui_widget_apply_class_styles(widget, type->name);
 		type = ttype_get_parent(type);
 	}
 }

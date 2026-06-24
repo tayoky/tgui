@@ -1,21 +1,33 @@
 #include <stackswitcher.h>
 #include <stack.h>
 #include <button.h>
+#include <togglebutton.h>
+#include <togglegroup.h>
 #include <box.h>
 
 TOBJECT_DEFINE_CLASS(tgui_stack_switcher, TGUI_STACK_SWITCHER, tgui_box_get_type())
+
+static int tgui_stack_switcher_constructor(void *object) {
+	tgui_stack_switcher_get_parent_class()->constructor(object);
+
+	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(object);
+	stack_switcher->toggle_group = tgui_toggle_group_new();
+	return 0;
+}
 
 static int tgui_stack_switcher_destructor(void *object) {
 	// on destruction disconnect from any stack
 	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(object);
 	tgui_stack_switcher_set_stack(stack_switcher, NULL);
+	tgui_toggle_group_free(stack_switcher->toggle_group);
 	
 	return tgui_stack_switcher_get_parent_class()->destructor(object);
 }
 
 static void tgui_stack_switcher_class_init(tgui_stack_switcher_class_t *class) {
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
-	tobject_class->destructor = tgui_stack_switcher_destructor;
+	tobject_class->constructor = tgui_stack_switcher_constructor;
+	tobject_class->destructor  = tgui_stack_switcher_destructor;
 }
 
 tgui_stack_switcher_t *tgui_stack_switcher_new(void) {
@@ -28,20 +40,23 @@ tgui_stack_switcher_t *tgui_stack_switcher_new(void) {
 	return stack_switcher;
 }
 
-static void tgui_stack_switcher_button_click(tobject_t *tobject) {
+static void tgui_stack_switcher_button_toggled(tobject_t *tobject, int *active) {
 	tgui_button_t *button = TGUI_BUTTON_CAST(tobject);
-	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(TGUI_WIDGET_CAST(tobject)->parent);
+	tgui_stack_switcher_t *stack_switcher = TGUI_STACK_SWITCHER_CAST(TGUI_WIDGET_CAST(button)->parent);
 	tgui_stack_t *stack = tgui_stack_switcher_get_stack(stack_switcher);
 	if (!stack) return; 
+	if (!*active) return;
 	tgui_stack_set_current(stack, tgui_button_get_text(button));
 }
 
 static void tgui_stack_switcher_add_page_button(tgui_stack_switcher_t *stack_switcher, tgui_stack_page_t *page) {
-	tgui_button_t *button = tgui_button_new();
-	tgui_button_set_text(button, page->name);
-	tgui_widget_connect_signal(TGUI_WIDGET_CAST(button), "click", TCALLBACK_CAST(tgui_stack_switcher_button_click), NULL);
+	tgui_toggle_button_t *button = tgui_toggle_button_new();
+	tgui_button_set_text(TGUI_BUTTON_CAST(button), page->name);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(button), "toggled", TCALLBACK_CAST(tgui_stack_switcher_button_toggled), NULL);
+	tgui_widget_apply_class_styles(TGUI_WIDGET_CAST(button), "stackswitcher-button");
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(button), TGUI_TRUE);
+	tgui_toggle_group_add(stack_switcher->toggle_group, button);
 	tgui_box_append_widget(TGUI_BOX_CAST(stack_switcher), TGUI_WIDGET_CAST(button));
 }
 

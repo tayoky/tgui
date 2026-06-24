@@ -3,12 +3,14 @@
 
 #include "box.h"
 #include "stack.h"
+#include "togglegroup.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_stack_switcher, TGUI_STACK_SWITCHER, tgui_box)
 
 struct tgui_stack_switcher {
 	tgui_box_t box;
 	tgui_stack_t *stack;
+	tgui_toggle_group_t *toggle_group;
 	size_t add_page_callback;
 	size_t remove_page_callback;
 	size_t destroy_callback;

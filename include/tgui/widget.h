@@ -299,8 +299,9 @@ static inline char tgui_widget_get_orientation(tgui_widget_t *widget) {
 
 tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y);
 
-void tgui_widget_set_default_style(tgui_style_t *style, const char *class);
-void tgui_widget_set_default_state_style(tgui_style_t *style, const char *class, char state);
+void tgui_widget_set_class_style(tgui_style_t *style, const char *class);
+void tgui_widget_set_class_state_style(tgui_style_t *style, const char *class, char state);
+void tgui_widget_apply_class_styles(tgui_widget_t *widget, const char *name);
 void tgui_widget_apply_default_styles(tgui_widget_t *widget);
 void tgui_widget_add_state_style(tgui_widget_t *widget, char state, tgui_style_t *style);
 void tgui_widget_add_style(tgui_widget_t *widget, tgui_style_t *style);
