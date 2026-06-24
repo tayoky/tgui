@@ -7,29 +7,32 @@ TOBJECT_DEFINE_CLASS(tgui_stack, TGUI_STACK, tgui_widget_get_type())
 
 static void tgui_stack_calculate_sizes(tgui_widget_t *widget) {
 	tgui_stack_t *stack = TGUI_STACK_CAST(widget);
-	if (!stack->current) return;
-	tgui_widget_calculate_sizes(stack->current);
-	widget->min_width  = stack->current->min_width;
-	widget->min_height = stack->current->min_height;
-	widget->pref_width  = stack->current->pref_width;
-	widget->pref_height = stack->current->pref_height;
+	tgui_widget_t *child = tgui_stack_get_current(stack);
+	if (!child) return;
+	tgui_widget_calculate_sizes(child);
+	widget->min_width  = child->min_width;
+	widget->min_height = child->min_height;
+	widget->pref_width  = child->pref_width;
+	widget->pref_height = child->pref_height;
 }
 
 static void tgui_stack_allocate_space(tgui_widget_t *widget) {
 	tgui_stack_t *stack = TGUI_STACK_CAST(widget);
-	if (!stack->current) return;
+	tgui_widget_t *child = tgui_stack_get_current(stack);
+	if (!child) return;
 	long x = tgui_widget_get_inner_x(widget);
 	long y = tgui_widget_get_inner_y(widget);
 	long width  = tgui_widget_get_inner_width(widget);
 	long height = tgui_widget_get_inner_height(widget);
-	tgui_widget_allocate_space(stack->current, x, y, width, height);
+	tgui_widget_allocate_space(child, x, y, width, height);
 }
 
 static void tgui_stack_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
 	tgui_stack_t *stack = TGUI_STACK_CAST(widget);
 
 	// make sure the page is not focused
-	if (stack->current == child) {
+	if (tgui_stack_get_current(stack) == child) {
+		// TODO : maybee switch to another one
 		tgui_stack_set_current_page(stack, NULL);
 	}
 
@@ -61,17 +64,25 @@ void tgui_stack_add_child(tgui_stack_t *stack, tgui_widget_t *child, const char 
 	tgui_widget_hide(child);
 	child->layout_data = page;
 	tgui_widget_send_signal(TGUI_WIDGET_CAST(stack), "add-page", page);
+	if (stack->pages.first == &page->node) {
+		// we are the first one set as visible
+		tgui_stack_set_current_page(stack, page);
+	}
 }
 
 void tgui_stack_set_current_page(tgui_stack_t *stack, tgui_stack_page_t *page) {
 	tgui_widget_send_signal(TGUI_WIDGET_CAST(stack), "switch-page", page);
-	tgui_widget_hide(stack->current);
-	if (page) {
-		stack->current = page->widget;
-		tgui_widget_show(stack->current);
-	} else {
-		stack->current = NULL;
+	if (stack->current) {
+		tgui_widget_hide(tgui_stack_get_current(stack));
 	}
+	stack->current = page;
+	if (page) {
+		tgui_widget_show(page->widget);
+	}
+}
+
+tgui_stack_page_t *tgui_stack_get_current_page(tgui_stack_t *stack) {
+	return stack->current;
 }
 
 void tgui_stack_set_current(tgui_stack_t *stack, const char *name) {
@@ -100,5 +111,5 @@ tgui_widget_t *tgui_stack_get_child(tgui_stack_t *stack, const char *name) {
 }
 
 tgui_widget_t *tgui_stack_get_current(tgui_stack_t *stack) {
-	return stack->current;
+	return stack->current ? stack->current->widget : NULL;
 }

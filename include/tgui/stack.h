@@ -16,13 +16,14 @@ TOBJECT_DECLARE_SIMPLE_CLASS(tgui_stack, TGUI_STACK, tgui_widget)
 struct tgui_stack {
 	tgui_widget_t widget;
 	tgui_list_t pages;
-	tgui_widget_t *current;
+	tgui_stack_page_t *current;
 };
 
 tgui_stack_t *tgui_stack_new(void);
 void tgui_stack_add_child(tgui_stack_t *stack, tgui_widget_t *child, const char *name);
 void tgui_stack_set_current(tgui_stack_t *stack, const char *name);
 void tgui_stack_set_current_page(tgui_stack_t *stack, tgui_stack_page_t *page);
+tgui_stack_page_t *tgui_stack_get_current_page(tgui_stack_t *stack);
 tgui_list_t *tgui_stack_get_pages(tgui_stack_t *stack);
 tgui_stack_page_t *tgui_stack_get_page(tgui_stack_t *stack, const char *name);
 tgui_widget_t *tgui_stack_get_child(tgui_stack_t *stack, const char *name);
