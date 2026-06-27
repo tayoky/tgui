@@ -35,6 +35,10 @@ tgui_widget_t *input_tab() {
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 
+	tgui_scrolled_window_t *main_scrolled = tgui_scrolled_window_new();
+	tgui_scrolled_window_set_hpolicy(main_scrolled, TGUI_SCROLLED_WINDOW_POLICY_NEVER);
+	tgui_scrolled_window_set_child(main_scrolled, TGUI_WIDGET_CAST(box));
+
 	tgui_button_t *button = tgui_button_new();
 	tgui_button_set_text(button, "button");
 	add_element(box, TGUI_WIDGET_CAST(button));
@@ -68,7 +72,7 @@ tgui_widget_t *input_tab() {
 	tgui_scrolled_window_set_child(scrolled_window, TGUI_WIDGET_CAST(tgui_label_new("some text that is very long and need a scrolled window in order to be read completly")));
 	add_element(box, TGUI_WIDGET_CAST(scrolled_window));
 
-	return TGUI_WIDGET_CAST(box);
+	return TGUI_WIDGET_CAST(main_scrolled);
 }
 
 tgui_widget_t *align_tab() {
