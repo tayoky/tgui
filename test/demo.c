@@ -10,7 +10,7 @@ void close_window(void) {
 
 void add_element(tgui_box_t *box, tgui_widget_t *widget) {
 	char text[256];
-	sprintf(text, "this is is a %s", tgui_widget_type_from_object(widget)->name);
+	sprintf(text, "this is a %s", tgui_widget_type_from_object(widget)->name);
 	tgui_label_t *label = tgui_label_new(text);
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(label));
 	tgui_widget_set_hexpand(widget, TGUI_TRUE);

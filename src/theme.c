@@ -4,13 +4,19 @@
 
 int tgui_theme_load(void) {
 	// colors
-	tgui_color_t *bg = tgui_color_new_rgb(200, 200, 200);
+	tgui_color_t *color1 = tgui_color_new_rgb(227, 226, 220);
+	tgui_color_t *color2 = tgui_color_new_rgb(255, 255, 255);
+	tgui_color_t *color3 = tgui_color_new_rgb(44, 105, 47);
+	tgui_color_t *color4 = tgui_color_new_rgb(60, 141, 63);
+	tgui_color_t *color5 = tgui_color_new_rgb(64, 177, 70);
+	tgui_color_t *color6 = tgui_color_new_rgb(80, 231, 87);
+
+	tgui_color_t *bg = color1;
 	tgui_color_t *color = tgui_color_new_rgb(0, 0, 0);
-	tgui_color_t *button_color = tgui_color_new_rgb(150, 150, 150);
-	tgui_color_t *button_clicked_color = tgui_color_new_rgb(120, 120, 120);
-	tgui_color_t *button_hover_color = tgui_color_new_rgb(170, 170, 170);
-	tgui_color_t *border_color = tgui_color_new_rgb(100, 100, 100);
-	tgui_color_t *accent = tgui_color_new_rgb(0, 150, 0);
+	tgui_color_t *button_color = color5;
+	tgui_color_t *button_clicked_color = color4;
+	tgui_color_t *button_hover_color = color6;
+	tgui_color_t *border_color = color3;
 	unsigned int border_width = 2;
 	unsigned int padding      = 4;
 
@@ -134,6 +140,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(title_bar_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(title_bar_style, TGUI_SIDE_ALL, border_color);
+	tgui_style_set_background_color(title_bar_style, border_color);
 	tgui_widget_set_class_style(title_bar_style, "tgui_title_bar");
 
 
