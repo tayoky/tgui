@@ -60,7 +60,18 @@ static void delete(tgui_text_iter_t *iter, size_t count) {
 	iter->line->size -= count;
 }
 
-static void delete_lines(tgui_text_iter_t *iter, size_t count) {
+static void delete_lines(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t count) {
+	// TODO
+}
+
+static int iter_cmp(tgui_text_iter_t *a, tgui_text_iter_t *b) {
+	if (a->line != b->line) {
+		return a->line > b->line ? 1 : -1;
+	}
+	if (a->index != b->index) {
+		return a->index > b->index ? 1 : -1;
+	}
+	return 1;
 }
 
 tgui_text_buffer_t *tgui_text_buffer_new(void) {
@@ -98,21 +109,34 @@ void tgui_text_buffer_get_line_index(tgui_text_buffer_t *buffer, tgui_text_iter_
 }
 
 void tgui_text_buffer_get_line_offset(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t line, size_t offset) {
+	tgui_text_buffer_get_line_iter(buffer, iter, line);
+	if (iter->index > 0) {
+		// we hit end
+		return;
+	}
+	// TODO : move the iter to the correct offset
 }
 
 void tgui_text_buffer_delete(tgui_text_buffer_t *buffer, tgui_text_iter_t *start, tgui_text_iter_t *end) {
 	// swap if end is before start
-	if (end->line < start->line || (end->line == start->line && end->index < start->index)) {
+	if (iter_cmp(start, end) < 0) {
 		tgui_text_iter_t *tmp = end;
 		end = start;
 		start = tmp;
 	}
 
-	if (start->line == end->line) {
-		delete(start, end->index - start->index);
-		end->index = start->index;
-	} else {
-		// TODO
+	while (iter_cmp(start, end) > 0) {
+		if (start->line == end->line) {
+			// we just have to delete stuff on current line
+			delete(start, end->index - start->index);
+			end->index = start->index;
+		} else if (start->index == 0) {
+			// we can delete multiple lines
+			delete_lines(buffer, start, end->line - start->line);
+			start->line = end->line;
+		} else {
+			// TODO : delete on current line
+		}
 	}
 }
 
@@ -140,7 +164,13 @@ void tgui_text_buffer_insert(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter,
 }
 
 void tgui_text_buffer_clear(tgui_text_buffer_t *buffer) {
-	// TODO
+	for (size_t i=0; i<buffer->lines_count; i++) {
+		free(buffer->lines[i].data);
+	}
+	buffer->lines[0].data = strdup("");
+	buffer->lines[0].size = 0;
+	buffer->lines[0].capacity = 1;
+	buffer->lines_count = 1;
 }
 
 void tgui_text_buffer_set_text(tgui_text_buffer_t *buffer, const char *str) {
