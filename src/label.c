@@ -26,7 +26,9 @@ static void tgui_label_calculate_sizes(tgui_widget_t *widget) {
 static void tgui_label_render(tgui_widget_t *widget) {
 	tgui_label_t *label = TGUI_LABEL_CAST(widget);
 	if (!label->text) return;
-	tgui_render_text(widget, label->widget.x, label->widget.y, label->text);
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	tgui_render_text(widget, x, y, label->text);
 }
 
 static int tgui_label_destructor(void *object) {
