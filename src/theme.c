@@ -140,7 +140,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(title_bar_style, TGUI_SIDE_BOTTOM, TGUI_BORDER_SOLID);
 	tgui_style_set_border_width(title_bar_style, TGUI_SIDE_ALL, border_width);
 	tgui_style_set_border_color(title_bar_style, TGUI_SIDE_ALL, border_color);
-	tgui_style_set_background_color(title_bar_style, border_color);
+	tgui_style_set_background_color(title_bar_style, button_clicked_color);
 	tgui_widget_set_class_style(title_bar_style, "tgui_title_bar");
 
 
