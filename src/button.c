@@ -56,7 +56,7 @@ void tgui_button_set_text(tgui_button_t *button, const char *text) {
 		tgui_widget_set_hexpand(TGUI_WIDGET_CAST(label), TGUI_TRUE);
 		tgui_widget_set_vexpand(TGUI_WIDGET_CAST(label), TGUI_TRUE);
 		tgui_widget_set_halign(TGUI_WIDGET_CAST(label), TGUI_ALIGN_CENTER);
-		tgui_widget_set_valign(TGUI_WIDGET_CAST(label), TGUI_ALIGN_TOP);
+		tgui_widget_set_valign(TGUI_WIDGET_CAST(label), TGUI_ALIGN_CENTER);
 	}
 }
 
@@ -71,7 +71,7 @@ void tgui_button_set_icon(tgui_button_t *button, const char *icon_name) {
 		tgui_widget_set_hexpand(TGUI_WIDGET_CAST(icon), TGUI_TRUE);
 		tgui_widget_set_vexpand(TGUI_WIDGET_CAST(icon), TGUI_TRUE);
 		tgui_widget_set_halign(TGUI_WIDGET_CAST(icon), TGUI_ALIGN_CENTER);
-		tgui_widget_set_valign(TGUI_WIDGET_CAST(icon), TGUI_ALIGN_TOP);
+		tgui_widget_set_valign(TGUI_WIDGET_CAST(icon), TGUI_ALIGN_CENTER);
 	}
 }
 
