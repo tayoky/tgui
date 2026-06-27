@@ -46,10 +46,6 @@ struct tgui_widget {
 	tgui_list_t styles;
 	tgui_style_t cache_style;
 	long flags;
-	long left_margin;
-	long right_margin;
-	long bottom_margin;
-	long top_margin;
 	long width;
 	long height;
 	long x;
@@ -231,9 +227,11 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state, int 
 	if (widget->state_flags == state_flags) return;
 	if (widget->state_styles[(int)state].first) {
 		tgui_widget_mark_dirty(widget);
+		widget->state_flags = state_flags;
 		tgui_widget_mark_dirty_style(widget);
+	} else {
+		widget->state_flags = state_flags;
 	}
-	widget->state_flags = state_flags;
 }
 
 /**
@@ -314,39 +312,19 @@ tgui_style_t *tgui_widget_get_current_style(tgui_widget_t *widget);
 unsigned int tgui_widget_get_border_size(tgui_widget_t *widget, int side);
 tgui_color_t *tgui_widget_get_border_color(tgui_style_t *style, int side);
 char tgui_widget_get_border_style(tgui_widget_t *widget, int side);
-unsigned int tgui_widget_get_padding(tgui_widget_t *widget, int side);
+
+static inline unsigned int tgui_widget_get_padding(tgui_widget_t *widget, int side) {
+	return tgui_widget_get_current_style(widget)->padding[side];
+}
+
+static inline unsigned int tgui_widget_get_margin(tgui_widget_t *widget, int side) {
+	return tgui_widget_get_current_style(widget)->margin[side];
+}
+
 tgui_color_t *tgui_widget_get_color(tgui_widget_t *widget);
 tgui_color_t *tgui_widget_get_background_color(tgui_widget_t *widget);
 tgui_font_t *tgui_widget_get_font(tgui_widget_t *widget);
 unsigned int tgui_widget_get_font_size(tgui_widget_t *widget);
-
-static inline void tgui_widget_set_left_margin(tgui_widget_t *widget, long margin) {
-	widget->left_margin = margin;
-	tgui_widget_mark_dirty_size(widget);
-}
-
-static inline void tgui_widget_set_right_margin(tgui_widget_t *widget, long margin) {
-	widget->right_margin = margin;
-	tgui_widget_mark_dirty_size(widget);
-}
-
-static inline void tgui_widget_set_top_margin(tgui_widget_t *widget, long margin) {
-	widget->top_margin = margin;
-	tgui_widget_mark_dirty_size(widget);
-}
-
-static inline void tgui_widget_set_bottom_margin(tgui_widget_t *widget, long margin) {
-	widget->bottom_margin = margin;
-	tgui_widget_mark_dirty_size(widget);
-}
-
-static inline void tgui_widget_set_margin(tgui_widget_t *widget, long margin) {
-	widget->left_margin = margin;
-	widget->right_margin = margin;
-	widget->top_margin = margin;
-	widget->bottom_margin = margin;
-	tgui_widget_mark_dirty_size(widget);
-}
 
 static inline void tgui_widget_set_halign(tgui_widget_t *widget, char halign) {
 	widget->halign = halign;
@@ -391,19 +369,19 @@ static inline void tgui_widget_get_outer_bounds(tgui_widget_t *widget, tgui_rect
 }
 
 static inline long tgui_widget_get_border_x(tgui_widget_t *widget) {
-	return widget->x + widget->left_margin;
+	return widget->x + tgui_widget_get_margin(widget, TGUI_SIDE_LEFT);
 }
 
 static inline long tgui_widget_get_border_width(tgui_widget_t *widget) {
-	return widget->width - widget->left_margin - widget->right_margin;
+	return widget->width - tgui_widget_get_margin(widget, TGUI_SIDE_LEFT) - tgui_widget_get_margin(widget, TGUI_SIDE_RIGHT);
 }
 
 static inline long tgui_widget_get_border_y(tgui_widget_t *widget) {
-	return widget->y + widget->top_margin;
+	return widget->y + tgui_widget_get_margin(widget, TGUI_SIDE_TOP);
 }
 
 static inline long tgui_widget_get_border_height(tgui_widget_t *widget) {
-	return widget->height - widget->top_margin - widget->bottom_margin;
+	return widget->height - tgui_widget_get_margin(widget, TGUI_SIDE_TOP) - tgui_widget_get_margin(widget, TGUI_SIDE_BOTTOM);
 }
 
 static inline void tgui_widget_get_border_bounds(tgui_widget_t *widget, tgui_rect_t *rect) {
@@ -416,7 +394,7 @@ static inline void tgui_widget_get_border_bounds(tgui_widget_t *widget, tgui_rec
 
 static inline long tgui_widget_get_frame_x(tgui_widget_t *widget) {
 	tgui_style_t *style = tgui_widget_get_current_style(widget);
-	long x = widget->x + widget->left_margin;
+	long x = widget->x + tgui_style_get_margin(style, TGUI_SIDE_LEFT);
 	if (style->border_style[TGUI_SIDE_LEFT] != TGUI_BORDER_NONE) {
 		x += style->border_width[TGUI_SIDE_LEFT];
 	}
@@ -425,7 +403,7 @@ static inline long tgui_widget_get_frame_x(tgui_widget_t *widget) {
 
 static inline long tgui_widget_get_frame_width(tgui_widget_t *widget) {
 	tgui_style_t *style = tgui_widget_get_current_style(widget);
-	long width = widget->width - widget->left_margin - widget->right_margin;
+	long width = widget->width - tgui_style_get_margin(style, TGUI_SIDE_LEFT) - tgui_style_get_margin(style, TGUI_SIDE_RIGHT);
 	if (style->border_style[TGUI_SIDE_LEFT] != TGUI_BORDER_NONE) {
 		width -= style->border_width[TGUI_SIDE_LEFT];
 	}
@@ -437,7 +415,7 @@ static inline long tgui_widget_get_frame_width(tgui_widget_t *widget) {
 
 static inline long tgui_widget_get_frame_y(tgui_widget_t *widget) {
 	tgui_style_t *style = tgui_widget_get_current_style(widget);
-	long y = widget->y + widget->top_margin;
+	long y = widget->y + tgui_style_get_margin(style, TGUI_SIDE_TOP);
 	if (style->border_style[TGUI_SIDE_TOP] != TGUI_BORDER_NONE) {
 		y += style->border_width[TGUI_SIDE_TOP];
 	}
@@ -446,7 +424,7 @@ static inline long tgui_widget_get_frame_y(tgui_widget_t *widget) {
 
 static inline long tgui_widget_get_frame_height(tgui_widget_t *widget) {
 	tgui_style_t *style = tgui_widget_get_current_style(widget);
-	long height = widget->height - widget->top_margin - widget->bottom_margin;
+	long height = widget->height - tgui_style_get_margin(style, TGUI_SIDE_TOP) - tgui_style_get_margin(style, TGUI_SIDE_BOTTOM);
 	if (style->border_style[TGUI_SIDE_TOP] != TGUI_BORDER_NONE) {
 		height -= style->border_width[TGUI_SIDE_TOP];
 	}

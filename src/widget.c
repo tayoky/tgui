@@ -94,10 +94,12 @@ void tgui_widget_calculate_sizes(tgui_widget_t *widget) {
 	tgui_style_t *style = tgui_widget_get_current_style(widget);
 
 	// add margin to sizes
-	widget->min_width  += widget->left_margin + widget->right_margin;
-	widget->min_height += widget->top_margin + widget->bottom_margin;
-	widget->pref_width  += widget->left_margin + widget->right_margin;
-	widget->pref_height += widget->top_margin + widget->bottom_margin;
+	long hmargin = tgui_widget_get_margin(widget, TGUI_SIDE_LEFT) + tgui_widget_get_margin(widget, TGUI_SIDE_RIGHT);
+	long vmargin = tgui_widget_get_margin(widget, TGUI_SIDE_TOP) + tgui_widget_get_margin(widget, TGUI_SIDE_BOTTOM);
+	widget->min_width  += hmargin;
+	widget->min_height += vmargin;
+	widget->pref_width  += hmargin;
+	widget->pref_height += vmargin;
 
 	// add padding to sizes
 	long hpadding = tgui_widget_get_padding(widget, TGUI_SIDE_LEFT) + tgui_widget_get_padding(widget, TGUI_SIDE_RIGHT);
@@ -270,6 +272,7 @@ void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent) {
 	tgui_list_append(&parent->children, &child->node);
 	tgui_widget_mark_dirty_size(parent);
 	tgui_widget_mark_dirty(child);
+	tgui_widget_mark_dirty_style(child);
 }
 
 tgui_widget_t *tgui_widget_get_at(tgui_widget_t *parent, long x, long y) {
@@ -413,10 +416,11 @@ static void tgui_widget_apply_style(tgui_style_t *style, tgui_style_t *dest_styl
 		if (style->border_width_flags & (1 << i)) {
 			dest_style->border_width[i] = style->border_width[i];
 		}
-		for (int i=0; i < 4; i++) {
-			if (style->padding_flags & (1 << i)) {
-				dest_style->padding[i] = style->padding[i];
-			}
+		if (style->padding_flags & (1 << i)) {
+			dest_style->padding[i] = style->padding[i];
+		}
+		if (style->margin_flags & (1 << i)) {
+			dest_style->margin[i] = style->margin[i];
 		}
 	}
 }
@@ -469,10 +473,6 @@ tgui_color_t *tgui_widget_get_border_color(tgui_style_t *style, int side);
 
 
 char tgui_widget_get_border_style(tgui_widget_t *widget, int side);
-
-unsigned int tgui_widget_get_padding(tgui_widget_t *widget, int side) {
-	return tgui_widget_get_current_style(widget)->padding[side];
-}
 
 tgui_color_t *tgui_widget_get_color(tgui_widget_t *widget) {
 	return tgui_widget_get_current_style(widget)->color;
