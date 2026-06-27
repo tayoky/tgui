@@ -154,11 +154,13 @@ void tgui_scrolled_window_set_child(tgui_scrolled_window_t *scrolled_window, tgu
 void tgui_scrolled_window_set_hpolicy(tgui_scrolled_window_t *scrolled_window, int hpolicy) {
 	scrolled_window->hpolicy = hpolicy;
 	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(scrolled_window));
+	tgui_viewport_set_have_hscroll(scrolled_window->viewport, hpolicy != TGUI_SCROLLED_WINDOW_POLICY_NEVER);
 }
 
 void tgui_scrolled_window_set_vpolicy(tgui_scrolled_window_t *scrolled_window, int vpolicy) {
 	scrolled_window->vpolicy = vpolicy;
 	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(scrolled_window));
+	tgui_viewport_set_have_vscroll(scrolled_window->viewport, vpolicy != TGUI_SCROLLED_WINDOW_POLICY_NEVER);
 }
 
 tgui_widget_t *tgui_scrolled_window_get_child(tgui_scrolled_window_t *scrolled_window) {
