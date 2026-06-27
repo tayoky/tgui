@@ -18,7 +18,7 @@ int tgui_theme_load(void) {
 	tgui_color_t *button_hover_color = color6;
 	tgui_color_t *border_color = color3;
 	unsigned int border_width = 2;
-	unsigned int padding      = 4;
+	unsigned int padding      = 2;
 
 	// window
 	tgui_style_t *window_style = tgui_style_new();
@@ -65,7 +65,7 @@ int tgui_theme_load(void) {
 	tgui_style_t *label_style = tgui_style_new();
 	tgui_style_set_rounded_corners(label_style, 0);
 	tgui_style_set_border_style(label_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
-	tgui_style_set_padding(label_style, TGUI_SIDE_ALL, 0);
+	tgui_style_set_padding(label_style, TGUI_SIDE_ALL, padding);
 	tgui_widget_set_class_style(label_style, "tgui_label");
 
 	// labels title
@@ -73,7 +73,6 @@ int tgui_theme_load(void) {
 	tgui_style_set_font_size(title_style, 20);
 	tgui_style_set_rounded_corners(title_style, 0);
 	tgui_style_set_border_style(title_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
-	tgui_style_set_padding(title_style, TGUI_SIDE_ALL, 0);
 	tgui_widget_set_class_style(title_style, "tgui_title");
 
 	// separators
