@@ -17,7 +17,9 @@ static void tgui_icon_render(tgui_widget_t *widget) {
 	tgui_icon_t *icon = TGUI_ICON_CAST(widget);
 	if (!icon->image) return;
 	tgui_surface_t *surface = tgui_widget_get_surface(widget);
-	tgui_platform_render_image(surface, widget->x, widget->y, icon->image);
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	tgui_platform_render_image(surface, x, y, icon->image);
 }
 
 static void tgui_icon_class_init(tgui_icon_class_t *class) {
