@@ -21,6 +21,7 @@ static void tgui_popover_click(tobject_t *tobject, tgui_event_click_t *event) {
 	long x = event->x;
 	long y = event->y;
 
+
 	// a click outside the popover close it
 	if (x < 0 || y < 0 || x >= width || y>= height) {
 		tgui_popover_popdown(popover);
@@ -82,8 +83,9 @@ void tgui_popover_popup(tgui_popover_t *popover) {
 		return;
 	}
 
+	// TODO : determinate surfqce size without hack
 	tgui_widget_calculate_sizes(popover->child);
-	popover->surface = tgui_surface_new(popover->child->pref_width, popover->child->pref_height, parent);
+	popover->surface = tgui_surface_new(popover->child->pref_width + 4, popover->child->pref_height + 4, parent);
 	TGUI_WIDGET_CAST(popover->surface)->layout_data = popover;
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(popover->surface), "click", TCALLBACK_CAST(tgui_popover_click), NULL);
 	//tgui_widget_connect_signal(TGUI_WIDGET_CAST(popover->surface), "unfocus", TCALLBACK_CAST(tgui_popover_unfocus), NULL);

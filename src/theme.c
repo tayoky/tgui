@@ -61,6 +61,10 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_style(submenu_button_style, TGUI_SIDE_ALL, TGUI_BORDER_NONE);
 	tgui_widget_set_class_style(submenu_button_style, "tgui_submenu_button");
 
+	tgui_style_t *submenu_button_hover_style = tgui_style_new();
+	tgui_style_set_background_color(submenu_button_hover_style, color2);
+	tgui_widget_set_class_state_style(submenu_button_hover_style, "tgui_submenu_button", TGUI_STATE_HOVER);
+
 	// labels
 	tgui_style_t *label_style = tgui_style_new();
 	tgui_style_set_rounded_corners(label_style, 0);
