@@ -93,23 +93,24 @@ tgui_widget_t *align_tab() {
 }
 
 static tgui_string_list_t *list;
-static tgui_text_t *index;
+static tgui_counter_t *index;
 
 void insert_element(void) {
-	size_t i = strtol(tgui_text_get_content(index), NULL, 0);
+	size_t i = tgui_counter_get_value(index);
 	tgui_string_list_insert(list, i, "inserted item");
+	tgui_counter_set_range(index, 0, tgui_list_model_get_count(TGUI_LIST_MODEL_CAST(list)));
 }
 
 void remove_element(void) {
-	size_t i = strtol(tgui_text_get_content(index), NULL, 0);
+	size_t i = tgui_counter_get_value(index);
 	tgui_string_list_remove(list, i);
+	tgui_counter_set_range(index, 0, tgui_list_model_get_count(TGUI_LIST_MODEL_CAST(list)));
 }
 
 tgui_widget_t *list_tab() {
 	tgui_box_t *box = tgui_box_new();
 
-	index = tgui_text_new();
-	tgui_text_set_placeholder(index, "index");
+	index = tgui_counter_new();
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(index));
 	tgui_button_t *insert = tgui_button_new();
 	tgui_button_set_text(insert, "insert element");
@@ -129,6 +130,7 @@ tgui_widget_t *list_tab() {
 		NULL,
 	};
 	list = tgui_string_list_new(strings);
+	tgui_counter_set_range(index, 0, tgui_list_model_get_count(TGUI_LIST_MODEL_CAST(list)));
 
 	tgui_scrolled_window_t *scrolled_window = tgui_scrolled_window_new();
 
