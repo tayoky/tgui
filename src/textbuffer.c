@@ -9,18 +9,26 @@ static int tgui_text_buffer_constructor(void *object) {
 
 	tgui_text_buffer_t *buffer = TGUI_TEXT_BUFFER_CAST(object);
 	buffer->capacity = 1;
-	buffer->lines_count = 1;
+	buffer->lines_count = 0;
 	buffer->lines = malloc(sizeof(tgui_text_buffer_line_t));
-	buffer->lines[0].data = strdup("");
-	buffer->lines[0].size = 0;
-	buffer->lines[0].capacity = 1;
+	tgui_text_buffer_clear(buffer);
 
 	return 0;
+}
+
+static int tgui_text_buffer_destructor(void *object) {
+	tgui_text_buffer_t *buffer = TGUI_TEXT_BUFFER_CAST(object);
+	for (size_t i=0; i<buffer->lines_count; i++) {
+		free(buffer->lines[i].data);
+	}
+	free(buffer->lines);
+	return tgui_text_buffer_get_parent_class()->destructor(object);
 }
 
 static void tgui_text_buffer_class_init(tgui_text_buffer_class_t *class) {
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_text_buffer_constructor;
+	tobject_class->destructor  = tgui_text_buffer_destructor;
 }
 
 static void append_buf(tgui_text_iter_t *iter, const char *str, size_t size) {
@@ -42,11 +50,11 @@ static tgui_text_buffer_line_t *append_line(tgui_text_buffer_t *buffer, tgui_tex
 	size_t i = iter->line - buffer->lines + 1;
 	if (buffer->lines_count + 1 > buffer->capacity) {
 		buffer->capacity *= 2;
-		buffer->lines = realloc(buffer->lines, sizeof(tgui_text_buffer_line_t));
+		buffer->lines = realloc(buffer->lines, buffer->capacity * sizeof(tgui_text_buffer_line_t));
 	}
 	memmove(buffer->lines + i + 1, buffer->lines + i, (buffer->lines_count - i) * sizeof(tgui_text_buffer_line_t));
 	buffer->lines[i].data = strdup("");
-	buffer->lines[i].size = 0;
+	buffer->lines[i].size = 1;
 	buffer->lines[i].capacity = 1;
 	buffer->lines_count++;
 	iter->line = &buffer->lines[i];
@@ -64,7 +72,7 @@ static void delete_lines(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, siz
 	// TODO
 }
 
-static int iter_cmp(tgui_text_iter_t *a, tgui_text_iter_t *b) {
+int tgui_text_iter_cmp(tgui_text_iter_t *a, tgui_text_iter_t *b) {
 	if (a->line != b->line) {
 		return a->line > b->line ? 1 : -1;
 	}
@@ -84,8 +92,8 @@ void tgui_text_buffer_get_start_iter(tgui_text_buffer_t *buffer, tgui_text_iter_
 }
 
 void tgui_text_buffer_get_end_iter(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter) {
-	iter->line = &buffer->lines[buffer->lines_count];
-	iter->index = iter->line->size;
+	iter->line = &buffer->lines[buffer->lines_count-1];
+	iter->index = iter->line->size - 1;
 }
 
 void tgui_text_buffer_get_line_iter(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t line) {
@@ -102,8 +110,8 @@ void tgui_text_buffer_get_line_index(tgui_text_buffer_t *buffer, tgui_text_iter_
 		// we hit end
 		return;
 	}
-	if (index > iter->line->size) {
-		index = iter->line->size;
+	if (index >= iter->line->size) {
+		index = iter->line->size - 1;
 	}
 	iter->index = index;
 }
@@ -117,15 +125,20 @@ void tgui_text_buffer_get_line_offset(tgui_text_buffer_t *buffer, tgui_text_iter
 	// TODO : move the iter to the correct offset
 }
 
+const char *tgui_text_buffer_get_line_content(tgui_text_buffer_t *text_buffer, tgui_text_iter_t *iter) {
+	(void)text_buffer;
+	return iter->line->data;
+}
+
 void tgui_text_buffer_delete(tgui_text_buffer_t *buffer, tgui_text_iter_t *start, tgui_text_iter_t *end) {
 	// swap if end is before start
-	if (iter_cmp(start, end) < 0) {
+	if (tgui_text_iter_cmp(start, end) < 0) {
 		tgui_text_iter_t *tmp = end;
 		end = start;
 		start = tmp;
 	}
 
-	while (iter_cmp(start, end) > 0) {
+	while (tgui_text_iter_cmp(start, end) > 0) {
 		if (start->line == end->line) {
 			// we just have to delete stuff on current line
 			delete(start, end->index - start->index);
@@ -150,10 +163,12 @@ void tgui_text_buffer_insert_buf(tgui_text_buffer_t *buffer, tgui_text_iter_t *i
 			count = size;
 		}
 		append_buf(iter, buf, count);
+		size -= count;
+		buf += count;
 		if (newline) {
-			size -= count - 1;
-			buf += count + 1;
 			append_line(buffer, iter);
+			size--;
+			buf++;
 		}
 	}
 	
@@ -168,7 +183,7 @@ void tgui_text_buffer_clear(tgui_text_buffer_t *buffer) {
 		free(buffer->lines[i].data);
 	}
 	buffer->lines[0].data = strdup("");
-	buffer->lines[0].size = 0;
+	buffer->lines[0].size = 1;
 	buffer->lines[0].capacity = 1;
 	buffer->lines_count = 1;
 }

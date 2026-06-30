@@ -110,6 +110,15 @@ void remove_element(void) {
 tgui_widget_t *list_tab() {
 	tgui_box_t *box = tgui_box_new();
 
+	tgui_text_buffer_t *text_buffer = tgui_text_buffer_new();
+	tgui_text_buffer_set_text(text_buffer, 
+		"test data\n"
+		"and random stuff\n"
+	);
+	tgui_text_view_t *text_view = tgui_text_view_new();
+	tgui_text_view_set_buffer(text_view, text_buffer);
+	add_element(box, TGUI_WIDGET_CAST(text_view));
+
 	index = tgui_counter_new();
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(index));
 	tgui_button_t *insert = tgui_button_new();

@@ -30,10 +30,12 @@ void tgui_text_buffer_get_end_iter(tgui_text_buffer_t *buffer, tgui_text_iter_t 
 void tgui_text_buffer_get_line_iter(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t line);
 void tgui_text_buffer_get_line_index(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t line, size_t index);
 void tgui_text_buffer_get_line_offset(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t line, size_t offset);
+const char *tgui_text_buffer_get_line_content(tgui_text_buffer_t *text_buffer, tgui_text_iter_t *iter);
 void tgui_text_buffer_delete(tgui_text_buffer_t *buffer, tgui_text_iter_t *start, tgui_text_iter_t *end);
 void tgui_text_buffer_insert_buf(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, const char *buf, size_t size);
 void tgui_text_buffer_insert(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, const char *str);
 void tgui_text_buffer_clear(tgui_text_buffer_t *buffer);
 void tgui_text_buffer_set_text(tgui_text_buffer_t *buffer, const char *str);
+int tgui_text_iter_cmp(tgui_text_iter_t *a, tgui_text_iter_t *b);
 
 #endif
