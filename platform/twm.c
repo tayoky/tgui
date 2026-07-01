@@ -233,10 +233,11 @@ void tgui_platform_handle_event(void) {
 int tgui_platform_create_window(tgui_window_t *window) {
 	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
 	stanix_window->window = twm_create_window(window->title, window->surface.width, window->surface.height, TWM_NULL);
-	if (stanix_window->window < 0) {
+	if (stanix_window->window == TWM_NULL) {
 		free(stanix_window);
 		return -1;
 	}
+	twm_set_window_attr(stanix_window->window, TWM_REMOVE_ATTR, TWM_ATTR_DECORED);
 	stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
 	window->surface.private = stanix_window;
 	return 0;
@@ -255,10 +256,11 @@ int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent
 	}
 	stanix_window_t *stanix_window = malloc(sizeof(stanix_window_t));
 	stanix_window->window = twm_create_window("surface", surface->width, surface->height, twm_parent);
-	if (stanix_window->window < 0) {
+	if (stanix_window->window == TWM_NULL) {
 		free(stanix_window);
 		return -1;
 	}
+	twm_set_window_attr(stanix_window->window, TWM_REMOVE_ATTR, TWM_ATTR_DECORED);
 	stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
 	surface->private = stanix_window;
 	return 0;
