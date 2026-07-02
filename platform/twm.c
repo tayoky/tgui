@@ -293,7 +293,7 @@ void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible) {
 
 void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y) {
 	stanix_window_t *stanix_window = surface->private;
-	twm_set_window_pos(stanix_window->window, x, y);
+	twm_window_move(stanix_window->window, x, y);
 }
 
 void tgui_platform_grab_surface(tgui_surface_t *surface) {
