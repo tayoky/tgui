@@ -46,6 +46,7 @@ int tgui_init(void);
 void tgui_fini(void);
 void tgui_main(void);
 int tgui_get_fd(void);
+void tgui_register_platform_handler(int (*handler)(void *event, void *data), void *data);
 void tgui_render(void);
 void tgui_poll(void);
 

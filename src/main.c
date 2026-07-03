@@ -49,3 +49,7 @@ void tgui_main(void) {
 int tgui_get_fd(void) {
 	return tgui_platform_get_fd();
 }
+
+void tgui_register_platform_handler(int (*handler)(void *event, void *data), void *data)  {
+	tgui_platform_register_handler(handler, data);
+}

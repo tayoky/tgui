@@ -6,6 +6,8 @@
 #include <gfx.h>
 
 static gfx_t gfx;
+static int (*event_handler)(void *event, void *data) = NULL;
+static void *event_handler_data;
 
 typedef struct stanix_window {
 	twm_window_t window;
@@ -196,6 +198,12 @@ void send_key_event(tgui_surface_t *surface, twm_event_input_t *input_event) {
 
 void tgui_platform_handle_event(void) {
 	twm_event_t *event = twm_poll_event();
+	if (event_handler) {
+		if (event_handler(event, event_handler_data)) {
+			free(event);
+			return;
+		}
+	}
 	switch (event->type) {
 	case TWM_EVENT_INPUT:;
 		twm_event_input_t *input_event = (twm_event_input_t *)event;
@@ -406,4 +414,9 @@ void tgui_platform_push_canva(tgui_canva_t *canva) {
 
 int tgui_platform_get_fd(void) {
 	return twm_get_fd();
+}
+
+void tgui_platform_register_handler(int (*handler)(void *event, void *data), void *data) {
+	event_handler = handler;
+	event_handler_data = data;
 }
