@@ -255,6 +255,22 @@ void tgui_platform_close_window(tgui_window_t *window) {
 	tgui_platform_close_surface(&window->surface);
 }
 
+void tgui_platform_minimize_window(tgui_window_t *window) {
+	stanix_window_t *stanix_window = window->surface.private;
+	twm_window_minimize(stanix_window->window);
+}
+
+void tgui_platform_toggle_maximize_window(tgui_window_t *window) {
+	stanix_window_t *stanix_window = window->surface.private;
+	twm_window_attr_t attr;
+	twm_get_window_attr(stanix_window->window, &attr);
+	if (attr.attr & TWM_ATTR_MAXIMIZED) {
+		twm_window_unmaximize(stanix_window->window);
+	} else {
+		twm_window_maximize(stanix_window->window);
+	}
+}
+
 int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent) {
 	(void)parent;
 	twm_window_t twm_parent = TWM_NULL;

@@ -141,6 +141,12 @@ void tgui_platform_close_window(tgui_window_t *window) {
 	tgui_platform_close_surface(&window->surface);
 }
 
+void tgui_platform_minimize_window(tgui_window_t *window) {
+}
+
+void tgui_platform_toggle_maximize_window(tgui_window_t *window) {
+}
+
 int tgui_platform_create_surface(tgui_surface_t *surface, tgui_surface_t *parent) {
 	Window x11_parent;
 	if (parent) {
