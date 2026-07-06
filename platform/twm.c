@@ -232,6 +232,16 @@ void tgui_platform_handle_event(void) {
 			}
 		}
 		break;
+	case TWM_EVENT_WINDOW_BUFFER_UPDATE:;
+		twm_event_window_t *window_event = (twm_event_window_t *)event;
+		surface = get_surface(window_event->window);
+		stanix_window = surface->private;
+		gfx_free(stanix_window->gfx);
+		stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
+		surface->width  = stanix_window->gfx->width;
+		surface->height = stanix_window->gfx->height;
+		tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(surface));
+		break;
 	default:
 		break;
 	}
