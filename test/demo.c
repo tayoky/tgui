@@ -36,6 +36,8 @@ tgui_widget_t *input_tab() {
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 
 	tgui_scrolled_window_t *main_scrolled = tgui_scrolled_window_new();
+	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(main_scrolled), TGUI_TRUE);
+	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(main_scrolled), TGUI_TRUE);
 	tgui_scrolled_window_set_hpolicy(main_scrolled, TGUI_SCROLLED_WINDOW_POLICY_NEVER);
 	tgui_scrolled_window_set_child(main_scrolled, TGUI_WIDGET_CAST(box));
 
