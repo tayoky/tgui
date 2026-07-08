@@ -188,7 +188,7 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 		new_height = widget->pref_height;
 	}
 
-
+	int changed_size = TGUI_FALSE;
 	if (widget->x != new_x || widget->width != new_width || widget->y != new_y || widget->height != new_height) {
 		// we need to redraw this
 		tgui_widget_mark_dirty(widget);
@@ -197,7 +197,7 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 		widget->y = new_y;
 		widget->height = new_height;
 		tgui_widget_mark_dirty(widget);
-		tgui_widget_send_signal(widget, "resize", NULL);
+		changed_size = TGUI_TRUE;
 	} else if (!tgui_widget_is_dirty_space(widget)) {
 		// do not recalculate child if useless
 		return;
@@ -206,6 +206,10 @@ void tgui_widget_allocate_space(tgui_widget_t *widget, long x, long y, long widt
 	tgui_widget_class_t *class = tgui_widget_get_class(widget);
 	if (class->allocate_space) {
 		class->allocate_space(widget);
+	}
+
+	if (changed_size) {
+		tgui_widget_send_signal(widget, "resize", NULL);
 	}
 	widget->flags &= ~TGUI_WIDGET_DIRTY_SPACE;
 }
