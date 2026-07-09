@@ -39,6 +39,10 @@ void tgui_surface_invalidate(tgui_surface_t *surface, tgui_rect_t *rect);
 void tgui_surface_register(tgui_surface_t *surface);
 void tgui_surface_unregister(tgui_surface_t *surface);
 
+#ifdef __stanix__
+int16_t tgui_surface_get_twm_window(tgui_surface_t *surface);
+#endif
+
 static inline tgui_surface_t *tgui_widget_get_surface(tgui_widget_t *widget) {
 	while (widget) {
 		if (tgui_widget_is_type(widget, tgui_surface_get_type())) {

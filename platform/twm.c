@@ -446,3 +446,8 @@ void tgui_platform_register_handler(int (*handler)(void *event, void *data), voi
 	event_handler = handler;
 	event_handler_data = data;
 }
+
+twm_window_t tgui_surface_get_twm_window(tgui_surface_t *surface) {
+	stanix_window_t *stanix_window = surface->private;
+	return stanix_window->window;
+}
