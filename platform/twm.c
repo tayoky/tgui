@@ -30,15 +30,16 @@ static tgui_surface_t *get_surface(twm_window_t window_id) {
 
 int tgui_platform_init(void) {
 	if (twm_init(NULL) < 0) return -1;
-	twm_fb_info_t fb_info;
-	twm_get_screen_fb(0, &fb_info);
-	gfx.bpp = fb_info.bpp;
-	gfx.red_mask_shift   = fb_info.red_mask_shift;
-	gfx.red_mask_size    = fb_info.red_mask_size;
-	gfx.green_mask_shift = fb_info.green_mask_shift;
-	gfx.green_mask_size  = fb_info.green_mask_size;
-	gfx.blue_mask_shift  = fb_info.blue_mask_shift;
-	gfx.blue_mask_size   = fb_info.blue_mask_size;
+	// TODO : find a screen correcly
+	twm_screen_attr_t screen;
+	twm_get_screen_attr(1, &screen);
+	gfx.bpp = screen.fb_info.bpp;
+	gfx.red_mask_shift   = screen.fb_info.red_mask_shift;
+	gfx.red_mask_size    = screen.fb_info.red_mask_size;
+	gfx.green_mask_shift = screen.fb_info.green_mask_shift;
+	gfx.green_mask_size  = screen.fb_info.green_mask_size;
+	gfx.blue_mask_shift  = screen.fb_info.blue_mask_shift;
+	gfx.blue_mask_size   = screen.fb_info.blue_mask_size;
 	return 0;
 }
 
