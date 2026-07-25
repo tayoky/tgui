@@ -1,7 +1,10 @@
 # makefile include to build a library
 
+LIB ?= $(PACKAGE)
 SRCS ?= $(wildcard *.[cs])
-HEADERS ?= $(wildcard include/*)
+STATIC ?= yes
+SHARED ?= yes
+INCS ?= $(wildcard include/*)
 STATIC_LIB ?= lib$(LIB).a
 SHARED_LIB ?= lib$(LIB).so
 STATIC_OBJS += $(SRCS:%=$(BUILDDIR)/%.o)
@@ -12,7 +15,7 @@ all :
 
 include $(TMAKE_DIR)/tmake-compile.mk
 
-ifneq ($(strip $(STATIC_OBJS)),)
+ifneq ($(STATIC),no)
 all : $(BUILDDIR)/$(STATIC_LIB)
 $(BUILDDIR)/$(STATIC_LIB) : $(STATIC_OBJS)
 	@mkdir -p "$(@D)"
@@ -21,17 +24,17 @@ $(BUILDDIR)/$(STATIC_LIB) : $(STATIC_OBJS)
 
 install : install-static
 install-static : $(BUILDDIR)/$(STATIC_LIB)
-	@mkdir -p "$(DESTDIR)$(PREFIX)/lib"
+	@mkdir -p "$(DESTDIR)$(LIBDIR)"
 	@echo "INSTALL $(STATIC_LIB)"
-	$(Q)cp "$(BUILDDIR)/$(STATIC_LIB)" "$(DESTDIR)$(PREFIX)/lib/"
+	$(Q)cp "$(BUILDDIR)/$(STATIC_LIB)" "$(DESTDIR)$(LIBDIR)/"
 
 uninstall : uninstall-static
 uninstall-static :
 	@echo "UNINSTALL $(STATIC_LIB)"
-	$(Q)rm -f "$(DESTDIR)$(PREFIX)/lib/$(STATIC_LIB)"
+	$(Q)rm -f "$(DESTDIR)$(LIBDIR)/$(STATIC_LIB)"
 endif
 
-ifneq ($(strip $(SHARED_OBJS)),)
+ifneq ($(SHARED),no)
 all : $(BUILDDIR)/$(SHARED_LIB)
 $(BUILDDIR)/$(SHARED_LIB) : $(SHARED_OBJS)
 	@mkdir -p "$(@D)"
@@ -40,31 +43,20 @@ $(BUILDDIR)/$(SHARED_LIB) : $(SHARED_OBJS)
 
 install : install-shared
 install-shared : $(BUILDDIR)/$(SHARED_LIB)
-	@mkdir -p "$(DESTDIR)$(PREFIX)/lib"
+	@mkdir -p "$(DESTDIR)$(LIBDIR)"
 	@echo "INSTALL $(SHARED_LIB)"
-	$(Q)cp "$(BUILDDIR)/$(SHARED_LIB)" "$(DESTDIR)$(PREFIX)/lib/"
+	$(Q)cp "$(BUILDDIR)/$(SHARED_LIB)" "$(DESTDIR)$(LIBDIR)/"
 
 uninstall : uninstall-shared
 uninstall-shared :
 	@echo "UNINSTALL $(SHARED_LIB)"
-	$(Q)rm -f "$(DESTDIR)$(PREFIX)/lib/$(SHARED_LIB)"
-endif
-
-ifneq ($(strip $(HEADERS)),)
-install : install-headers
-install-headers :
-	@mkdir -p "$(DESTDIR)$(PREFIX)/include"
-	@echo "INSTALL $(HEADERS)"
-	$(Q)cp -r $(HEADERS) "$(DESTDIR)$(PREFIX)/include/"
-
-uninstall : uninstall-headers
-uninstall-headers :
-	@echo "UNINSTALL $(HEADERS)"
-	$(Q)rm -f $(addprefix $(DESTDIR)$(PREFIX)/include/,$(HEADERS))
+	$(Q)rm -f "$(DESTDIR)$(LIBDIR)/$(SHARED_LIB)"
 endif
 
 clean :
 	@echo "CLEAN $(BUILDDIR)"
 	$(Q) rm -rf "$(BUILDDIR)"
 
-.PHONY : all install-headers install-static install-shared install uninstall-headers uninstall-static uninstall-shared clean
+include $(TMAKE_DIR)/tmake-incs.mk
+
+.PHONY : install install-static install-shared uninstall uninstall-static uninstall-shared clean
