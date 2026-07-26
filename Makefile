@@ -3,7 +3,8 @@ TMAKE_DIR = $(TOP)/make
 include $(TMAKE_DIR)/tmake-init.mk
 
 LIB = tgui
-INCS = include/tgui
+INCSDIR = $(PREFIX)/include/tgui
+INCS = $(wildcard include/tgui/*.h)
 SRCS = $(wildcard src/*.c) platform/$(PLATFORM).c
 CFLAGS += -Iinclude/tgui
 include $(TMAKE_DIR)/tmake-lib.mk 
