@@ -1,7 +1,9 @@
 #include <platform.h>
 #include <stdlib.h>
 #include <inputs.h>
+#include <timer.h>
 #include <input.h>
+#include <poll.h>
 #include <twm.h>
 #include <gfx.h>
 
@@ -198,7 +200,16 @@ void send_key_event(tgui_surface_t *surface, twm_event_input_t *input_event) {
 }
 
 void tgui_platform_handle_event(void) {
-	twm_event_t *event = twm_poll_event();
+	twm_event_t *event = twm_peek_event();
+	if (!event) {
+		struct pollfd pollfd = {
+			.fd = twm_get_fd(),
+			.events = POLLIN,
+		};
+		poll(&pollfd, 1, tgui_timer_get_before_next_trigger());
+		event = twm_peek_event();
+		if (!event) return;
+	}
 	if (event_handler) {
 		if (event_handler(event, event_handler_data)) {
 			free(event);
