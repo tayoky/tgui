@@ -16,7 +16,9 @@ struct tgui_timer {
 };
 
 tgui_timer_t *tgui_timer_new(tgui_time_t duration);
+tgui_timer_t *tgui_timer_new_from_trigger(tgui_time_t trigger);
 void tgui_timer_reset(tgui_timer_t *timer);
+void tgui_timer_set_trigger(tgui_timer_t *timer, tgui_time_t trigger);
 static inline void tgui_timer_release(tgui_timer_t *timer) {
 	tobject_free(TOBJECT_CAST(timer));
 }

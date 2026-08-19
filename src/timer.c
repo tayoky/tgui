@@ -36,7 +36,20 @@ tgui_timer_t *tgui_timer_new(long duration) {
 	return timer;
 }
 
+tgui_timer_t *tgui_timer_new_from_trigger(tgui_time_t trigger) {
+	tgui_timer_t *timer = tobject_new(tgui_timer_get_type());
+	if (!timer) return NULL;
+	timer->duration = -1;
+	tgui_timer_set_trigger(timer, trigger);
+	return timer;
+}
+
 void tgui_timer_reset(tgui_timer_t *timer) {
+	if (timer->duration == -1) return;
+	tgui_timer_set_trigger(timer, tgui_timer_get_current_time() + timer->duration);
+}
+
+void tgui_timer_set_trigger(tgui_timer_t *timer, tgui_time_t trigger) {
 	if (timer->trigger == -1) {
 		// adding it to the list create a new ref
 		tgui_timer_ref(timer);
@@ -44,7 +57,7 @@ void tgui_timer_reset(tgui_timer_t *timer) {
 		// it was already in the list remove it
 		tgui_list_remove(&timers, &timer->node);
 	}
-	timer->trigger = tgui_timer_get_current_time() + timer->duration;
+	timer->trigger = trigger;
 
 	// we need to keep the list sorted
 	tgui_list_node_t *prev = NULL;
