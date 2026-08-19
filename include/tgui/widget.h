@@ -26,7 +26,8 @@ struct tgui_widget_class {
 #define TGUI_STATE_HOVER    1
 #define TGUI_STATE_PRESSED  2
 #define TGUI_STATE_DISABLED 3
-#define TGUI_STATE_COUNT    4
+#define TGUI_STATE_FOCUSED  4
+#define TGUI_STATE_COUNT    5
 
 typedef struct tgui_style_node {
 	tgui_list_node_t node;

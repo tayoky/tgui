@@ -153,7 +153,10 @@ void tgui_surface_set_position(tgui_surface_t *surface, long x, long y) {
 }
 
 void tgui_surface_set_focus(tgui_surface_t *surface, tgui_widget_t *widget) {
+	if (surface->focus == widget) return;
+	tgui_widget_set_state_parent(surface->focus, TGUI_STATE_FOCUSED, TGUI_FALSE);
 	surface->focus = widget;
+		tgui_widget_set_state_parent(widget, TGUI_STATE_FOCUSED, TGUI_TRUE);
 }
 
 tgui_widget_t *tgui_surface_get_focus(tgui_surface_t *surface) {
