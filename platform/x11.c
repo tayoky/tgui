@@ -104,7 +104,9 @@ void tgui_platform_handle_event(void) {
 		.fd = tgui_platform_get_fd(),
 		.events = POLLIN,
 	};
-	poll(&pollfd, 1, tgui_timer_get_before_next_trigger());
+	if (XPending(display) <= 0) {
+		poll(&pollfd, 1, tgui_timer_get_before_next_trigger());
+	}
 	if (XPending(display) <= 0) return;
 	XNextEvent(display, &event);
 	switch (event.type) {
