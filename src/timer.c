@@ -33,11 +33,14 @@ tgui_timer_t *tgui_timer_new(long duration) {
 	if (!timer) return NULL;
 	timer->duration = duration;
 	tgui_timer_reset(timer);
-	return tgui_timer_ref(timer);
+	return timer;
 }
 
 void tgui_timer_reset(tgui_timer_t *timer) {
-	if (timer->trigger != -1) {
+	if (timer->trigger == -1) {
+		// adding it to the list create a new ref
+		tgui_timer_ref(timer);
+	} else {
 		// it was already in the list remove it
 		tgui_list_remove(&timers, &timer->node);
 	}
@@ -89,5 +92,6 @@ void tgui_timer_update(void) {
 		timer->trigger = -1;
 		tgui_list_remove(&timers, &timer->node);
 		tgui_timer_send_signal(timer, "trigger", NULL);
+		tgui_timer_release(timer);
 	}
 }
