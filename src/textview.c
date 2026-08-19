@@ -55,6 +55,15 @@ static void tgui_text_view_render(tgui_widget_t *widget) {
 	}
 }
 
+static void tgui_text_view_buffer_changed(tgui_text_buffer_t *buffer, void *unused, tgui_text_view_t *text_view) {
+	(void)unused;
+	if (buffer != text_view->buffer) return;
+
+	// the buffer changed we need to mark the view as dirty
+	tgui_widget_mark_dirty_size(TGUI_WIDGET_CAST(text_view));
+	tgui_widget_mark_dirty(TGUI_WIDGET_CAST(text_view));
+}
+
 static int tgui_text_view_destructor(void *object) {
 	tgui_text_view_t *text_view = TGUI_TEXT_VIEW_CAST(object);
 	tobject_free(TOBJECT_CAST(text_view->buffer));
@@ -75,8 +84,12 @@ tgui_text_view_t *tgui_text_view_new(void) {
 }
 
 void tgui_text_view_set_buffer(tgui_text_view_t *text_view, tgui_text_buffer_t *buffer) {
-	tobject_free(TOBJECT_CAST(text_view->buffer));
+	if (text_view->buffer) {
+		tgui_text_buffer_disconnect_signal(text_view->buffer, "changed", text_view->changed_callback);
+		tobject_free(TOBJECT_CAST(text_view->buffer));
+	}
 	text_view->buffer = tgui_text_buffer_ref(buffer);
+	tgui_text_buffer_connect_signal(text_view->buffer, "changed", TCALLBACK_CAST(tgui_text_view_buffer_changed), text_view);
 }
 
 tgui_text_buffer_t *tgui_text_view_get_buffer(tgui_text_view_t *text_view) {

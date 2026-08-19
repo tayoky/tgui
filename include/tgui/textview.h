@@ -9,6 +9,7 @@ TOBJECT_DECLARE_SIMPLE_CLASS(tgui_text_view, TGUI_TEXT_VIEW, tgui_widget)
 struct tgui_text_view {
 	tgui_widget_t widget;
 	tgui_text_buffer_t *buffer;
+	size_t changed_callback;
 };
 
 tgui_text_view_t *tgui_text_view_new(void);

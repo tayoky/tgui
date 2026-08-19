@@ -146,11 +146,13 @@ void tgui_text_buffer_delete(tgui_text_buffer_t *buffer, tgui_text_iter_t *start
 		} else if (start->index == 0) {
 			// we can delete multiple lines
 			delete_lines(buffer, start, end->line - start->line);
-			start->line = end->line;
+			end->line = start->line;
 		} else {
-			// TODO : delete on current line
+			delete(start, start->line->size - start->index);
+			// TODO : merge with next line
 		}
 	}
+	tgui_text_buffer_send_signal(buffer, "changed", NULL);
 }
 
 void tgui_text_buffer_insert_buf(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, const char *buf, size_t size) {
@@ -171,7 +173,7 @@ void tgui_text_buffer_insert_buf(tgui_text_buffer_t *buffer, tgui_text_iter_t *i
 			buf++;
 		}
 	}
-	
+	tgui_text_buffer_send_signal(buffer, "changed", NULL);
 }
 
 void tgui_text_buffer_insert(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, const char *str) {
