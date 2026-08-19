@@ -31,7 +31,7 @@ static void tgui_text_buffer_class_init(tgui_text_buffer_class_t *class) {
 	tobject_class->destructor  = tgui_text_buffer_destructor;
 }
 
-static void append_buf(tgui_text_iter_t *iter, const char *str, size_t size) {
+static void insert_buf(tgui_text_iter_t *iter, const char *str, size_t size) {
 	size_t new_size = iter->line->size + size;
 	if (iter->line->capacity < new_size) {
 		size_t capacity = iter->line->capacity;
@@ -46,7 +46,7 @@ static void append_buf(tgui_text_iter_t *iter, const char *str, size_t size) {
 	iter->line->size += size;
 }
 
-static tgui_text_buffer_line_t *append_line(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter) {
+static tgui_text_buffer_line_t *insert_line(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter) {
 	size_t i = iter->line - buffer->lines + 1;
 	if (buffer->lines_count + 1 > buffer->capacity) {
 		buffer->capacity *= 2;
@@ -69,7 +69,12 @@ static void delete(tgui_text_iter_t *iter, size_t count) {
 }
 
 static void delete_lines(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t count) {
-	// TODO
+	for (size_t i=0; i<count; i++) {
+		tgui_text_buffer_line_t *line = iter->line + i;
+		free(line->data);
+	}
+	memmove(iter->line, iter->line + count, (buffer->lines_count - (iter->line - buffer->lines) - count) * sizeof(tgui_text_buffer_line_t *));
+	buffer->lines_count -= count;
 }
 
 int tgui_text_iter_cmp(tgui_text_iter_t *a, tgui_text_iter_t *b) {
@@ -93,7 +98,7 @@ void tgui_text_buffer_get_start_iter(tgui_text_buffer_t *buffer, tgui_text_iter_
 
 void tgui_text_buffer_get_end_iter(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter) {
 	iter->line = &buffer->lines[buffer->lines_count-1];
-	iter->index = iter->line->size - 1;
+	iter->index = iter->line->size;
 }
 
 void tgui_text_buffer_get_line_iter(tgui_text_buffer_t *buffer, tgui_text_iter_t *iter, size_t line) {
@@ -110,8 +115,8 @@ void tgui_text_buffer_get_line_index(tgui_text_buffer_t *buffer, tgui_text_iter_
 		// we hit end
 		return;
 	}
-	if (index >= iter->line->size) {
-		index = iter->line->size - 1;
+	if (index > iter->line->size) {
+		index = iter->line->size;
 	}
 	iter->index = index;
 }
@@ -132,26 +137,46 @@ const char *tgui_text_buffer_get_line_content(tgui_text_buffer_t *text_buffer, t
 
 void tgui_text_buffer_delete(tgui_text_buffer_t *buffer, tgui_text_iter_t *start, tgui_text_iter_t *end) {
 	// swap if end is before start
-	if (tgui_text_iter_cmp(start, end) < 0) {
+	if (tgui_text_iter_cmp(start, end) > 0) {
 		tgui_text_iter_t *tmp = end;
 		end = start;
 		start = tmp;
 	}
 
-	while (tgui_text_iter_cmp(start, end) > 0) {
-		if (start->line == end->line) {
-			// we just have to delete stuff on current line
-			delete(start, end->index - start->index);
-			end->index = start->index;
-		} else if (start->index == 0) {
-			// we can delete multiple lines
-			delete_lines(buffer, start, end->line - start->line);
-			end->line = start->line;
-		} else {
-			delete(start, start->line->size - start->index);
-			// TODO : merge with next line
-		}
+	// start by doing the full lines
+	if (start->line + 1 < end->line) {
+			// we can delete multiple lines at once
+			tgui_text_iter_t first_line = *start;
+			first_line.line++;
+			first_line.index = 0;
+			delete_lines(buffer, &first_line, end->line - start->line - 1);
+			end->line = start->line + 1;
 	}
+
+	if (start->line != end->line) {
+		// delete till end of the line
+		delete(start, start->line->size - start->index);
+
+		// merge with next line
+		tgui_text_iter_t line_end = *start;
+		line_end.index = start->line->size;
+		tgui_text_iter_t next_line = *start;
+		next_line.index = 0;
+		next_line.line++;
+		insert_buf(&line_end, next_line.line->data, next_line.line->size);
+
+		// now that we have merged, remove next line
+		delete_lines(buffer, &next_line, 1);
+		end->index += line_end.index;
+		end->line--;
+	}
+
+	if (start->index != end->index) {
+		// we just have to delete stuff on current line
+		delete(start, end->index - start->index);
+		end->index = start->index;
+	}
+
 	tgui_text_buffer_send_signal(buffer, "changed", NULL);
 }
 
@@ -164,11 +189,11 @@ void tgui_text_buffer_insert_buf(tgui_text_buffer_t *buffer, tgui_text_iter_t *i
 		} else {
 			count = size;
 		}
-		append_buf(iter, buf, count);
+		insert_buf(iter, buf, count);
 		size -= count;
 		buf += count;
 		if (newline) {
-			append_line(buffer, iter);
+			insert_line(buffer, iter);
 			size--;
 			buf++;
 		}
