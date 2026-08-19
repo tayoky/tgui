@@ -3,8 +3,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <platform.h>
+#include <timer.h>
 #include <inputs.h>
 #include <list.h>
+#include <poll.h>
 #include <stdlib.h>
 
 typedef struct x11_window {
@@ -98,6 +100,12 @@ void tgui_platform_fini(void) {
 void tgui_platform_handle_event(void) {
 	XEvent event;
 	XFlush(display);
+	struct pollfd pollfd = {
+		.fd = tgui_platform_get_fd(),
+		.events = POLLIN,
+	};
+	poll(&pollfd, 1, tgui_timer_get_before_next_trigger());
+	if (XPending(display) <= 0) return;
 	XNextEvent(display, &event);
 	switch (event.type) {
 	case Expose:
@@ -416,6 +424,7 @@ void tgui_platform_push_canva(tgui_canva_t *canva) {
 }
 
 int tgui_platform_get_fd(void) {
+	return XConnectionNumber(display);
 }
 
 void tgui_platform_register_handler(int (*handler)(void *event, void *data), void *data) {

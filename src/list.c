@@ -25,19 +25,35 @@ void tgui_list_append(tgui_list_t *list, tgui_list_node_t *node) {
 	list->count++;
 }
 
-void tgui_list_add_before(tgui_list_t *list, tgui_list_node_t *before, tgui_list_node_t *node) {
-	if (!before) {
+void tgui_list_add_before(tgui_list_t *list, tgui_list_node_t *ref, tgui_list_node_t *node) {
+	if (!ref) {
 		tgui_list_append(list, node);
 		return;
 	}
-	node->prev = before->prev;
-	if (before->prev) {
-		before->prev->next = node;
+	node->prev = ref->prev;
+	if (ref->prev) {
+		ref->prev->next = node;
 	} else {
 		list->first = node;
 	}
-	before->prev = node;
-	node->next = before;
+	ref->prev = node;
+	node->next = ref;
+	list->count++;
+}
+
+void tgui_list_add_after(tgui_list_t *list, tgui_list_node_t *ref, tgui_list_node_t *node) {
+	if (!ref) {
+		tgui_list_prepend(list, node);
+		return;
+	}
+	node->next = ref->next;
+	if (ref->next) {
+		ref->next->prev = node;
+	} else {
+		list->last = node;
+	}
+	ref->next = node;
+	node->prev = ref;
 	list->count++;
 }
 

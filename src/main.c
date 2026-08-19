@@ -41,6 +41,7 @@ void tgui_poll(void) {
 
 void tgui_main(void) {
 	while (!quit) {
+		tgui_timer_update();
 		tgui_render();
 		tgui_poll();
 	}

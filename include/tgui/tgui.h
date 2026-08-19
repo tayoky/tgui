@@ -40,6 +40,7 @@
 #include "font.h"
 #include "color.h"
 #include "inputs.h"
+#include "timer.h"
 
 void tgui_quit(void);
 int tgui_init(void);
