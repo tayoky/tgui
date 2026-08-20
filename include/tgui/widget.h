@@ -232,6 +232,7 @@ static inline void tgui_widget_set_state(tgui_widget_t *widget, char state, int 
 	} else {
 		widget->state_flags = state_flags;
 	}
+	tgui_widget_send_signal(widget, "state-changed", &state);
 }
 
 /**
