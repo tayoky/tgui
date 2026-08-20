@@ -3,7 +3,7 @@
 #include <label.h>
 #include <icon.h>
 
-TOBJECT_DEFINE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget_get_type())
+TOBJECT_DEFINE_CLASS(tgui_button, TGUI_BUTTON, tgui_focusable_get_type())
 
 static void tgui_button_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
 	tgui_button_t *button = TGUI_BUTTON_CAST(widget);

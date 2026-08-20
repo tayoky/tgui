@@ -1,13 +1,13 @@
 #ifndef TGUI_TEXT_H
 #define TGUI_TEXT_H
 
-#include "widget.h"
+#include "focusable.h"
 #include "label.h"
 
-TOBJECT_DECLARE_SIMPLE_CLASS(tgui_text, TGUI_TEXT, tgui_widget)
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_text, TGUI_TEXT, tgui_focusable)
 
 struct tgui_text {
-	tgui_widget_t widget;
+	tgui_focusable_t focusable;
 	tgui_label_t *label;
 	char *placeholder;
 	char *text;
