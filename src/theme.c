@@ -53,6 +53,10 @@ int tgui_theme_load(void) {
 	tgui_style_set_background_color(button_hover_style, button_hover_color);
 	tgui_widget_set_class_state_style(button_hover_style, "tgui_button", TGUI_STATE_HOVER);
 
+	tgui_style_t *button_disabled_style = tgui_style_new();
+	tgui_style_set_background_color(button_disabled_style, button_clicked_color);
+	tgui_widget_set_class_state_style(button_disabled_style, "tgui_button", TGUI_STATE_DISABLED);
+
 	// submenu buttons
 	tgui_style_t *submenu_button_style = tgui_style_new();
 	tgui_style_set_background_color(submenu_button_style, bg);
@@ -96,6 +100,7 @@ int tgui_theme_load(void) {
 	tgui_style_set_border_color(text_style, TGUI_SIDE_ALL, border_color);
 	tgui_style_set_padding(text_style, TGUI_SIDE_ALL, padding);
 	tgui_widget_set_class_style(text_style, "tgui_text");
+	//tgui_widget_set_class_state_style(button_style, "tgui_text", TGUI_STATE_FOCUSED);
 
 	// integer input
 	tgui_style_t *counter_style = tgui_style_new();
