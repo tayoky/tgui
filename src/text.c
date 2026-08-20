@@ -5,7 +5,7 @@
 
 // handle text input
 
-TOBJECT_DEFINE_CLASS(tgui_text, TGUI_TEXT, tgui_focusable_get_type())
+TOBJECT_DEFINE_CLASS(tgui_text, TGUI_TEXT, tgui_widget_get_type())
 
 static void tgui_text_key_press(tobject_t *tobject, tgui_event_press_t *event) {
 	tgui_text_t *text = TGUI_TEXT_CAST(tobject);

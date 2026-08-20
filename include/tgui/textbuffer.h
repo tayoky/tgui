@@ -17,6 +17,8 @@ struct tgui_text_buffer {
 	tgui_text_buffer_line_t *lines;
 	size_t lines_count;
 	size_t capacity;
+	size_t cursor_x;
+	size_t cursor_y;
 };
 
 typedef struct tgui_text_iter {

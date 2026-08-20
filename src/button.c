@@ -3,7 +3,7 @@
 #include <label.h>
 #include <icon.h>
 
-TOBJECT_DEFINE_CLASS(tgui_button, TGUI_BUTTON, tgui_focusable_get_type())
+TOBJECT_DEFINE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget_get_type())
 
 static void tgui_button_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
 	tgui_button_t *button = TGUI_BUTTON_CAST(widget);
@@ -27,6 +27,9 @@ static int tgui_button_constructor(void *object) {
 
 	tgui_widget_connect_signal(object, "click", TCALLBACK_CAST(tgui_button_click), NULL);
 	tgui_widget_connect_signal(object, "unclick", TCALLBACK_CAST(tgui_button_unclick), NULL);
+
+	// buttons are focusable by default
+	tgui_widget_set_focusable(object, TGUI_TRUE);
 
 	return 0;
 }

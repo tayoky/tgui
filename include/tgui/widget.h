@@ -68,7 +68,7 @@ struct tgui_widget {
 #define TGUI_WIDGET_DIRTY_STYLE 0x10
 #define TGUI_WIDGET_DIRTY_SPACE 0x20
 #define TGUI_WIDGET_HIDDEN      0x40
-#define TGUI_WIDGET_SELECTABLE  0x80
+#define TGUI_WIDGET_FOCUSABLE   0x80
 
 #define TGUI_ALIGN_FILL    0x00
 #define TGUI_ALIGN_LEFT    0x01
@@ -167,22 +167,22 @@ static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_HIDDEN;
 }
 
-static inline void tgui_widget_set_selectable(tgui_widget_t *widget, int selectable) {
+static inline void tgui_widget_set_focusable(tgui_widget_t *widget, int focusable) {
 	if (!widget) return;
-	if (selectable) {
-		widget->flags |= TGUI_WIDGET_SELECTABLE;
+	if (focusable) {
+		widget->flags |= TGUI_WIDGET_FOCUSABLE;
 	} else {
-		widget->flags &= ~TGUI_WIDGET_SELECTABLE;
+		widget->flags &= ~TGUI_WIDGET_FOCUSABLE;
 	}
 }
 
 /**
- * @brief check if a widget is selectable
+ * @brief check if a widget is focusable
  * @param widget the widget to check
- * @return 1 if selectable else 0
+ * @return 1 if focusable else 0
  */
-static inline int tgui_widget_is_selectable(tgui_widget_t *widget) {
-	return widget->flags & TGUI_WIDGET_SELECTABLE;
+static inline int tgui_widget_is_focusable(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_FOCUSABLE;
 }
 
 /**

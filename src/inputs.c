@@ -7,9 +7,7 @@ void tgui_input_click(tgui_surface_t *surface, int button, long x, long y) {
 	x /= surface->scaling;
 	y /= surface->scaling;
 	tgui_widget_t *widget = tgui_widget_get_at(TGUI_WIDGET_CAST(surface), x, y);
-
-	tgui_widget_t *old_focus = surface->focus;
-	surface->focus = NULL;
+	tgui_surface_set_focus(surface, widget);
 	surface->clicked = widget;
 	if (!widget) widget = TGUI_WIDGET_CAST(surface);
 	tgui_event_click_t event = {
@@ -18,13 +16,6 @@ void tgui_input_click(tgui_surface_t *surface, int button, long x, long y) {
 		.y = y,
 	};
 	tgui_widget_send_parent_signal(widget, "click", &event);
-
-	if (surface->focus != old_focus) {
-		// we change the state of the old focus only at the end
-		// in case the focus didn't change
-		tgui_widget_set_state_parent(old_focus, TGUI_STATE_FOCUSED,TGUI_FALSE);
-		tgui_widget_set_state_parent(surface->focus, TGUI_STATE_FOCUSED,TGUI_TRUE);
-	}
 }
 
 void tgui_input_unclick(tgui_surface_t *surface, int button, long x, long y) {

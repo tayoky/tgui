@@ -15,6 +15,9 @@ static int tgui_toggle_button_constructor(void *object) {
 
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(object), "click", TCALLBACK_CAST(tgui_toggle_button_click), NULL);
 
+	// buttons are focusable by default
+	tgui_widget_set_focusable(object, TGUI_TRUE);
+
 	return 0;
 }
 

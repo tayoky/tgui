@@ -1,16 +1,16 @@
 #ifndef TGUI_BUTTON_H
 #define TGUI_BUTTON_H
 
-#include "focusable.h"
+#include "widget.h"
 
-TOBJECT_DECLARE_SIMPLE_CLASS(tgui_button, TGUI_BUTTON, tgui_focusable)
+TOBJECT_DECLARE_SIMPLE_CLASS(tgui_button, TGUI_BUTTON, tgui_widget)
 
 /**
  * @struct tgui_button
  * A button is a widget that display a visual button with text, icon or any child widget on which the user can click.
  */
 struct tgui_button {
-	tgui_focusable_t focusable;
+	tgui_widget_t widget;
 	tgui_widget_t *child;
 };
 
