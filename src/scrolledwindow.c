@@ -1,4 +1,6 @@
 #include <scrolledwindow.h>
+#include <inputs.h>
+#include <events.h>
 
 TOBJECT_DEFINE_CLASS(tgui_scrolled_window, TGUI_SCROLLED_WINDOW, tgui_widget_get_type())
 
@@ -100,6 +102,25 @@ static void tgui_scrolled_window_allocate_space(tgui_widget_t *widget) {
 	tgui_widget_allocate_space(TGUI_WIDGET_CAST(scrolled_window->viewport), x, y, view_width, view_height);
 }
 
+static void tgui_scrolled_window_press(tgui_scrolled_window_t *scrolled_window, tgui_event_press_t *event) {
+	if (tgui_scrolled_window_get_vpolicy(scrolled_window) != TGUI_SCROLLED_WINDOW_POLICY_NEVER) {
+		if (event->sym == TGUI_KEY_ARROW_UP) {
+			tgui_scrollbar_add_value(scrolled_window->vbar, -50);
+		}
+		if (event->sym == TGUI_KEY_ARROW_DOWN) {
+			tgui_scrollbar_add_value(scrolled_window->vbar, 50);
+		}
+	}
+	if (tgui_scrolled_window_get_hpolicy(scrolled_window) != TGUI_SCROLLED_WINDOW_POLICY_NEVER) {
+		if (event->sym == TGUI_KEY_ARROW_LEFT) {
+			tgui_scrollbar_add_value(scrolled_window->hbar, -50);
+		}
+		if (event->sym == TGUI_KEY_ARROW_RIGHT) {
+			tgui_scrollbar_add_value(scrolled_window->hbar, 50);
+		}
+	}
+}
+
 static void tgui_scrolled_window_hbar_changed(tobject_t *tobject, long *value) {
 	tgui_scrollbar_t *scrollbar = TGUI_SCROLLBAR_CAST(tobject);
 	tgui_scrolled_window_t *scrolled_window = TGUI_SCROLLED_WINDOW_CAST(TGUI_WIDGET_CAST(scrollbar)->parent);
@@ -118,6 +139,8 @@ static int tgui_scrolled_window_constructor(void *object) {
 	tgui_scrolled_window_get_parent_class()->constructor(object);
 
 	tgui_scrolled_window_t *scrolled_window = TGUI_SCROLLED_WINDOW_CAST(object);
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(scrolled_window), TGUI_TRUE);
+	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrolled_window), "press", TCALLBACK_CAST(tgui_scrolled_window_press), NULL);
 	scrolled_window->hbar = tgui_scrollbar_new(TGUI_ORIENTATION_HORIZONTAL);
 	scrolled_window->vbar = tgui_scrollbar_new(TGUI_ORIENTATION_VERTICAL);
 	scrolled_window->viewport = tgui_viewport_new();

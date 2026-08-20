@@ -66,6 +66,16 @@ static int x11_sym2tgui(int x11_sym) {
 		return '\t';
 	case XK_Escape:
 		return '\033';
+	case XK_Return:
+		return TGUI_KEY_ENTER;
+	case XK_Up:
+		return TGUI_KEY_ARROW_UP;
+	case XK_Down:
+		return TGUI_KEY_ARROW_DOWN;
+	case XK_Left:
+		return TGUI_KEY_ARROW_LEFT;
+	case XK_Right:
+		return TGUI_KEY_ARROW_RIGHT;
 	case XK_KP_Equal:
 		return '=';
 	case XK_KP_Multiply:
