@@ -45,6 +45,11 @@ tgui_widget_t *input_tab() {
 	tgui_button_set_text(button, "button");
 	add_element(box, TGUI_WIDGET_CAST(button));
 
+	tgui_button_t *disabled_button = tgui_button_new();
+	tgui_button_set_text(disabled_button, "disabled button");
+	tgui_widget_set_state(TGUI_WIDGET_CAST(disabled_button), TGUI_STATE_DISABLED, TGUI_TRUE);
+	add_element(box, TGUI_WIDGET_CAST(disabled_button));
+
 	tgui_toggle_button_t *toggle_button = tgui_toggle_button_new();
 	tgui_button_set_text(TGUI_BUTTON_CAST(toggle_button), "toggle");
 	add_element(box, TGUI_WIDGET_CAST(toggle_button));

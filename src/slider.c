@@ -5,17 +5,17 @@ TOBJECT_DEFINE_CLASS(tgui_slider, TGUI_SLIDER, tgui_widget_get_type())
 
 static void tgui_slider_calculate_sizes(tgui_widget_t *widget) {
 	tgui_slider_t *slider = TGUI_SLIDER_CAST(widget);
-
-	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(slider->button));
+	tgui_button_t *button = slider->button;
+	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(button));
 
 	long button_min_length;
 	long button_pref_length;
 	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		button_min_length  = slider->button->widget.min_height;
-		button_pref_length = slider->button->widget.pref_height;
+		button_min_length  = TGUI_WIDGET_CAST(button)->min_height;
+		button_pref_length = TGUI_WIDGET_CAST(button)->pref_height;
 	} else {
-		button_min_length  = slider->button->widget.min_width;
-		button_pref_length = slider->button->widget.pref_width;
+		button_min_length  = TGUI_WIDGET_CAST(button)->min_width;
+		button_pref_length = TGUI_WIDGET_CAST(button)->pref_width;
 	}
 
 	long slider_min_length;
@@ -33,15 +33,15 @@ static void tgui_slider_calculate_sizes(tgui_widget_t *widget) {
 	}
 
 	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		widget->min_width  = slider->button->widget.min_width;
-		widget->pref_width = slider->button->widget.pref_width;
+		widget->min_width  = TGUI_WIDGET_CAST(button)->min_width;
+		widget->pref_width = TGUI_WIDGET_CAST(button)->pref_width;
 		widget->min_height  = slider_min_length;
 		widget->pref_height = slider_pref_length;
 	} else {
 		widget->min_width  = slider_min_length;
 		widget->pref_width = slider_pref_length;
-		widget->min_height  = slider->button->widget.min_height;
-		widget->pref_height = slider->button->widget.pref_height;
+		widget->min_height  = TGUI_WIDGET_CAST(button)->min_height;
+		widget->pref_height = TGUI_WIDGET_CAST(button)->pref_height;
 	}
 }
 
@@ -56,28 +56,29 @@ static void tgui_slider_allocate_space(tgui_widget_t *widget) {
 	// for easier calcul
 	double val = (slider->value - slider->min) / (slider->max - slider->min);
 
-	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
+	tgui_button_t *button = slider->button;
+	if (TGUI_WIDGET_CAST(slider)->orientation == TGUI_ORIENTATION_VERTICAL) {
 		long button_height;
 		if (slider->size == TGUI_SLIDER_SIZE_AUTO) {
 			button_height = height / 2;
-			if (button_height > slider->button->widget.pref_height) {
-				button_height = slider->button->widget.pref_height;
+			if (button_height > TGUI_WIDGET_CAST(button)->pref_height) {
+				button_height = TGUI_WIDGET_CAST(button)->pref_height;
 			}
 		} else {
 			button_height = height * slider->size;
 		}
-		tgui_widget_allocate_space(TGUI_WIDGET_CAST(slider->button), x, y + (height - button_height) * val, width, button_height);
+		tgui_widget_allocate_space(TGUI_WIDGET_CAST(button), x, y + (height - button_height) * val, width, button_height);
 	} else {
 		long button_width;
 		if (slider->size == TGUI_SLIDER_SIZE_AUTO) {
 			button_width = width / 2;
-			if (button_width > slider->button->widget.pref_width) {
-				button_width = slider->button->widget.pref_width;
+			if (button_width > TGUI_WIDGET_CAST(button)->pref_width) {
+				button_width = TGUI_WIDGET_CAST(button)->pref_width;
 			}
 		} else {
 			button_width = width * slider->size;
 		}
-		tgui_widget_allocate_space(TGUI_WIDGET_CAST(slider->button), x + (width - button_width) * val, y, button_width, height);
+		tgui_widget_allocate_space(TGUI_WIDGET_CAST(button), x + (width - button_width) * val, y, button_width, height);
 	}
 }
 
@@ -85,9 +86,9 @@ static void tgui_slider_button_click(tobject_t *tobject, tgui_event_click_t *eve
 	tgui_slider_t *slider = TGUI_SLIDER_CAST(TGUI_WIDGET_CAST(tobject)->parent);
 	tgui_button_t *button = TGUI_BUTTON_CAST(tobject);
 	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		slider->offset = button->widget.y - event->y;
+		slider->offset = TGUI_WIDGET_CAST(button)->y - event->y;
 	} else {
-		slider->offset = button->widget.x - event->x;
+		slider->offset = TGUI_WIDGET_CAST(button)->x - event->x;
 	}
 }
 
@@ -98,12 +99,12 @@ static void tgui_slider_button_move(tobject_t *tobject, tgui_event_move_t *event
 
 	long offset;
 	long length;
-	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
-		offset = event->abs_y - slider->widget.y + slider->offset;
-		length = slider->widget.height - button->widget.height;
+	if (TGUI_WIDGET_CAST(slider)->orientation == TGUI_ORIENTATION_VERTICAL) {
+		offset = event->abs_y - TGUI_WIDGET_CAST(slider)->y + slider->offset;
+		length = TGUI_WIDGET_CAST(slider)->height - TGUI_WIDGET_CAST(button)->height;
 	} else {
-		offset = event->abs_x - slider->widget.x + slider->offset;
-		length = slider->widget.width - button->widget.width;
+		offset = event->abs_x - TGUI_WIDGET_CAST(slider)->x + slider->offset;
+		length = TGUI_WIDGET_CAST(slider)->width - TGUI_WIDGET_CAST(button)->width;
 	}
 
 	double val = (double)offset/(double)length;

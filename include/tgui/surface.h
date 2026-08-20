@@ -2,6 +2,7 @@
 #define TGUI_SURFACE_H
 
 #include "widget.h"
+#include "keyboardnav.h"
 #include "rect.h"
 
 TOBJECT_DECLARE_SIMPLE_CLASS(tgui_surface, TGUI_SURFACE, tgui_widget)
@@ -9,6 +10,7 @@ TOBJECT_DECLARE_SIMPLE_CLASS(tgui_surface, TGUI_SURFACE, tgui_widget)
 struct tgui_surface {
 	tgui_widget_t widget;
 	tgui_list_node_t node;
+	tgui_keyboardnav_t keyboardnav;
 	void *private;
 	long scaling;
 	tgui_widget_t *focus;

@@ -140,6 +140,10 @@ void tgui_platform_handle_event(void) {
 		surface = get_surface(event.xkey.window);
 		tgui_input_key_press(surface, 0, x11_sym2tgui(XLookupKeysym(&event.xkey, 0)));
 		break;
+	case KeyRelease:
+		surface = get_surface(event.xkey.window);
+		tgui_input_key_release(surface, 0, x11_sym2tgui(XLookupKeysym(&event.xkey, 0)));
+		break;
 	}	
 }
 

@@ -26,6 +26,8 @@ static int tgui_surface_constructor(void *object) {
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(surface), TGUI_TRUE);
 	surface->scaling = 1;
 
+	tgui_keyboardnav_set_widget(&surface->keyboardnav, TGUI_WIDGET_CAST(surface));
+
 	// TODO : do more init here
 
 	return 0;

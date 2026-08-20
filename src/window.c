@@ -61,6 +61,7 @@ static int tgui_window_constructor(void *object) {
 	window->title_bar = tgui_title_bar_new();
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(window->title_bar), TGUI_TRUE);
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(window->title_bar), TGUI_WIDGET_CAST(window));
+	tgui_keyboardnav_set_widget(&TGUI_SURFACE_CAST(window)->keyboardnav, TGUI_WIDGET_CAST(window));
 	return 0;
 }
 

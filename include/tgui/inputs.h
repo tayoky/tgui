@@ -3,14 +3,18 @@
 
 #include "surface.h"
 
-#define TGUI_BUTTON_LEFT   0
-#define TGUI_BUTTON_MIDDLE 1
-#define TGUI_BUTTON_RIGHT  2
+#define TGUI_BUTTON_LEFT     0
+#define TGUI_BUTTON_MIDDLE   1
+#define TGUI_BUTTON_RIGHT    2
+#define TGUI_BUTTON_B4       3
+#define TGUI_BUTTON_B5       4
+#define TGUI_BUTTON_KEYBOARD 5 // for keyboard space/enter
 
 #define TGUI_KEY_BACKSPACE    '\177'
 #define TGUI_KEY_TAB          '\t'
 #define TGUI_KEY_ESC          '\033'
 #define TGUI_KEY_ENTER        '\r'
+#define TGUI_KEY_SPACE        ' '
 #define TGUI_KEY_FIRST        17000000
 #define TGUI_KEY_MOUSE_LEFT   17000000
 #define TGUI_KEY_MOUSE_MIDDLE 17000001
