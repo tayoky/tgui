@@ -122,6 +122,7 @@ static int tgui_slider_constructor(void *object) {
 	tgui_widget_set_parent(TGUI_WIDGET_CAST(slider->button), TGUI_WIDGET_CAST(slider));
 	tgui_widget_set_hexpand(TGUI_WIDGET_CAST(slider->button), TGUI_TRUE);
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(slider->button), TGUI_TRUE);
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(slider->button), TGUI_FALSE);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(slider->button), "click", TCALLBACK_CAST(tgui_slider_button_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(slider->button), "move", TCALLBACK_CAST(tgui_slider_button_move), NULL);
 	tgui_slider_set_text(slider, "-");

@@ -51,6 +51,8 @@ static int tgui_scrollbar_constructor(void *object) {
 	scrollbar->top    = tgui_button_new();
 	scrollbar->bottom = tgui_button_new();
 	scrollbar->slider = tgui_slider_new(TGUI_ORIENTATION_VERTICAL);
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(scrollbar->top), TGUI_FALSE);
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(scrollbar->bottom), TGUI_FALSE);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->top), "click", TCALLBACK_CAST(tgui_scrollbar_top_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->bottom), "click", TCALLBACK_CAST(tgui_scrollbar_bottom_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrollbar->slider), "changed", TCALLBACK_CAST(tgui_scrollbar_slider_changed), NULL);
