@@ -41,8 +41,6 @@ static int tgui_surface_destructor(void *object) {
 
 static void tgui_surface_class_init(tgui_surface_class_t *class) {
 	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
-	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
-	widget_class->allocate_space  = tgui_container_single_allocate_space;
 	widget_class->remove_child    = tgui_surface_remove_child;
 
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);

@@ -33,8 +33,6 @@ static int tgui_button_constructor(void *object) {
 
 static void tgui_button_class_init(tgui_button_class_t *class) {
 	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
-	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
-	widget_class->allocate_space = tgui_container_single_allocate_space;
 	widget_class->remove_child   = tgui_button_remove_child;
 
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);

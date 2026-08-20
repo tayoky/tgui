@@ -18,6 +18,39 @@ static tgui_list_t default_state_styles[TGUI_STATE_COUNT];
 
 TOBJECT_DEFINE_CLASS(tgui_widget, TGUI_WIDGET, tobject_get_type())
 
+void tgui_container_single_calculate_sizes(tgui_widget_t *widget) {
+	if (tgui_list_is_empty(&widget->children)) {
+empty:
+		widget->min_width = 0;
+		widget->min_height = 0;
+		widget->pref_width = 0;
+		widget->pref_height = 0;
+		return;
+	}
+	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(widget->children.first);
+	if (tgui_widget_is_hidden(child)) goto empty;
+	tgui_widget_calculate_sizes(child);
+	widget->min_width  = child->min_width;
+	widget->min_height = child->min_height;
+	widget->pref_width  = child->min_width;
+	widget->pref_height = child->pref_height;
+}
+
+
+void tgui_container_single_allocate_space(tgui_widget_t *widget) {
+	if (tgui_list_is_empty(&widget->children)) {
+		return;
+	}
+	long x = tgui_widget_get_inner_x(widget);
+	long y = tgui_widget_get_inner_y(widget);
+	long width  = tgui_widget_get_inner_width(widget);
+	long height = tgui_widget_get_inner_height(widget);
+
+
+	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(widget->children.first);
+	tgui_widget_allocate_space(child, x, y, width, height);
+}
+
 static int tgui_widget_constructor(void *ptr) {
 	tgui_widget_t *widget = TGUI_WIDGET_CAST(ptr);
 	tgui_widget_mark_dirty(widget);
@@ -30,7 +63,10 @@ static int tgui_widget_constructor(void *ptr) {
 }
 
 static void tgui_widget_class_init(tgui_widget_class_t *class) {
-	class->parent_class.constructor = tgui_widget_constructor;
+	class->calculate_sizes = tgui_container_single_calculate_sizes;
+	class->allocate_space  = tgui_container_single_allocate_space;
+	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
+	tobject_class->constructor = tgui_widget_constructor;
 }
 
 void tgui_widget_destroy(tgui_widget_t *widget) {
@@ -492,37 +528,4 @@ tgui_font_t *tgui_widget_get_font(tgui_widget_t *widget) {
 
 unsigned int tgui_widget_get_font_size(tgui_widget_t *widget) {
 	return tgui_widget_get_current_style(widget)->font_size;
-}
-
-void tgui_container_single_calculate_sizes(tgui_widget_t *widget) {
-	if (!widget->children.first) {
-	empty:
-		widget->min_width = 0;
-		widget->min_height = 0;
-		widget->pref_width = 0;
-		widget->pref_height = 0;
-		return;
-	}
-	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(widget->children.first);
-	if (tgui_widget_is_hidden(child)) goto empty;
-	tgui_widget_calculate_sizes(child);
-	widget->min_width  = child->min_width;
-	widget->min_height = child->min_height;
-	widget->pref_width  = child->min_width;
-	widget->pref_height = child->pref_height;
-}
-
-
-void tgui_container_single_allocate_space(tgui_widget_t *widget) {
-	if (widget->children.count == 0) {
-		return;
-	}
-	long x = tgui_widget_get_inner_x(widget);
-	long y = tgui_widget_get_inner_y(widget);
-	long width  = tgui_widget_get_inner_width(widget);
-	long height = tgui_widget_get_inner_height(widget);
-
-
-	tgui_widget_t *child = TGUI_WIDGET_FROM_NODE(widget->children.first);
-	tgui_widget_allocate_space(child, x, y, width, height);
 }

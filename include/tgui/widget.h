@@ -468,7 +468,5 @@ static inline void tgui_widget_get_inner_bounds(tgui_widget_t *widget, tgui_rect
 
 void tgui_widget_set_parent(tgui_widget_t *child, tgui_widget_t *parent);
 void tgui_widget_remove_parent(tgui_widget_t *child);
-void tgui_container_single_calculate_sizes(tgui_widget_t *widget);
-void tgui_container_single_allocate_space(tgui_widget_t *widget);
 
 #endif

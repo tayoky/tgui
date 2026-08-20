@@ -37,10 +37,6 @@ static int tgui_text_destructor(void *object) {
 }
 
 static void tgui_text_class_init(tgui_text_class_t *class) {
-	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
-	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
-	widget_class->allocate_space = tgui_container_single_allocate_space;
-
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_text_constructor;
 	tobject_class->destructor = tgui_text_destructor;

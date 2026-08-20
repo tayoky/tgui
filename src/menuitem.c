@@ -17,10 +17,6 @@ static int tgui_menu_item_constructor(void *object) {
 }
 
 static void tgui_menu_item_class_init(tgui_menu_item_class_t *class) {
-	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
-	widget_class->calculate_sizes = tgui_container_single_calculate_sizes;
-	widget_class->allocate_space  = tgui_container_single_allocate_space;
-
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_menu_item_constructor;
 }
