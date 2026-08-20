@@ -41,10 +41,13 @@ static int tgui_title_bar_constructor(void *object) {
 	tgui_widget_set_valign(TGUI_WIDGET_CAST(title_bar->title), TGUI_ALIGN_CENTER);
 	title_bar->minimize = tgui_button_new();
 	tgui_button_set_icon(title_bar->minimize, "window-minimize");
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(title_bar->minimize), TGUI_FALSE);
 	title_bar->maximize = tgui_button_new();
 	tgui_button_set_icon(title_bar->maximize, "window-maximize");
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(title_bar->maximize), TGUI_FALSE);
 	title_bar->close    = tgui_button_new();
 	tgui_button_set_icon(title_bar->close, "window-close");
+	tgui_widget_set_focusable(TGUI_WIDGET_CAST(title_bar->close), TGUI_FALSE);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(title_bar->minimize), "click", TCALLBACK_CAST(tgui_minimize_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(title_bar->maximize), "click", TCALLBACK_CAST(tgui_maximize_click), NULL);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(title_bar->close), "click", TCALLBACK_CAST(tgui_close_click), NULL);

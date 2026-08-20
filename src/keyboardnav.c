@@ -25,7 +25,7 @@ static void tgui_keyboardnav_focus_next(tgui_keyboardnav_t *keyboardnav) {
 	tgui_surface_t *surface = tgui_widget_get_surface(keyboardnav->widget);
 	int found = tgui_surface_get_focus(surface) == NULL;
 	if (!tgui_keyboardnav_focus_next_recur(surface, TGUI_WIDGET_CAST(surface), &found)) {
-		*found = 1;
+		found = 1;
 		tgui_keyboardnav_focus_next_recur(surface, TGUI_WIDGET_CAST(surface), &found);
 	}
 }
