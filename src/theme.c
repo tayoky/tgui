@@ -57,6 +57,10 @@ int tgui_theme_load(void) {
 	tgui_style_set_background_color(button_disabled_style, button_clicked_color);
 	tgui_widget_set_class_state_style(button_disabled_style, "tgui_button", TGUI_STATE_DISABLED);
 
+	tgui_style_t *button_focused_style = tgui_style_new();
+	tgui_style_set_border_color(button_focused_style, TGUI_SIDE_ALL, button_clicked_color);
+	tgui_widget_set_class_state_style(button_focused_style, "tgui_button", TGUI_STATE_FOCUSED);
+
 	// submenu buttons
 	tgui_style_t *submenu_button_style = tgui_style_new();
 	tgui_style_set_background_color(submenu_button_style, bg);

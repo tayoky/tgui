@@ -68,7 +68,7 @@ struct tgui_widget {
 #define TGUI_WIDGET_DIRTY_STYLE 0x10
 #define TGUI_WIDGET_DIRTY_SPACE 0x20
 #define TGUI_WIDGET_HIDDEN      0x40
-#define TGUI_WIDGET_FOCUSABLE   0x80
+#define TGUI_WIDGET_TABSTOP     0x80
 
 #define TGUI_ALIGN_FILL    0x00
 #define TGUI_ALIGN_LEFT    0x01
@@ -167,22 +167,22 @@ static inline int tgui_widget_is_hidden(tgui_widget_t *widget) {
 	return widget->flags & TGUI_WIDGET_HIDDEN;
 }
 
-static inline void tgui_widget_set_focusable(tgui_widget_t *widget, int focusable) {
+static inline void tgui_widget_set_tabstop(tgui_widget_t *widget, int tabstop) {
 	if (!widget) return;
-	if (focusable) {
-		widget->flags |= TGUI_WIDGET_FOCUSABLE;
+	if (tabstop) {
+		widget->flags |= TGUI_WIDGET_TABSTOP;
 	} else {
-		widget->flags &= ~TGUI_WIDGET_FOCUSABLE;
+		widget->flags &= ~TGUI_WIDGET_TABSTOP;
 	}
 }
 
 /**
- * @brief check if a widget is focusable
+ * @brief check if a widget has tabstop
  * @param widget the widget to check
- * @return 1 if focusable else 0
+ * @return 1 if tabstop else 0
  */
-static inline int tgui_widget_is_focusable(tgui_widget_t *widget) {
-	return widget->flags & TGUI_WIDGET_FOCUSABLE;
+static inline int tgui_widget_has_tabstop(tgui_widget_t *widget) {
+	return widget->flags & TGUI_WIDGET_TABSTOP;
 }
 
 /**

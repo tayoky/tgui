@@ -28,8 +28,8 @@ static int tgui_button_constructor(void *object) {
 	tgui_widget_connect_signal(object, "click", TCALLBACK_CAST(tgui_button_click), NULL);
 	tgui_widget_connect_signal(object, "unclick", TCALLBACK_CAST(tgui_button_unclick), NULL);
 
-	// buttons are focusable by default
-	tgui_widget_set_focusable(object, TGUI_TRUE);
+	// buttons have tabstop by default
+	tgui_widget_set_tabstop(object, TGUI_TRUE);
 
 	return 0;
 }

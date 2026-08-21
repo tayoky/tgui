@@ -9,7 +9,7 @@ static int tgui_keyboardnav_focus_next_recur(tgui_surface_t *surface, tgui_widge
 		*found = 1;
 	} else if (tgui_widget_is_hidden(widget) || tgui_widget_get_state(widget, TGUI_STATE_DISABLED)) {
 		return 0;
-	} else if (tgui_widget_is_focusable(widget) && *found) {
+	} else if (tgui_widget_has_tabstop(widget) && *found) {
 		tgui_surface_set_focus(surface, widget);
 		return 1;
 	}

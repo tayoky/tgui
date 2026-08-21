@@ -139,7 +139,6 @@ static int tgui_scrolled_window_constructor(void *object) {
 	tgui_scrolled_window_get_parent_class()->constructor(object);
 
 	tgui_scrolled_window_t *scrolled_window = TGUI_SCROLLED_WINDOW_CAST(object);
-	tgui_widget_set_focusable(TGUI_WIDGET_CAST(scrolled_window), TGUI_TRUE);
 	tgui_widget_connect_signal(TGUI_WIDGET_CAST(scrolled_window), "press", TCALLBACK_CAST(tgui_scrolled_window_press), NULL);
 	scrolled_window->hbar = tgui_scrollbar_new(TGUI_ORIENTATION_HORIZONTAL);
 	scrolled_window->vbar = tgui_scrollbar_new(TGUI_ORIENTATION_VERTICAL);
