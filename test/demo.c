@@ -165,11 +165,11 @@ tgui_widget_t *menu_tab() {
 	tgui_widget_set_vexpand(TGUI_WIDGET_CAST(box), TGUI_TRUE);
 	tgui_widget_set_orientation(TGUI_WIDGET_CAST(box), TGUI_ORIENTATION_HORIZONTAL);
 
-	tgui_popover_t *file = tgui_popover_new();
+	tgui_popover_t *file = tgui_popover_new(TGUI_SURFACE_CAST(window));
 	tgui_popover_set_child(file, TGUI_WIDGET_CAST(tgui_label_new("file menu")));
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(tgui_submenu_button_new(file, "file")));
 
-	tgui_popover_t *edit = tgui_popover_new();
+	tgui_popover_t *edit = tgui_popover_new(TGUI_SURFACE_CAST(window));
 	tgui_popover_set_child(edit, TGUI_WIDGET_CAST(tgui_label_new("edit menu")));
 	tgui_box_append_widget(box, TGUI_WIDGET_CAST(tgui_submenu_button_new(edit, "edit")));
 

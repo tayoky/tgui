@@ -2,15 +2,6 @@
 
 TOBJECT_DEFINE_CLASS(tgui_popover_button, TGUI_POPOVER_BUTTON, tgui_button_get_type())
 
-static void tgui_popover_button_remove_child(tgui_widget_t *widget, tgui_widget_t *child) {
-	TGUI_WIDGET_CLASS_CAST(tgui_popover_button_get_parent_class())->remove_child(widget, child);
-
-	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(widget);
-	if (TGUI_WIDGET_CAST(popover_button->popover) == child) {
-		popover_button->popover = NULL;
-	}
-}
-
 static void tgui_popover_button_click(tobject_t *tobject) {
 	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(tobject);
 	long x = tgui_widget_get_frame_x(TGUI_WIDGET_CAST(popover_button));
@@ -49,12 +40,17 @@ static int tgui_popover_button_constructor(void *object) {
 	return 0;
 }
 
-static void tgui_popover_button_class_init(tgui_popover_button_class_t *class) {
-	tgui_widget_class_t *widget_class = TGUI_WIDGET_CLASS_CAST(class);
-	widget_class->remove_child = tgui_popover_button_remove_child;
+static int tgui_popover_button_destructor(void *object) {
+	tgui_popover_button_t *popover_button = TGUI_POPOVER_BUTTON_CAST(object);
+	tgui_popover_button_set_popover(popover_button, NULL);
+	
+	return tgui_popover_button_get_parent_class()->destructor(object);
+}
 
+static void tgui_popover_button_class_init(tgui_popover_button_class_t *class) {
 	tobject_class_t *tobject_class = TOBJECT_CLASS_CAST(class);
 	tobject_class->constructor = tgui_popover_button_constructor;
+	tobject_class->destructor  = tgui_popover_button_destructor;
 }
 
 tgui_popover_button_t *tgui_popover_button_new(tgui_popover_t *popover, const char *name) {
@@ -67,8 +63,9 @@ tgui_popover_button_t *tgui_popover_button_new(tgui_popover_t *popover, const ch
 }
 
 void tgui_popover_button_set_popover(tgui_popover_button_t *popover_button, tgui_popover_t *popover) {
-	tgui_widget_destroy(TGUI_WIDGET_CAST(popover_button->popover));
-	tgui_widget_set_parent(TGUI_WIDGET_CAST(popover), TGUI_WIDGET_CAST(popover_button));
+	tobject_ref(TOBJECT_CAST(popover));
+	tgui_popover_popdown(popover_button->popover);
+	tgui_popover_release(popover_button->popover);
 	popover_button->popover = popover;
 }
 
