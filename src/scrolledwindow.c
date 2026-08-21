@@ -25,6 +25,12 @@ static void tgui_scrolled_window_calculate_sizes(tgui_widget_t *widget) {
 	case TGUI_SCROLLED_WINDOW_POLICY_AUTO:
 		widget->pref_width += TGUI_WIDGET_CAST(scrolled_window->vbar)->pref_width;
 		widget->min_width += TGUI_WIDGET_CAST(scrolled_window->vbar)->min_width;
+		/*if (widget->min_height < TGUI_WIDGET_CAST(scrolled_window->vbar)->min_height) {
+			widget->min_height = TGUI_WIDGET_CAST(scrolled_window->vbar)->min_height;
+		}
+		if (widget->pref_height < TGUI_WIDGET_CAST(scrolled_window->vbar)->pref_height) {
+			widget->pref_height = TGUI_WIDGET_CAST(scrolled_window->vbar)->pref_height;
+		}*/
 		break;
 	case TGUI_SCROLLED_WINDOW_POLICY_NEVER:
 		break;
@@ -35,6 +41,12 @@ static void tgui_scrolled_window_calculate_sizes(tgui_widget_t *widget) {
 	case TGUI_SCROLLED_WINDOW_POLICY_AUTO:
 		widget->pref_height += TGUI_WIDGET_CAST(scrolled_window->hbar)->pref_height;
 		widget->min_height += TGUI_WIDGET_CAST(scrolled_window->hbar)->min_height;
+		/*if (widget->min_width < TGUI_WIDGET_CAST(scrolled_window->hbar)->min_width) {
+			widget->min_width = TGUI_WIDGET_CAST(scrolled_window->hbar)->min_width;
+		}
+		if (widget->pref_width < TGUI_WIDGET_CAST(scrolled_window->hbar)->pref_width) {
+			widget->pref_width = TGUI_WIDGET_CAST(scrolled_window->hbar)->pref_height;
+		}*/
 		break;
 	case TGUI_SCROLLED_WINDOW_POLICY_NEVER:
 		break;

@@ -7,16 +7,17 @@ TOBJECT_DEFINE_CLASS(tgui_viewport, TGUI_VIEWPORT, tgui_widget_get_type())
 static void tgui_viewport_calculate_sizes(tgui_widget_t *widget) {
 	tgui_viewport_t *viewport = TGUI_VIEWPORT_CAST(widget);
 
+	// min size 10x10 to prevent colapse
 	long min_width;
 	if (viewport->have_hscroll) {
-		min_width = 0;
+		min_width = 10;
 	} else {
 		min_width = tgui_viewport_get_content_min_width(viewport);
 	}
 
 	long min_height;
 	if (viewport->have_vscroll) {
-		min_height = 0;
+		min_height = 10;
 	} else {
 		min_height = tgui_viewport_get_content_min_height(viewport);
 	}

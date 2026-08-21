@@ -28,8 +28,8 @@ static void tgui_slider_calculate_sizes(tgui_widget_t *widget) {
 		// we know how big is the slider
 		// and the portion of the slider it take
 		// we can calculate how big is the slider
-		slider_min_length  = button_min_length / slider->size;
-		slider_pref_length = button_pref_length / slider->size;
+		slider_min_length  = (double)button_min_length / slider->size;
+		slider_pref_length = (double)button_pref_length / slider->size;
 	}
 
 	if (slider->widget.orientation == TGUI_ORIENTATION_VERTICAL) {
