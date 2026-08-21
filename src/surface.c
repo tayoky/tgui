@@ -89,13 +89,18 @@ tgui_widget_t *tgui_surface_get_child(tgui_surface_t *surface) {
 
 int tgui_surface_resize(tgui_surface_t *surface, long width, long height) {
 	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(surface));
-	if (width < surface->widget.min_width || width < surface->widget.min_height) {
-		// won't do it
+	if (width < TGUI_WIDGET_CAST(surface)->min_width) {
 		// too small
-		return -1;
+		width = TGUI_WIDGET_CAST(surface)->min_width;
 	}
-	surface->width = width;
+	if (height < TGUI_WIDGET_CAST(surface)->min_height) {
+		// too small
+		height = TGUI_WIDGET_CAST(surface)->min_height;
+	}
+
+	surface->width  = width;
 	surface->height = height;
+	tgui_platform_set_surface_size(surface);
 
 	// now widgets could get more or less space
 	tgui_widget_mark_dirty_space(TGUI_WIDGET_CAST(surface));
@@ -117,7 +122,11 @@ void tgui_surface_render(tgui_surface_t *surface) {
 		return;
 	}
 
+	// make sure the surface is big enought
 	tgui_widget_calculate_sizes(TGUI_WIDGET_CAST(surface));
+	if (surface->width < TGUI_WIDGET_CAST(surface)->min_width || surface->height < TGUI_WIDGET_CAST(surface)->min_height) {
+		tgui_surface_resize(surface, surface->width, surface->height);
+	}
 	tgui_widget_allocate_space(TGUI_WIDGET_CAST(surface), 0, 0, surface->width / surface->scaling, surface->height / surface->scaling);
 
 	if (tgui_surface_is_dirty(surface)) {

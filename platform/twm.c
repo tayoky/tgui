@@ -347,6 +347,20 @@ void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y)
 	twm_window_move(stanix_window->window, x, y);
 }
 
+void tgui_platform_set_surface_size(tgui_surface_t *surface) {
+	stanix_window_t *stanix_window = surface->private;
+	twm_window_move(stanix_window->window, width, height);
+
+	// get the new gfx
+	gfx_free(stanix_window->gfx);
+	stanix_window->gfx = twm_get_window_gfx(stanix_window->window);
+}
+
+void tgui_platform_set_surface_size(tgui_surface_t *surface) {
+	stanix_window_t *stanix_window = surface->private;
+	twm_window_resize(stanix_window->window, surface->width, surface->height);
+}
+
 void tgui_platform_grab_surface(tgui_surface_t *surface) {
 	stanix_window_t *stanix_window = surface->private;
 	twm_grab_input(stanix_window->window, 0);

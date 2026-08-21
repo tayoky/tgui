@@ -223,6 +223,25 @@ void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y)
 	XMoveWindow(display, x11_window->window, x, y);
 }
 
+void tgui_platform_set_surface_size(tgui_surface_t *surface) {
+	x11_window_t *x11_window = surface->private;
+	XResizeWindow(display, x11_window->window, surface->width, surface->height);
+
+	// free old pixmap and GC
+	XftDrawDestroy(x11_window->draw);
+	XFreeGC(display, x11_window->gc);
+	XFreePixmap(display, x11_window->pixmap);
+	
+	// setup pixmap and GC
+	XGCValues values;
+	x11_window->gc = XCreateGC(display, x11_window->window, 0, &values);
+	x11_window->pixmap = XCreatePixmap(display, x11_window->window, surface->width, surface->height, DefaultDepth(display, screen));
+	x11_window->draw = XftDrawCreate(display, x11_window->pixmap, visual, colormap);
+	XMapWindow(display, x11_window->window);
+	XFlush(display);
+	surface->private = x11_window;
+}
+
 void tgui_platform_grab_surface(tgui_surface_t *surface) {
 	x11_window_t *x11_window = surface->private;
 	XGrabPointer(display, x11_window->window, False, ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None, CurrentTime);

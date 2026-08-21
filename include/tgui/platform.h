@@ -20,6 +20,7 @@ void tgui_platform_close_surface(tgui_surface_t *surface);
 void tgui_platform_push_surface(tgui_surface_t *surface);
 void tgui_platform_set_surface_visible(tgui_surface_t *surface, int visible);
 void tgui_platform_set_surface_position(tgui_surface_t *surface, long x, long y);
+void tgui_platform_set_surface_size(tgui_surface_t *surface);
 void tgui_platform_grab_surface(tgui_surface_t *surface);
 void tgui_platform_ungrab_surface(tgui_surface_t *surface);
 void tgui_platform_new_color(tgui_color_t *color, uint8_t r, uint8_t g, uint8_t b, uint8_t a);

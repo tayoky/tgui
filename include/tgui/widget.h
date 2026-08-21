@@ -42,7 +42,7 @@ struct tgui_widget {
 	tgui_list_t children;
 	tgui_widget_t *parent;
 	char *id;
-	void *layout_data; // usef by parent
+	void *layout_data; // used by parent
 	tgui_list_t state_styles[TGUI_STATE_COUNT];
 	tgui_list_t styles;
 	tgui_style_t cache_style;
