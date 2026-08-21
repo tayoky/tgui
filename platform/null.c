@@ -11,7 +11,7 @@ void tgui_platform_fini(void) {
 void tgui_platform_handle_event(void) {
 }
 
-int tgui_platform_create_window(tgui_window_t *window) {
+int tgui_platform_create_window(tgui_window_t *window, tgui_window_t *parent) {
 	return 0;
 }
 

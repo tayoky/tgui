@@ -14,6 +14,7 @@ struct tgui_window {
 	char *title;
 };
 
+tgui_window_t *tgui_window_new_with_parent(const char *title, long width, long height, tgui_window_t *parent);
 tgui_window_t *tgui_window_new(const char *title, long width, long height);
 void tgui_window_set_child(tgui_window_t *window, tgui_widget_t *child);
 tgui_widget_t *tgui_window_get_child(tgui_window_t *window);

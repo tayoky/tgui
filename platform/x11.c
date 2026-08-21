@@ -157,8 +157,8 @@ void tgui_platform_handle_event(void) {
 	}	
 }
 
-int tgui_platform_create_window(tgui_window_t *window) {
-	return tgui_platform_create_surface(&window->surface, NULL);
+int tgui_platform_create_window(tgui_window_t *window, tgui_window_t *parent) {
+	return tgui_platform_create_surface(&window->surface, parent ? &parent->surface : NULL);
 }
 
 void tgui_platform_close_window(tgui_window_t *window) {

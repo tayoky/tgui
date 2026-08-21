@@ -84,16 +84,17 @@ static void tgui_window_class_init(tgui_window_class_t *class) {
 	tobject_class->destructor  = tgui_window_destructor;
 }
 
-tgui_window_t *tgui_window_new(const char *title, long width, long height) {
+tgui_window_t *tgui_window_new_with_parent(const char *title, long width, long height, tgui_window_t *parent) {
 	tgui_window_t *window = tobject_new(tgui_window_get_type());
 	if (!window) return NULL;
 
 	// TODO : move this to constructor
 	window->surface.width  = width;
 	window->surface.height = height;
+	window->surface.height = height;
 	window->title = strdup(title ? title : "tgui window");
 	tgui_title_bar_set_title(window->title_bar, window->title);
-	tgui_platform_create_window(window);
+	tgui_platform_create_window(window, parent);
 	tgui_list_append(&windows, &window->node);
 	tgui_surface_register(&window->surface);
 
@@ -101,6 +102,10 @@ tgui_window_t *tgui_window_new(const char *title, long width, long height) {
 	tgui_rect_init(&rect, 0, 0, width, height);
 	tgui_surface_invalidate(&window->surface, &rect);
 	return window;
+}
+
+tgui_window_t *tgui_window_new(const char *title, long width, long height) {
+	return tgui_window_new_with_parent(title, width, height, NULL);
 }
 
 void tgui_window_set_child(tgui_window_t *window, tgui_widget_t *child) {
