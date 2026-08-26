@@ -31,8 +31,8 @@
 #define TGUI_KEY_PAGE_DOWN    17000065
 #define TGUI_KEY_LSHIFT       17000066
 #define TGUI_KEY_RSHIFT       17000067
-#define TGUI_KEY_LCRTL        17000068
-#define TGUI_KEY_RCRTL        17000069
+#define TGUI_KEY_LCTRL        17000068
+#define TGUI_KEY_RCTRL        17000069
 #define TGUI_KEY_LALT         17000070
 #define TGUI_KEY_RALT         17000071
 #define TGUI_KEY_ALTGR        17000072
