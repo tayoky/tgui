@@ -8,7 +8,7 @@ static int tgui_dropdown_constructor(void *object) {
 	tgui_dropdown_get_parent_class()->constructor(object);
 
 	tgui_dropdown_t *dropdown = TGUI_DROPDOWN_CAST(object);
-	dropdown->popover = tgui_popover_new();
+	dropdown->popover = tgui_popover_new(NULL); // TODO : fix that
 	dropdown->list_view = tgui_list_view_new(NULL, NULL);
 	tgui_popover_set_child(dropdown->popover, TGUI_WIDGET_CAST(dropdown->list_view));
 	tgui_popover_button_set_popover(TGUI_POPOVER_BUTTON_CAST(object), dropdown->popover);
