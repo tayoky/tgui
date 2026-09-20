@@ -1,9 +1,10 @@
 #!/bin/sh
 
-. ./tconf.sh
+. "$(dirname "$0")/tconf.sh"
 
 : ${STATIC:="yes"}
 : ${SHARED:="yes"}
+OPTIONS="STATIC SHARED PLATFORM"
 
 tconf_init "$@"
 
@@ -32,7 +33,6 @@ case $PLATFORM in
 		;;
 esac
 
+tconf_gen_makefiles "$SRCDIR/Makefile.in" "$SRCDIR/test/Makefile.in"
+
 tconf_fini
-tconf_echo_conf "STATIC" "$STATIC" >> config.mk
-tconf_echo_conf "SHARED" "$SHARED" >> config.mk
-tconf_echo_conf "PLATFORM" "$PLATFORM" >> config.mk
